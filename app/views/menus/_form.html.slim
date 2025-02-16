@@ -1,0 +1,30 @@
+= form_with(model: menu, local: true) do |f|
+  .mb-3
+    = f.label :name, class: "form-label"
+    = f.text_field :name, class: "form-control"
+
+  .mb-3
+    = f.label :category, class: "form-label"
+    = f.select :category, Menu.categories.keys.map { |c| [c, c] }, {}, class: "form-control"
+
+  .mb-3
+    = f.label :cook_before, class: "form-label"
+    = f.text_area :cook_before, class: "form-control"
+
+  .mb-3
+    = f.label :cook_on_the_day, class: "form-label"
+    = f.text_area :cook_on_the_day, class: "form-control"
+
+  .mb-3
+    = f.label :cost_price, class: "form-label"
+    = f.number_field :cost_price, class: "form-control"
+
+  h3 レシピ
+  #menu_materials
+    = f.fields_for :menu_materials do |material_form|
+      = render 'menus/menu_material_fields', f: material_form
+
+    = link_to_add_association "材料追加", f, :menu_materials, class: "btn btn-success"
+
+  .mt-3
+    = f.submit "保存", class: "btn btn-primary"

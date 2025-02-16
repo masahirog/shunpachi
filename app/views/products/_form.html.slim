@@ -1,0 +1,32 @@
+= form_with(model: product, local: true) do |f|
+  .mb-3
+    = f.label :name, class: "form-label"
+    = f.text_field :name, class: "form-control"
+
+  .mb-3
+    = f.label :food_label_name, class: "form-label"
+    = f.text_field :food_label_name, class: "form-control"
+
+  .mb-3
+    = f.label :sell_price, class: "form-label"
+    = f.number_field :sell_price, class: "form-control"
+
+  .mb-3
+    = f.label :cost_price, class: "form-label"
+    = f.number_field :cost_price, class: "form-control"
+
+  .mb-3
+    = f.label :category, class: "form-label"
+    = f.select :category, Product.categories.keys.map { |c| [c, c] }, {}, class: "form-control"
+
+
+  h3 メニュー情報
+  #product_menus
+    = f.fields_for :product_menus do |product_menu_form|
+      = render 'products/product_menu_fields', f: product_menu_form
+
+    = link_to_add_association "メニュー追加", f, :product_menus, class: "btn btn-success"
+
+
+  .mt-3
+    = f.submit "保存", class: "btn btn-primary"

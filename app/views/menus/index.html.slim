@@ -1,0 +1,23 @@
+h3 メニュー一覧
+= link_to "新規登録", new_menu_path, class: "btn btn-success mb-3"
+
+table.table.table-striped
+  thead
+    tr
+      th 名称
+      th カテゴリ
+      th 事前調理
+      th 当日調理
+      th 原価
+      th 操作
+  tbody
+    - @menus.each do |menu|
+      tr
+        td = menu.name
+        td = menu.category
+        td = menu.cook_before
+        td = menu.cook_on_the_day
+        td = menu.cost_price
+        td
+          = link_to "編集", edit_menu_path(menu), class: "btn btn-primary btn-sm"
+          = link_to "削除", menu, method: :delete, data: { confirm: "本当に削除しますか？" }, class: "btn btn-danger btn-sm"

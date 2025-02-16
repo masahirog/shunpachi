@@ -1,0 +1,17 @@
+= form_with(model: store, local: true) do |f|
+  .mb-3
+    = f.label :name, class: "form-label"
+    = f.text_field :name, class: "form-control"
+
+  .mb-3
+    = f.label :phone, class: "form-label"
+    = f.text_field :phone, class: "form-control"
+
+  .mb-3
+    = f.label :address, class: "form-label"
+    = f.text_area :address, class: "form-control"
+
+  .form-check
+    = f.check_box :unused_flag, class: "form-check-input"
+    = f.label :unused_flag, "未使用", class: "form-check-label"
+

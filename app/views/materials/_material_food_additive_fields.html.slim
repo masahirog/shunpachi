@@ -1,0 +1,5 @@
+.nested-fields
+  .mb-3
+    = f.label :food_additive_id, "食品添加物", class: "form-label"
+    = f.collection_select :food_additive_id, FoodAdditive.all, :id, :name, {}, class: "form-control"
+  = link_to_remove_association "削除", f, class: "btn btn-danger"

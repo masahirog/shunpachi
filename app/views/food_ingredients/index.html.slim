@@ -1,0 +1,26 @@
+h1 食品成分一覧
+
+= link_to "新規登録", new_food_ingredient_path, class: "btn btn-success mb-3"
+
+table.table.table-striped
+  thead
+    tr
+      th 名称
+      th カロリー
+      th タンパク質
+      th 脂質
+      th 炭水化物
+      th 塩分
+      th 操作
+  tbody
+    - @food_ingredients.each do |food_ingredient|
+      tr
+        td = food_ingredient.name
+        td = food_ingredient.calorie
+        td = food_ingredient.protein
+        td = food_ingredient.lipid
+        td = food_ingredient.carbohydrate
+        td = food_ingredient.salt
+        td
+          = link_to "編集", edit_food_ingredient_path(food_ingredient), class: "btn btn-primary btn-sm"
+          = link_to "削除", food_ingredient, method: :delete, data: { confirm: "本当に削除しますか？" }, class: "btn btn-danger btn-sm"

@@ -1,0 +1,7 @@
+= form_with(model: food_additive, local: true) do |f|
+  .mb-3
+    = f.label :name, class: "form-label"
+    = f.text_field :name, class: "form-control"
+
+  .mt-3
+    = f.submit "保存", class: "btn btn-primary"

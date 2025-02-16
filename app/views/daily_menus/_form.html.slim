@@ -1,0 +1,27 @@
+= form_with(model: daily_menu, local: true) do |f|
+  .mb-3
+    = f.label :date, class: "form-label"
+    = f.date_field :date, class: "form-control"
+
+  .mb-3
+    = f.label :manufacturing_number, class: "form-label"
+    = f.number_field :manufacturing_number, class: "form-control"
+
+  .mb-3
+    = f.label :total_selling_price, class: "form-label"
+    = f.number_field :total_selling_price, class: "form-control"
+
+  .mb-3
+    = f.label :worktime, class: "form-label"
+    = f.number_field :worktime, class: "form-control"
+
+  h3 商品情報
+  #daily_menu_products
+    = f.fields_for :daily_menu_details do |daily_menu_detail_form|
+      = render 'daily_menus/daily_menu_detail_fields', f: daily_menu_detail_form
+
+    = link_to_add_association "商品追加", f, :daily_menu_details, class: "btn btn-success"
+
+
+  .mt-3
+    = f.submit "保存", class: "btn btn-primary"

@@ -1,0 +1,12 @@
+h3 日別メニュー
+= link_to "新規登録", new_daily_menu_path, class: "btn btn-success mb-3"
+
+= month_calendar do |date|
+  - daily_menu = DailyMenu.find_by(date: date)
+  .calendar-event
+    - if daily_menu
+      = link_to daily_menu.date.strftime('%Y-%m-%d'), edit_daily_menu_path(daily_menu)
+      p "製造数: #{daily_menu.manufacturing_number}"
+      p "総売上: ¥#{daily_menu.total_selling_price}"
+    - else
+      = link_to "追加", new_daily_menu_path(date: date)

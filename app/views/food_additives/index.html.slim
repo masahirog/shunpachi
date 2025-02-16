@@ -1,0 +1,15 @@
+h3 食品添加物一覧
+= link_to "新規登録", new_food_additive_path, class: "btn btn-success mb-3"
+
+table.table.table-striped
+  thead
+    tr
+      th 名称
+      th 操作
+  tbody
+    - @food_additives.each do |food_additive|
+      tr
+        td = food_additive.name
+        td
+          = link_to "編集", edit_food_additive_path(food_additive), class: "btn btn-primary btn-sm"
+          = link_to "削除", food_additive, method: :delete, data: { confirm: "本当に削除しますか？" }, class: "btn btn-danger btn-sm"

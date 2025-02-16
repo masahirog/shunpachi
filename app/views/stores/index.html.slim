@@ -1,0 +1,21 @@
+h3 店舗一覧
+= link_to "新規登録", new_store_path, class: "btn btn-success mb-3"
+
+table.table.table-striped
+  thead
+    tr
+      th 名称
+      th 電話番号
+      th 住所
+      th 使用状況
+      th 操作
+  tbody
+    - @stores.each do |store|
+      tr
+        td = store.name
+        td = store.phone
+        td = store.address
+        td = store.unused_flag ? '未使用' : '使用中'
+        td
+          = link_to "編集", edit_store_path(store), class: "btn btn-primary btn-sm"
+          = link_to "削除", store, method: :delete, data: { confirm: "本当に削除しますか？" }, class: "btn btn-danger btn-sm"

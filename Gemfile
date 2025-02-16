@@ -13,6 +13,12 @@ gem "jbuilder"
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 gem "bootsnap", require: false
 gem "devise", "~> 4.9"
+gem "slim-rails", "~> 3.7"
+gem 'cocoon'
+gem 'simple_calendar'
+
+
+
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
@@ -30,5 +36,3 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
-
-gem "slim-rails", "~> 3.7"

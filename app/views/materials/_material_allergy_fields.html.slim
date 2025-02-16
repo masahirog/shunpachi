@@ -1,0 +1,5 @@
+.nested-fields
+  .mb-3
+    = f.label :allergy, "アレルゲン", class: "form-label"
+    = f.text_field :allergy, class: "form-control"
+  = link_to_remove_association "削除", f, class: "btn btn-danger"
