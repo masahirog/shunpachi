@@ -1,0 +1,11 @@
+h2 ユーザー一覧
+
+.container
+  .row
+    - @users.each do |user|
+      .col-md-4.mb-3
+        .card
+          .card-body
+            h5.card-title = user.name
+            p.card-text = user.email
+            = link_to "詳細", user_path(user), class: "btn btn-primary"

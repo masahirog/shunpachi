@@ -1,0 +1,32 @@
+doctype html
+html
+  head
+    title Shunpachi
+    meta charset="utf-8"
+    meta name="viewport" content="width=device-width, initial-scale=1"
+    = csrf_meta_tags
+    = csp_meta_tag
+    = stylesheet_link_tag "application", media: "all"
+    = javascript_importmap_tags
+
+
+  body
+    header
+      nav.navbar.navbar-expand-lg.navbar-light.bg-light
+        = link_to "Shunpachi",root_path,class:"navbar-brand", style:"margin-left:20px;"
+        button.navbar-toggler type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+          span.navbar-toggler-icon
+        #navbarNav.collapse.navbar-collapse
+          ul.navbar-nav
+            - if user_signed_in?
+              li.nav-item
+                = link_to "ユーザー一覧", users_path, class: "nav-link"
+              li.nav-item
+                = link_to "ログアウト", destroy_user_session_path, method: :delete, class: "nav-link"
+            - else
+              li.nav-item
+                = link_to "ログイン", new_user_session_path, class: "nav-link"
+              li.nav-item
+                = link_to "新規登録", new_user_registration_path, class: "nav-link"
+    .mt-4 style='padding:0px 20px;'
+      = yield

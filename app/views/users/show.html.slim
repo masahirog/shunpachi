@@ -1,0 +1,10 @@
+h2 ユーザー詳細
+
+.container
+  .row
+    .col-md-6
+      .card
+        .card-body
+          h5.card-title = @user.name
+          p.card-text = @user.email
+          = link_to "戻る", users_path, class: "btn btn-secondary"
