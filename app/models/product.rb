@@ -1,7 +1,7 @@
 class Product < ApplicationRecord
   has_many :product_menus, -> { order(:row_order) }, dependent: :destroy
   accepts_nested_attributes_for :product_menus, allow_destroy: true
-  has_many :daily_menu_details
+  has_many :daily_menu_products
 
   enum category: { A: 0, B: 1, C: 2, D: 3, E: 4, F: 5 }
   

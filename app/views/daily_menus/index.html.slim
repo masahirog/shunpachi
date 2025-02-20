@@ -1,12 +1,19 @@
-h3 日別メニュー
-= link_to "新規登録", new_daily_menu_path, class: "btn btn-success mb-3"
+h3.text-center = "#{@date.year}年#{@date.month}月 献立"
+.row.justify-content-between.mb-2
+  .col-auto
+    = link_to "<< 先月", daily_menus_path(date: @date.prev_month), class: "btn btn-outline-primary"
+  .col-auto
+    = link_to "翌月 >>", daily_menus_path(date: @date.next_month), class: "btn btn-outline-primary"
 
-= month_calendar do |date|
-  - daily_menu = DailyMenu.find_by(date: date)
-  .calendar-event
-    - if daily_menu
-      = link_to daily_menu.date.strftime('%Y-%m-%d'), edit_daily_menu_path(daily_menu)
-      p "製造数: #{daily_menu.manufacturing_number}"
-      p "総売上: ¥#{daily_menu.total_selling_price}"
-    - else
-      = link_to "追加", new_daily_menu_path(date: date)
+= month_calendar events: @daily_menus, attribute: :date do |date, daily_menu|
+  - daily_menu = daily_menu[0]
+  = link_to edit_daily_menu_path(daily_menu) ,style:'text-decoration: none;' do
+    .calendar-event.card.shadow-sm
+      .card-body style='padding: 10px;'
+        h5.text-dark.font-weight-bold = date.day
+        p.mb-1.text-muted
+          strong 製造数：
+          = "#{daily_menu.manufacturing_number} 食"
+        p.mb-1.text-muted
+          strong 総売上：
+          = "#{daily_menu.total_selling_price} 円"

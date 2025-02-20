@@ -1,0 +1,16 @@
+ja:
+  date:
+    day_names: [日, 月, 火, 水, 木, 金, 土]
+  enums:
+    material:
+      recipe_unit:
+        g: g
+        ml: ml
+        pack: 袋
+        hon: 本
+        ko: 個
+        mai: 枚
+      category:
+        food: 食品
+        packed: 包材容器
+        other: その他

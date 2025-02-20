@@ -1,3 +1,3 @@
-h2 日別メニュー編集
+h3 = "#{formatted_date(@daily_menu.date)}献立"
 = render "form", daily_menu: @daily_menu
-= link_to "戻る", daily_menus_path, class: "btn btn-secondary"
+= link_to "戻る", daily_menus_path, class: "btn btn-outline-secondary",style:'float:right;'

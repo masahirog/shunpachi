@@ -2,7 +2,23 @@ class DailyMenusController < ApplicationController
   before_action :set_daily_menu, only: %i[edit update destroy]
 
   def index
-    @daily_menus = DailyMenu.all
+    if params[:date].present?
+      @date = params[:date].to_date
+    else
+      @date = Date.today
+    end
+    params[:start_date] = @date
+    @dates = ((@date.beginning_of_month - 6)..(@date.end_of_month+6)).to_a
+    @daily_menus = DailyMenu.where(date:@dates)
+    creare_dates = @dates - @daily_menus.map{|dm|dm.date}
+    if creare_dates.present?
+      new_arr = []
+      creare_dates.each do |date|
+        new_arr << DailyMenu.new(date:date)
+      end
+      DailyMenu.import new_arr
+      @daily_menus = DailyMenu.where(date:@dates)
+    end
   end
 
   def new
@@ -40,6 +56,6 @@ class DailyMenusController < ApplicationController
   end
 
   def daily_menu_params
-    params.require(:daily_menu).permit(:date, :manufacturing_number, :total_selling_price, :worktime)
+    params.require(:daily_menu).permit(:date, :manufacturing_number, :total_selling_price, :worktime,:total_cost_price)
   end
 end

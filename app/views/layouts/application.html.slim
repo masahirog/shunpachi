@@ -6,11 +6,10 @@ html
     meta name="viewport" content="width=device-width, initial-scale=1"
     = csrf_meta_tags
     = csp_meta_tag
-    = stylesheet_link_tag "application", media: "all"
+    = stylesheet_link_tag "application", media: "all", "data-turbo-track": "reload"
+
     = javascript_importmap_tags
     = javascript_include_tag "cocoon", defer: true
-
-
   body
     header
       nav.navbar.navbar-expand-lg.navbar-light.bg-light
@@ -22,6 +21,17 @@ html
 
           #navbarNav.collapse.navbar-collapse
             ul.navbar-nav.me-auto
+              li.nav-item
+                = link_to "献立情報", daily_menus_path, class: "nav-link"
+
+              li.nav-item.dropdown
+                a.nav-link.dropdown-toggle href="#" id="menuMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+                  | レシピ管理
+                ul.dropdown-menu aria-labelledby="menuMenu"
+                  li = link_to "メニュー", menus_path, class: "dropdown-item"
+                  li = link_to "商品", products_path, class: "dropdown-item"
+
+
               li.nav-item.dropdown
                 a.nav-link.dropdown-toggle href="#" id="masterMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false"
                   | マスター管理
@@ -30,34 +40,20 @@ html
                   li = link_to "材料", materials_path, class: "dropdown-item"
                   li = link_to "食品成分", food_ingredients_path, class: "dropdown-item"
                   li = link_to "食品添加物", food_additives_path, class: "dropdown-item"
+                  li = link_to "店舗管理", stores_path, class: "dropdown-item"
 
-              li.nav-item.dropdown
-                a.nav-link.dropdown-toggle href="#" id="menuMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false"
-                  | メニュー管理
-                ul.dropdown-menu aria-labelledby="menuMenu"
-                  li = link_to "メニュー", menus_path, class: "dropdown-item"
-                  li = link_to "商品", products_path, class: "dropdown-item"
-
-              li.nav-item.dropdown
-                a.nav-link.dropdown-toggle href="#" id="dailyMenuMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false"
-                  | 日別メニュー
-                ul.dropdown-menu aria-labelledby="dailyMenuMenu"
-                  li = link_to "カレンダー", daily_menus_path, class: "dropdown-item"
-
-              li.nav-item
-                = link_to "店舗管理", stores_path, class: "nav-link"
 
             ul.navbar-nav.ms-auto
               - if user_signed_in?
-                li.nav-item
-                  / = link_to "ユーザー一覧", users_path, class: "nav-link"
                 li.nav-item
                   = link_to "ログアウト", destroy_user_session_path, method: :delete, class: "nav-link"
               - else
                 li.nav-item
                   = link_to "ログイン", new_user_session_path, class: "nav-link"
-                li.nav-item
-                  = link_to "新規登録", new_user_registration_path, class: "nav-link"
+                / li.nav-item
+                /   = link_to "新規登録", new_user_registration_path, class: "nav-link"
 
-    .mt-4 style='padding:0px 20px;'
+    .mt-4.mb-4 style='padding:0px 20px;'
+      = render '/shared/notice', notice: notice
+      = render '/shared/alert', alert: alert
       = yield

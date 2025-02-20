@@ -15,7 +15,8 @@ table.table.table-striped
   tbody
     - @vendors.each do |vendor|
       tr
-        td = vendor.name
+        td
+          = link_to vendor.name, edit_vendor_path(vendor), class: ""
         td = vendor.phone
         td = vendor.mail
         td = vendor.address
@@ -23,5 +24,4 @@ table.table.table-striped
         td = vendor.memo
         td = vendor.unused_flag ? '未使用' : '使用中'
         td
-          = link_to "編集", edit_vendor_path(vendor), class: "btn btn-primary btn-sm"
           = link_to "削除", vendor, method: :delete, data: { confirm: "本当に削除しますか？" }, class: "btn btn-danger btn-sm"

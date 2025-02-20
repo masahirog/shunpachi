@@ -1,8 +1,7 @@
 import $ from "jquery";
-
-// jQuery をグローバル変数にセット
 window.$ = $;
 window.jQuery = $;
-
 import "@popperjs/core";
 import "bootstrap";
+import "./materials";  // `materials.js` をロード
+import * as bootstrap from "bootstrap"

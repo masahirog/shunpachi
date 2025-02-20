@@ -1,5 +1,0 @@
-.nested-fields
-  .mb-3
-    = f.label :product_id, "商品", class: "form-label"
-    = f.collection_select :product_id, Product.all, :id, :name, {}, class: "form-control"
-  = link_to_remove_association "削除", f, class: "btn btn-danger"

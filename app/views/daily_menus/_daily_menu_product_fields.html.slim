@@ -1,0 +1,14 @@
+tr.nested-fields
+  = f.hidden_field :row_order,class:'daily_menu_products_row_order'
+
+  td 
+    = f.collection_select :product_id, Product.all, :id, :name, {}, class: "form-control"
+  td
+    = f.number_field :manufacturing_number, readonly:true, class:'form-control'
+  td
+    = f.number_field :sell_price, readonly:true, class:'form-control'
+  td
+    = f.number_field :total_cost_price, readonly:true, class:'form-control'
+
+  td
+    = link_to_remove_association "削除", f, class: "btn btn-danger"

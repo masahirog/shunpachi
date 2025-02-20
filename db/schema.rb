@@ -29,6 +29,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_16_054619) do
     t.date "date", null: false
     t.integer "manufacturing_number", default: 0, null: false
     t.integer "total_selling_price", default: 0, null: false
+    t.integer "total_cost_price", default: 0, null: false
     t.float "worktime"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -49,6 +50,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_16_054619) do
     t.float "lipid", default: 0.0, null: false
     t.float "carbohydrate", default: 0.0, null: false
     t.float "salt", default: 0.0, null: false
+    t.text "memo"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

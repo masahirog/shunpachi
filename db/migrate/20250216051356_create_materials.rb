@@ -2,7 +2,7 @@ class CreateMaterials < ActiveRecord::Migration[7.1]
   def change
     create_table :materials do |t|
       t.references :vendor
-      t.references :food_ingredient
+      t.references :food_ingredient,null:true
       t.string :name, null: false
       t.string :food_label_name
       t.integer :category, null: false

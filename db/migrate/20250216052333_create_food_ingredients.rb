@@ -7,7 +7,7 @@ class CreateFoodIngredients < ActiveRecord::Migration[7.1]
       t.float :lipid, null: false, default: 0
       t.float :carbohydrate, null: false, default: 0
       t.float :salt, null: false, default: 0
-
+      t.text :memo
       t.timestamps
     end
   end

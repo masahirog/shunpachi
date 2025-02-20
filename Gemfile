@@ -16,18 +16,24 @@ gem "devise", "~> 4.9"
 gem "slim-rails", "~> 3.7"
 gem 'cocoon'
 gem 'simple_calendar'
-
+gem "select2-rails"
+gem 'kaminari'
+gem 'activerecord-import'
+gem 'rails-i18n'
+gem 'gon'
+gem 'aws-sdk-s3'
+gem 'image_processing'
 
 
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
+  gem 'pry-rails'
 end
 
 group :development do
   gem "web-console"
-
-
+  gem 'bullet'
 
   gem "error_highlight", ">= 0.4.0", platforms: [:ruby]
 end
@@ -35,4 +41,9 @@ end
 group :test do
   gem "capybara"
   gem "selenium-webdriver"
+end
+
+
+group :production do
+  gem 'rails_12factor'
 end
