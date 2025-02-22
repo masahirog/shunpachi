@@ -1,12 +1,10 @@
-
-// Sass モジュールを先に読み込む
 @use "sass:color";
 @use "sass:map";
 @use "sass:math";
-@use 'bootstrap/scss/bootstrap';
-@use 'bootstrap-icons/font/bootstrap-icons';
- 
-// Bootstrap のカスタム変数を設定
+@use "bootstrap/scss/bootstrap" as *;
+@use "bootstrap-icons/font/bootstrap-icons";
+
+
 $primary: #0d6efd !default;
 $secondary: #6c757d !default;
 $success: #198754 !default;
@@ -26,13 +24,3 @@ $theme-colors: (
   "light": $light,
   "dark": $dark
 ) !default;
-
-// Bootstrap を標準で読み込む
-@use "bootstrap/scss/bootstrap";
-
-body {
-	background-color:green;
-}
-.aaa{
-	background-color:red;
-}

@@ -1,6 +1,17 @@
 class FoodIngredientsController < ApplicationController
   before_action :set_food_ingredient, only: %i[edit update destroy]
 
+  def search
+    query = params[:q]
+    food_ingredients = if query.present?
+                         FoodIngredient.where("name LIKE ?", "%#{query}%")
+                       else
+                         FoodIngredient.none
+                       end
+
+    render json: food_ingredients.select(:id, :name) # 必要なデータのみ返す
+  end
+
   def index
     @food_ingredients = FoodIngredient.all
   end

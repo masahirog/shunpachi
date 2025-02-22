@@ -7,10 +7,13 @@ Rails.application.routes.draw do
   resources :menus
   resources :products
   resources :food_additives
-  resources :food_ingredients
   resources :daily_menus
   resources :stores
-
+  resources :food_ingredients do
+    collection do
+      get :search
+    end
+  end
   # simple_calendar 用のルート
   get 'calendar', to: 'daily_menus#index', as: :calendar
 end

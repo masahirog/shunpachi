@@ -23,8 +23,8 @@ gem 'rails-i18n'
 gem 'gon'
 gem 'aws-sdk-s3'
 gem 'image_processing'
-
-
+gem 'sassc-rails'
+gem 'jquery-rails'
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
