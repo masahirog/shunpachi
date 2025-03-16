@@ -3,7 +3,11 @@ Rails.application.routes.draw do
   devise_for :users
 
   resources :vendors
-  resources :materials
+  resources :materials do
+    collection do
+      get :search
+    end
+  end
   resources :menus
   resources :products
   resources :food_additives
@@ -14,6 +18,5 @@ Rails.application.routes.draw do
       get :search
     end
   end
-  # simple_calendar 用のルート
   get 'calendar', to: 'daily_menus#index', as: :calendar
 end

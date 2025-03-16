@@ -1,17 +1,15 @@
 h3 仕入れ業者一覧
-= link_to "新規登録", new_vendor_path, class: "btn btn-success mb-3"
+= link_to "新規登録", new_vendor_path, class: "btn btn-primary mb-3"
 
 table.table.table-striped
   thead
     tr
-      th 名称
-      th 電話番号
-      th メール
-      th 住所
-      th 取引担当者
+      th style='width:200px;' 名称
+      th style='width:200px;' 電話番号
+      th style='width:200px;' メール
+      th style='width:300px;' 住所
+      th style='width:200px;' 取引担当者
       th メモ
-      th 使用状況
-      th 操作
   tbody
     - @vendors.each do |vendor|
       tr
@@ -21,7 +19,4 @@ table.table.table-striped
         td = vendor.mail
         td = vendor.address
         td = vendor.trading_person_name
-        td = vendor.memo
-        td = vendor.unused_flag ? '未使用' : '使用中'
-        td
-          = link_to "削除", vendor, method: :delete, data: { confirm: "本当に削除しますか？" }, class: "btn btn-danger btn-sm"
+        td = text_url_to_link(simple_format(h(vendor.memo))).html_safe

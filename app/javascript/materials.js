@@ -36,8 +36,69 @@ document.addEventListener("DOMContentLoaded", function() {
     minimumInputLength: 1
   });
 
+
+
+  $('.add_material_fields').on('click',function(){
+    setTimeout(function(){
+      material_select2();
+    },5);
+  });
+
+  function material_select2(){
+    $(".material_select2").select2({
+      width: "100%",
+      placeholder: "食材を検索",
+      allowClear: true,
+      ajax: {
+        url: "/materials/search",
+        dataType: "json",
+        delay: 250,
+        data: function (params) {
+          return {
+            q: params.term
+          };
+        },
+        processResults: function (data) {
+          return {
+            results: data.map(function (material) {
+              return { id: material.id, text: material.name };
+            })
+          };
+        },
+        cache: true
+      },
+      minimumInputLength: 1
+    });  
+  };
+
+
+  $(".material_select2").select2({
+    width: "100%",
+    placeholder: "食材を検索",
+    allowClear: true,
+    ajax: {
+      url: "/materials/search",
+      dataType: "json",
+      delay: 250,
+      data: function (params) {
+        return {
+          q: params.term
+        };
+      },
+      processResults: function (data) {
+        return {
+          results: data.map(function (material) {
+            return { id: material.id, text: material.name };
+          })
+        };
+      },
+      cache: true
+    },
+    minimumInputLength: 1
+  });
+
   $('#material_recipe_unit').on('change', function() {
-    var unit = $(this).val();
+    var unit = $(this).find("option:selected").text(); // 選択されたoptionのテキストを取得
     $(".label-recipe_unit_price").text("1" + unit + "の税抜価格");
   });
 });

@@ -1,23 +1,26 @@
 h3 材料一覧
-= link_to "新規登録", new_material_path, class: "btn btn-success mb-3"
+= link_to "新規登録", new_material_path, class: "btn btn-primary mb-3"
 
 table.table.table-striped
   thead
     tr
       th 名称
+      th 仕入先
       th カテゴリ
       th レシピ単位
       th 単価
-      th 使用状況
-      th 操作
+      th 栄養計算
+      th 
   tbody
     - @materials.each do |material|
       tr
-        td = material.name
-        td = material.category
-        td = material.recipe_unit
+        td = link_to material.name, edit_material_path(material), class: ""
+        td = material.vendor.name
+        td = enum_l(material, :category)
+        td = enum_l(material, :recipe_unit)
         td = material.recipe_unit_price
-        td = material.unused_flag ? '未使用' : '使用中'
-        td
-          = link_to "編集", edit_material_path(material), class: "btn btn-primary btn-sm"
-          = link_to "削除", material, method: :delete, data: { confirm: "本当に削除しますか？" }, class: "btn btn-danger btn-sm"
+        td = material.food_ingredient.name if material.food_ingredient.present?
+        td = material.unused_flag ? '使用停止' : ''
+
+.mt-4
+  = will_paginate @materials, renderer: WillPaginate::ActionView::BootstrapLinkRenderer

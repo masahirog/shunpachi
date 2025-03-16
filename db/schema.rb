@@ -78,7 +78,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_16_054619) do
     t.string "name", null: false
     t.string "food_label_name"
     t.integer "category", null: false
-    t.string "recipe_unit", null: false
+    t.integer "recipe_unit", null: false
     t.float "recipe_unit_price", default: 0.0, null: false
     t.text "memo"
     t.boolean "unused_flag", default: false, null: false

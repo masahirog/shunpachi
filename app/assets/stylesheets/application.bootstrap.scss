@@ -3,7 +3,7 @@
 @use "sass:math";
 @use "bootstrap/scss/bootstrap" as *;
 @use "bootstrap-icons/font/bootstrap-icons";
-
+@use "material";
 
 $primary: #0d6efd !default;
 $secondary: #6c757d !default;
@@ -24,3 +24,21 @@ $theme-colors: (
   "light": $light,
   "dark": $dark
 ) !default;
+
+.form-control:read-only {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+/* 必要に応じてテキストの色も変更 */
+.form-control:read-only:not([type="color"]) {
+  color: #6c757d;
+}
+
+/* フォーカス時のスタイルも調整 */
+.form-control:read-only:focus {
+  box-shadow: none;
+  background-color: #f8f9fa;
+}

@@ -6,7 +6,6 @@ class Menu < ApplicationRecord
   has_many :food_ingredients, through: :menu_materials
 
   enum category: { 容器: 0, 温菜: 1, 冷菜: 2, スイーツ: 3 }
-
   validates :name, presence: true
   validates :category, presence: true
 end

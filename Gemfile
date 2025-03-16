@@ -17,7 +17,8 @@ gem "slim-rails", "~> 3.7"
 gem 'cocoon'
 gem 'simple_calendar'
 gem "select2-rails"
-gem 'kaminari'
+gem 'will_paginate'
+gem 'will_paginate-bootstrap-style'
 gem 'activerecord-import'
 gem 'rails-i18n'
 gem 'gon'

@@ -10,6 +10,6 @@ class Material < ApplicationRecord
 
   validates :name, presence: true, uniqueness: true
 
-  enum recipe_unit: {g:1,ml:2,pack:3,hon:4,ko:5,mai:6}
+  enum recipe_unit: {gram:1,ml:2,pack:3,hon:4,ko:5,mai:6}
   enum category: {food:1,packed:2,other:3}
 end

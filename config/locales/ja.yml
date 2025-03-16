@@ -4,7 +4,7 @@ ja:
   enums:
     material:
       recipe_unit:
-        g: g
+        gram: g
         ml: ml
         pack: 袋
         hon: 本

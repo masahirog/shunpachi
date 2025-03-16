@@ -1,7 +1,39 @@
-.nested-fields
-  .mb-3
-    = f.label :material_id, "材料", class: "form-label"
-    = f.collection_select :material_id, Material.all, :id, :name, {}, class: "form-control"
-    = f.label :amount_used, "使用量", class: "form-label"
-    = f.number_field :amount_used, class: "form-control"
-  = link_to_remove_association "削除", f, class: "btn btn-danger"
+tr.nested-fields
+  = f.hidden_field :row_order
+  td
+    = f.collection_select :material_id, Material.all, :id, :name, {include_blank: true}, class: "form-control material_select2"
+    .food_ingredient
+  td
+    .clearfix
+      = f.number_field :amount_used, style:'float:left;width:100px;',class:'form-control'
+      span.float-start 　g
+
+    .clearfix.mt-1
+      = f.number_field :gram_quantity, style:'float:left;width:100px;border: 1px solid #ccc;border-radius: 3px;'
+      span.float-start 　g
+  td 
+    = f.select :source_group, options_for_select_from_enum(MenuMaterial, :source_group),{ include_blank: true }, { class: "form-control"}
+
+  td 
+    = f.text_field :preparation,class: "form-control"
+    .clearfix.mt-1
+      label.label-eiyo.float-start cal：
+      = f.number_field :calorie, style:'float:left;width:50px;',readonly:true,class:"input-eiyo"
+      label.label-eiyo.float-start.ms-3 pro：
+      = f.number_field :protein, style:'float:left;width:50px;',readonly:true,class:"input-eiyo"
+      label.label-eiyo.float-start.ms-3 lip：
+      = f.number_field :lipid, style:'float:left;width:50px;',readonly:true,class:"input-eiyo"
+      label.label-eiyo.float-start.ms-3 car：
+      = f.number_field :carbohydrate, style:'float:left;width:50px;',readonly:true,class:"input-eiyo"
+      label.label-eiyo.float-start.ms-3 sal：
+      = f.number_field :salt, style:'float:left;width:50px;',readonly:true,class:"input-eiyo"
+  td
+    = link_to_remove_association "削除", f, class: "btn btn-danger"
+
+
+css:
+  .input-eiyo{
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    background-color: #f8f9fa;
+  }

@@ -12,10 +12,9 @@ table.table.table-striped
   tbody
     - @stores.each do |store|
       tr
-        td = store.name
+        td = link_to store.name, edit_store_path(store)
         td = store.phone
         td = store.address
         td = store.unused_flag ? '未使用' : '使用中'
         td
-          = link_to "編集", edit_store_path(store), class: "btn btn-primary btn-sm"
           = link_to "削除", store, method: :delete, data: { confirm: "本当に削除しますか？" }, class: "btn btn-danger btn-sm"
