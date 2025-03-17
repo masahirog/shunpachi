@@ -137,6 +137,8 @@ GEM
       responders
       warden (~> 1.2.3)
     drb (2.2.1)
+    enum_help (0.0.19)
+      activesupport (>= 3.0.0)
     error_highlight (0.7.0)
     erubi (1.13.1)
     ffi (1.17.1-aarch64-linux-gnu)
@@ -364,6 +366,7 @@ DEPENDENCIES
   cssbundling-rails
   debug
   devise (~> 4.9)
+  enum_help
   error_highlight (>= 0.4.0)
   gon
   image_processing

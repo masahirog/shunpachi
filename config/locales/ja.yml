@@ -14,3 +14,8 @@ ja:
         food: 食品
         packed: 包材容器
         other: その他
+    product:
+      category:
+        souzai: 惣菜
+        bento: 弁当
+        hankanhin: 1.5次品

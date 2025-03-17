@@ -84,6 +84,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_16_054619) do
     t.boolean "unused_flag", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.float "recipe_unit_gram_quantity"
     t.index ["food_ingredient_id"], name: "index_materials_on_food_ingredient_id"
     t.index ["name"], name: "index_materials_on_name", unique: true
     t.index ["vendor_id"], name: "index_materials_on_vendor_id"
@@ -104,6 +105,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_16_054619) do
     t.integer "source_group"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.float "cost_price", default: 0.0, null: false
     t.index ["material_id"], name: "index_menu_materials_on_material_id"
     t.index ["menu_id"], name: "index_menu_materials_on_menu_id"
   end
@@ -114,6 +116,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_16_054619) do
     t.text "cook_before"
     t.text "cook_on_the_day"
     t.float "cost_price", default: 0.0, null: false
+    t.float "calorie", default: 0.0, null: false
+    t.float "protein", default: 0.0, null: false
+    t.float "lipid", default: 0.0, null: false
+    t.float "carbohydrate", default: 0.0, null: false
+    t.float "salt", default: 0.0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

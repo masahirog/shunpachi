@@ -13,8 +13,8 @@ class CreateMenuMaterials < ActiveRecord::Migration[7.1]
       t.float :carbohydrate, null: false, default: 0
       t.float :salt, null: false, default: 0
       t.integer :source_group
-
       t.timestamps
+      t.float :cost_price, null: false, default: 0
     end
   end
 end

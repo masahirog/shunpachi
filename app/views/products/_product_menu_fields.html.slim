@@ -1,5 +1,6 @@
-.nested-fields
-  .mb-3
-    = f.label :menu_id, "メニュー", class: "form-label"
+tr.nested-fields
+  td.mb-3
     = f.collection_select :menu_id, Menu.all, :id, :name, {}, class: "form-control"
-  = link_to_remove_association "削除", f, class: "btn btn-danger"
+  td
+  td
+    = link_to_remove_association "削除", f, class: "btn btn-danger"

@@ -6,11 +6,10 @@ html
     meta name="viewport" content="width=device-width, initial-scale=1"
     = csrf_meta_tags
     = csp_meta_tag
+    script src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.min.js"
     = stylesheet_link_tag "application", media: "all", "data-turbo-track": "reload"
     = stylesheet_link_tag "select2", media: "all"
     = javascript_importmap_tags
-    = javascript_include_tag "cocoon", defer: true
-    = javascript_include_tag "select2", defer: true
   body
     header
       nav.navbar.navbar-expand-lg.navbar-light.bg-light

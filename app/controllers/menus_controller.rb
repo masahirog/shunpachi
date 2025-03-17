@@ -2,10 +2,11 @@ class MenusController < ApplicationController
   before_action :set_menu, only: %i[edit update destroy]
 
   def index
-    @menus = Menu.all
+    @menus = Menu.includes(:menu_materials).all
   end
 
   def new
+    @materials = Material.first(10)
     @menu = Menu.new
   end
 
@@ -18,7 +19,10 @@ class MenusController < ApplicationController
     end
   end
 
-  def edit; end
+  def edit
+    material_ids = @menu.menu_materials.map(&:material_id)
+    @materials = Material.includes(:food_ingredient).where(id: material_ids)
+  end
 
   def update
     if @menu.update(menu_params)
@@ -36,10 +40,14 @@ class MenusController < ApplicationController
   private
 
   def set_menu
-    @menu = Menu.find(params[:id])
+    @menu = Menu.includes(menu_materials: :material).find(params[:id])
   end
 
   def menu_params
-    params.require(:menu).permit(:name, :category, :cook_before, :cook_on_the_day, :cost_price)
+    params.require(:menu).permit(:name, :category, :cook_before, :cook_on_the_day, :cost_price,
+      :calorie,:protein,:lipid,:carbohydrate,:salt,
+    menu_materials_attributes: [:id,:menu_id,:material_id,:amount_used,:preparation,:row_order,
+      :gram_quantity,:calorie,:protein,:lipid,:carbohydrate,:salt,:source_group,:cost_price,:_destroy])
+
   end
 end

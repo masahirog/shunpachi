@@ -40,6 +40,8 @@ class ProductsController < ApplicationController
   end
 
   def product_params
-    params.require(:product).permit(:name, :food_label_name, :sell_price, :cost_price, :category, :introduction, :memo, :image, :serving_infomation, :food_label_contents, :calorie, :protein, :lipid, :carbohydrate, :salt, :how_to_save, :sales_unit_amount, :unused_flag)
+    params.require(:product).permit(:name, :food_label_name, :sell_price, :cost_price, :category, :introduction, :memo, :image,
+     :serving_infomation, :food_label_contents, :calorie, :protein, :lipid, :carbohydrate, :salt, :how_to_save, :sales_unit_amount, :unused_flag,
+     product_menus_attributes: [:id,:menu_id,:product_id,:row_order,:_destroy])
   end
 end

@@ -1,9 +1,13 @@
-import $ from "jquery";
-window.$ = $;
-window.jQuery = $;
-import "@popperjs/core";
-import "bootstrap";
-import "./materials";
 
-import * as bootstrap from "bootstrap";
-console.log('1');
+
+// 通常のインポート
+import "jquery"
+import "@popperjs/core"
+import "bootstrap"
+import "cocoon"
+import "select2"
+import "materials"
+
+// グローバル変数の設定
+window.$ = window.jQuery = jQuery;
+window.bootstrap = bootstrap;

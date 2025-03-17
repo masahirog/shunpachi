@@ -25,20 +25,69 @@ $theme-colors: (
   "dark": $dark
 ) !default;
 
-.form-control:read-only {
+// readonly要素のスタイルをより具体的に指定
+input[type="text"]:read-only,
+input[type="number"]:read-only,
+input[type="email"]:read-only,
+input[type="password"]:read-only,
+input[type="date"]:read-only,
+input[type="datetime-local"]:read-only,
+textarea:read-only {
   background-color: #f8f9fa;
   border-color: #dee2e6;
   opacity: 0.8;
   cursor: not-allowed;
 }
 
-/* 必要に応じてテキストの色も変更 */
-.form-control:read-only:not([type="color"]) {
+// 必要に応じてテキストの色も変更
+input[type="text"]:read-only,
+input[type="number"]:read-only,
+input[type="email"]:read-only,
+input[type="password"]:read-only,
+input[type="date"]:read-only,
+input[type="datetime-local"]:read-only,
+textarea:read-only {
   color: #6c757d;
 }
 
-/* フォーカス時のスタイルも調整 */
-.form-control:read-only:focus {
+// フォーカス時のスタイルも調整
+input[type="text"]:read-only:focus,
+input[type="number"]:read-only:focus,
+input[type="email"]:read-only:focus,
+input[type="password"]:read-only:focus,
+input[type="date"]:read-only:focus,
+input[type="datetime-local"]:read-only:focus,
+textarea:read-only:focus {
   box-shadow: none;
   background-color: #f8f9fa;
+}
+
+a {
+  text-decoration:none; 
+}
+
+/* Select2をBootstrapのform-controlと高さを揃える */
+.select2-container .select2-selection--single {
+  height: calc(1.5em + 0.75rem + 2px) !important; /* Bootstrapのform-controlと同じ高さ */
+  padding: 0.375rem 0.375rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+}
+
+/* 選択された項目のテキスト位置調整 */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: calc(1.5em);
+  padding-left: 0;
+}
+
+/* ドロップダウン矢印の位置調整 */
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: calc(1.5em);
+}
+
+/* フォーカス時のスタイル */
+.select2-container--default.select2-container--focus .select2-selection--single {
+  border-color: #86b7fe;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }

@@ -30,6 +30,9 @@
     = f.select :recipe_unit, options_for_select_from_enum(Material, :recipe_unit),{}, { class: "form-control recipe_unit",required:true}
 
   .mb-3
+    = f.label :recipe_unit_gram_quantity,'1recipe_unitあたり何グラム？', class: "form-label required"
+    = f.number_field :recipe_unit_gram_quantity, class: "form-control"
+  .mb-3
     - if f.object.recipe_unit.present?
       = f.label :recipe_unit_price,"1#{enum_l(f.object, :recipe_unit)}の税抜価格", class: "form-label label-recipe_unit_price required"
     - else

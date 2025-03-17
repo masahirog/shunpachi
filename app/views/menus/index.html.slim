@@ -1,23 +1,71 @@
-h3 メニュー一覧
-= link_to "新規登録", new_menu_path, class: "btn btn-success mb-3"
+.container-fluid.py-4.px-3
+  .d-flex.justify-content-between.align-items-center.mb-3
+    h3.mb-0 メニュー一覧
+    = link_to new_menu_path, class: "btn btn-primary" do
+      i.bi.bi-plus-circle.me-1
+      | 新規登録
 
-table.table.table-striped
-  thead
-    tr
-      th 名称
-      th カテゴリ
-      th 事前調理
-      th 当日調理
-      th 原価
-      th 操作
-  tbody
-    - @menus.each do |menu|
-      tr
-        td = menu.name
-        td = menu.category
-        td = menu.cook_before
-        td = menu.cook_on_the_day
-        td = menu.cost_price
-        td
-          = link_to "編集", edit_menu_path(menu), class: "btn btn-primary btn-sm"
-          = link_to "削除", menu, method: :delete, data: { confirm: "本当に削除しますか？" }, class: "btn btn-danger btn-sm"
+  .card.shadow-sm.mb-3
+    .card-body.py-2.px-3
+      .row.g-2
+        .col-md-8.col-lg-9
+          .input-group
+            span.input-group-text.py-1
+              i.bi.bi-search
+            input.form-control.js-menu-search type="text" placeholder="メニュー名で検索..."
+        .col-md-4.col-lg-3
+          select.form-select.js-category-filter
+            option value="" すべてのカテゴリ
+            - Menu.categories.keys.each do |category|
+              option value=category = category
+
+  .table-responsive
+    table.table.table-hover.table-bordered.mb-0
+      thead.table-light
+        tr
+          th メニュー名
+          th.text-center カテゴリ
+          th.text-end 原価
+          th.text-center 栄養情報
+          th.text-center 工程
+          th.text-center 操作
+      tbody
+        - @menus.each do |menu|
+          tr.js-menu-item
+            td
+              .fw-bold = menu.name
+              - if menu.menu_materials.exists?
+                small.text-muted = "#{menu.menu_materials.count}種類の材料"
+            td.text-center
+              span.badge.rounded-pill.bg-info.text-dark = menu.category
+            td.text-end
+              = number_to_currency(menu.cost_price, unit: "¥")
+            td.text-center
+              small
+                span.me-2 
+                  i.bi.bi-fire.text-danger
+                  = "#{menu.calorie}kcal"
+                span 
+                  i.bi.bi-droplet.text-primary
+                  = "#{menu.salt}g"
+            td.text-center
+              - if menu.cook_before.present? || menu.cook_on_the_day.present?
+                - if menu.cook_before.present?
+                  span.badge.bg-warning.text-dark.me-1 前日
+                - if menu.cook_on_the_day.present?
+                  span.badge.bg-success 当日
+              - else
+                span.text-muted なし
+            td.text-center
+              .btn-group.btn-group-sm
+                = link_to edit_menu_path(menu), class: "btn btn-outline-primary" do
+                  i.bi.bi-pencil-square
+                = link_to menu_path(menu), class: "btn btn-outline-info mx-1" do
+                  i.bi.bi-eye
+                = link_to menu_path(menu), method: :delete, data: { confirm: "「#{menu.name}」を削除してもよろしいですか？" }, class: "btn btn-outline-danger" do
+                  i.bi.bi-trash
+
+  .d-flex.justify-content-between.align-items-center.mt-2
+    small.text-muted 全 #{@menus.count} 件
+    = paginate @menus if @menus.respond_to?(:total_pages)
+

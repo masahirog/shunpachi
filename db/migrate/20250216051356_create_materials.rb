@@ -11,6 +11,7 @@ class CreateMaterials < ActiveRecord::Migration[7.1]
       t.text :memo
       t.boolean :unused_flag, null: false, default: false
       t.timestamps
+      t.float :recipe_unit_gram_quantity
     end
     add_index :materials, :name, unique: true
   end

@@ -1,38 +1,73 @@
 tr.nested-fields
   = f.hidden_field :row_order
   td
-    = f.collection_select :material_id, Material.all, :id, :name, {include_blank: true}, class: "form-control material_select2"
-    .food_ingredient
+    = f.collection_select :material_id, @materials, :id, :name, {include_blank: true}, class: "form-select material_select2"
+    .food_ingredient.mt-1.ps-2
+      - if f.object.material_id.present?
+        - if f.object.material.food_ingredient.present?
+          .food_ingredient_a
+            = link_to f.object.material.food_ingredient.name,"/food_ingredients/#{f.object.material.food_ingredient.id}/edit"
+          .food_ingredient_info.d-none
+            input.food_ingredient_info_input.unit_calorie value = "#{f.object.material.food_ingredient.calorie}"
+            input.food_ingredient_info_input.unit_protein value = "#{f.object.material.food_ingredient.protein}"
+            input.food_ingredient_info_input.unit_lipid value = "#{f.object.material.food_ingredient.lipid}"
+            input.food_ingredient_info_input.unit_carbohydrate value = "#{f.object.material.food_ingredient.carbohydrate}"
+            input.food_ingredient_info_input.unit_salt value = "#{f.object.material.food_ingredient.salt}"
+        - else
+          .food_ingredient_a
+          .food_ingredient_info.d-none
+            input.food_ingredient_info_input.unit_calorie
+            input.food_ingredient_info_input.unit_protein
+            input.food_ingredient_info_input.unit_lipid
+            input.food_ingredient_info_input.unit_carbohydrate
+            input.food_ingredient_info_input.unit_salt
+
   td
     .clearfix
-      = f.number_field :amount_used, style:'float:left;width:100px;',class:'form-control'
-      span.float-start 　g
+      = f.number_field :amount_used, style:'float:left;width:100px;',class:'form-control amount_used', step: "0.1"
+      span.float-start.material_unit.ms-2.mt-2 = f.object.material.recipe_unit_i18n if f.object.material_id.present?
 
     .clearfix.mt-1
-      = f.number_field :gram_quantity, style:'float:left;width:100px;border: 1px solid #ccc;border-radius: 3px;'
-      span.float-start 　g
-  td 
-    = f.select :source_group, options_for_select_from_enum(MenuMaterial, :source_group),{ include_blank: true }, { class: "form-control"}
+      = f.number_field :gram_quantity, style:'float:left;width:100px;border: 1px solid #ccc;border-radius: 3px;padding:0 10px;',class:'gram_quantity', step: "0.1"
+      - if f.object.material_id.present?
+        input.recipe_unit_gram_quantity.d-none value="#{f.object.material.recipe_unit_gram_quantity}"
+      - else
+        input.recipe_unit_gram_quantity.d-none
+      span.float-start.ms-2.mt-1 style='color:#555555;' g
+  td
+    .clearfix
+      = f.number_field :cost_price,class:'form-control cost_price',readonly:true,style:'float:left;width:90px;'
+      span.float-start.mt-2.ms-1 円
+    - if f.object.material_id.present?
+      input.form-control.unit_cost_price.d-none readonly=true value="#{f.object.material.recipe_unit_price}"
+    - else
+      input.form-control.unit_cost_price.d-none readonly=true value=0
+    .pt-1.ps-3.clearfix style='color:gray;'
+      span.unit_cost_price_text.float-start
+        = f.object.material.recipe_unit_price if f.object.material_id.present?
+      span.recipe_unit_text.float-start.ps-2.mt-1 style='font-size:0.8em;' 円 / g
+  td
+    = f.select :source_group, options_for_select_from_enum(MenuMaterial, :source_group),{ include_blank: true }, { class: "form-select"}
 
   td 
     = f.text_field :preparation,class: "form-control"
-    .clearfix.mt-1
+    .clearfix.mt-1 style='color:#555555;'
       label.label-eiyo.float-start cal：
-      = f.number_field :calorie, style:'float:left;width:50px;',readonly:true,class:"input-eiyo"
+      = f.number_field :calorie, style:'float:left;width:50px;',readonly:true,class:"menu_material_food_ingredient_info_input gram_calorie"
       label.label-eiyo.float-start.ms-3 pro：
-      = f.number_field :protein, style:'float:left;width:50px;',readonly:true,class:"input-eiyo"
+      = f.number_field :protein, style:'float:left;width:50px;',readonly:true,class:"menu_material_food_ingredient_info_input gram_protein"
       label.label-eiyo.float-start.ms-3 lip：
-      = f.number_field :lipid, style:'float:left;width:50px;',readonly:true,class:"input-eiyo"
+      = f.number_field :lipid, style:'float:left;width:50px;',readonly:true,class:"menu_material_food_ingredient_info_input gram_lipid"
       label.label-eiyo.float-start.ms-3 car：
-      = f.number_field :carbohydrate, style:'float:left;width:50px;',readonly:true,class:"input-eiyo"
+      = f.number_field :carbohydrate, style:'float:left;width:50px;',readonly:true,class:"menu_material_food_ingredient_info_input gram_carbohydrate"
       label.label-eiyo.float-start.ms-3 sal：
-      = f.number_field :salt, style:'float:left;width:50px;',readonly:true,class:"input-eiyo"
-  td
-    = link_to_remove_association "削除", f, class: "btn btn-danger"
+      = f.number_field :salt, style:'float:left;width:50px;',readonly:true,class:"menu_material_food_ingredient_info_input gram_salt"
+  td.text-center
+    = link_to_remove_association "削除", f, class: "btn btn-danger btn-sm"
 
 
 css:
-  .input-eiyo{
+  .menu_material_food_ingredient_info_input{
     border: 1px solid #ccc;
     border-radius: 3px;
     background-color: #f8f9fa;

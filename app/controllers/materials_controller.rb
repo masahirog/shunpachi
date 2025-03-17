@@ -1,6 +1,27 @@
 class MaterialsController < ApplicationController
   before_action :set_material, only: %i[edit update destroy]
-
+  def get_details
+    material = Material.find(params[:id])
+    food_ingredient = material.food_ingredient
+    response_data = { 
+      unit: material.recipe_unit_i18n,
+      recipe_unit_gram_quantity: material.recipe_unit_gram_quantity,
+      recipe_unit_price: material.recipe_unit_price
+    }
+    
+    if food_ingredient.present?
+      response_data[:food_ingredient] = {
+        id: food_ingredient.id,
+        name: food_ingredient.name,
+        calorie: food_ingredient.calorie,
+        protein: food_ingredient.protein,
+        lipid: food_ingredient.lipid,
+        carbohydrate: food_ingredient.carbohydrate,
+        salt: food_ingredient.salt
+      }
+    end
+    render json: response_data
+  end
   def search
     query = params[:q]
     materials = if query.present?
@@ -13,7 +34,7 @@ class MaterialsController < ApplicationController
   end
 
   def index
-    @materials = Material.order(id: :desc).paginate(page: params[:page], per_page: 30)
+    @materials = Material.includes(:vendor, :food_ingredient).order(id: :desc).paginate(page: params[:page], per_page: 30)
   end
 
   def new
@@ -52,6 +73,6 @@ class MaterialsController < ApplicationController
   end
 
   def material_params
-    params.require(:material).permit(:vendor_id, :food_ingredient_id, :name, :food_label_name, :category, :recipe_unit, :recipe_unit_price, :memo, :unused_flag)
+    params.require(:material).permit(:vendor_id, :food_ingredient_id, :name, :food_label_name, :category, :recipe_unit, :recipe_unit_price, :memo, :unused_flag,:recipe_unit_gram_quantity)
   end
 end

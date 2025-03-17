@@ -3,7 +3,7 @@ class Product < ApplicationRecord
   accepts_nested_attributes_for :product_menus, allow_destroy: true
   has_many :daily_menu_products
 
-  enum category: { A: 0, B: 1, C: 2, D: 3, E: 4, F: 5 }
+  enum category: { souzai: 0, bento: 1, hankanhin: 2 }
   
   validates :name, presence: true, uniqueness: true
   validates :food_label_name, presence: true

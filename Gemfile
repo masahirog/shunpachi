@@ -26,6 +26,7 @@ gem 'aws-sdk-s3'
 gem 'image_processing'
 gem 'sassc-rails'
 gem 'jquery-rails'
+gem 'enum_help'
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
