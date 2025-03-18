@@ -1,7 +1,7 @@
 function onLoad() {
   // 商品追加ボタンのクリックイベント
-  $(document).on('click', '.js-add-product-btn', function() {
-    console.log('追加ボタンがクリックされました');
+  $("#addProductModal").on('click', '.js-add-product-btn', function() {
+
     const row = $(this).closest('tr');
     const productId = row.data('id');
     const productName = row.data('name');
@@ -9,7 +9,6 @@ function onLoad() {
     const sellPrice = row.data('sell-price');
     const costPrice = row.data('cost-price');
     
-    // 既に追加されている商品かチェック
     const isDuplicate = checkProductDuplicate(productId);
     if (isDuplicate) {
       toastr.error(`${productName}はすでに献立に追加されています`);
@@ -114,7 +113,7 @@ function onLoad() {
   }
   
   // 店舗数量の入力イベント
-  $(document).on('change keyup', '.js-store-quantity', function() {
+  $(".js-daily-menu-products-container").on('change keyup', '.js-store-quantity', function() {
     const row = $(this).closest('.js-daily-menu-product-row');
     const sellPrice = parseFloat(row.data('sell-price')) || 0;
     const storeId = $(this).data('store-id');
@@ -342,6 +341,9 @@ function onLoad() {
   });
 }
 
+$(document).on("turbo:before-cache", function() {
+  $('.material_select2').select2('destroy');
+});
 
 document.addEventListener("DOMContentLoaded", onLoad);
 document.addEventListener("turbo:load", onLoad);

@@ -1,7 +1,7 @@
 function onLoad() {
 
   // メニュー選択時のイベント処理
-  $(document).on('change', '.menu-select', function() {
+  $("#product_menus-container").on('change', '.menu-select', function() {
     var menuId = $(this).val();
     var card = $(this).closest('.product-menu-item');
     var menuInfo = card.find('.menu-info');
@@ -12,11 +12,6 @@ function onLoad() {
       menuInfo.addClass('d-none');
       return;
     }
-    
-    // 選択されたメニューのデータをリクエスト
-    console.log("メニューID: " + menuId + "のデータを取得します");
-    
-    // 読み込み中の表示
     menuInfo.removeClass('d-none');
     materialsList.html('<div class="text-center"><small>読み込み中...</small></div>');
     
@@ -25,7 +20,6 @@ function onLoad() {
       type: 'GET',
       dataType: 'json',
       success: function(data) {
-        console.log("データ取得成功:", data);
         
         // 基本情報を表示
         card.find('.menu-category').text(data.category_name);
@@ -65,8 +59,6 @@ function onLoad() {
         updateProductTotals();
       },
       error: function(xhr, status, error) {
-        console.error("エラー発生:", status, error);
-        console.log(xhr.responseText);
         menuInfo.addClass('d-none');
         alert("メニュー情報の取得に失敗しました");
       }
@@ -74,17 +66,17 @@ function onLoad() {
   });
   
   // Cocoonのイベントハンドラ
-  $(document).on('cocoon:after-insert', function(e, insertedItem) {
+  $("#product_menus-container").on('cocoon:after-insert', function(e, insertedItem) {
     console.log("新しいメニュー項目が追加されました");
     // 追加された項目にフォーカス
     insertedItem.find('.menu-select').focus();
   });
   
-  $(document).on('cocoon:before-remove', function(e, item) {
+  $("#product_menus-container").on('cocoon:before-remove', function(e, item) {
     // 削除前の処理（確認など必要であれば）
   });
   
-  $(document).on('cocoon:after-remove', function() {
+  $("#product_menus-container").on('cocoon:after-remove', function() {
     // 項目が削除された後に合計を更新
     updateProductTotals();
   });
@@ -158,8 +150,7 @@ function onLoad() {
     
     // 原価率の更新
     updateCostRatio();
-    
-    console.log("商品合計を更新: 原価=" + totalCost.toFixed(2));
+
   }
 
   // 原価率の計算
@@ -184,7 +175,8 @@ function onLoad() {
   }
   
   // 売価が変更されたときに原価率を更新
-  $(document).on('change keyup', '.product_sell_price', function() {
+  $(".price").on('change keyup', '.product_sell_price', function() {
+    console.log('money')
     updateCostRatio();
   });
 

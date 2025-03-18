@@ -166,5 +166,11 @@ function onLoad() {
 
 }
 
+$(document).on("turbo:before-cache", function() {
+  $('.material_select2').select2('destroy');
+});
+
+
+
 document.addEventListener("DOMContentLoaded", onLoad);
 document.addEventListener("turbo:load", onLoad);

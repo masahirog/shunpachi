@@ -15,7 +15,7 @@
           .mb-3
             = f.label :category,"カテゴリー", class: "form-label"
             = f.select :category, options_for_select_from_enum(Product, :category),{}, { class: "form-control category",required:true}
-      .row
+      .row.price
         .col-md-4
           .mb-3
             = f.label :sell_price,"売価", class: "form-label"
@@ -81,7 +81,7 @@
             td = f.number_field :salt, class: "product_salt form-control", readonly: true
 
   .card.mb-4
-    .card-header.bg-light.d-flex.justify-content-between.align-items-center
+    .card-header.bg-light.d-flex.justify-content-between.align-items-center.product_menus-add_button
       h5.mb-0 レシピ情報
       = link_to_add_association "メニュー追加", f, :product_menus, 
         data: {association_insertion_node: '#product_menus-container',association_insertion_method: 'append'},
