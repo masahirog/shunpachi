@@ -65,7 +65,6 @@ class DailyMenusController < ApplicationController
       { daily_menu_products: [:product, :store_daily_menu_products] }
     ).find(params[:id])
 
-
   end
   
   def daily_menu_params
