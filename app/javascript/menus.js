@@ -1,4 +1,5 @@
-$(document).ready(function() {
+function onLoad() {
+
   // メニュー選択時のイベント処理
   $(document).on('change', '.menu-select', function() {
     var menuId = $(this).val();
@@ -186,4 +187,9 @@ $(document).ready(function() {
   $(document).on('change keyup', '.product_sell_price', function() {
     updateCostRatio();
   });
-});
+
+}
+
+
+document.addEventListener("DOMContentLoaded", onLoad);
+document.addEventListener("turbo:load", onLoad);

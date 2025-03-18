@@ -1,6 +1,4 @@
-// daily_menus.js
-$(document).ready(function() {
-
+function onLoad() {
   // 商品追加ボタンのクリックイベント
   $(document).on('click', '.js-add-product-btn', function() {
     console.log('追加ボタンがクリックされました');
@@ -342,5 +340,8 @@ $(document).ready(function() {
       $(this).show();
     });
   });
+}
 
-});
+
+document.addEventListener("DOMContentLoaded", onLoad);
+document.addEventListener("turbo:load", onLoad);

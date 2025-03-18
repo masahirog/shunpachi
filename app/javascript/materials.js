@@ -1,7 +1,5 @@
-document.addEventListener("DOMContentLoaded", function() {
+function onLoad() {
   material_select2();
-
-
   $('.add_material_fields').on('click',function(){
     setTimeout(function(){
       material_select2();
@@ -164,6 +162,8 @@ document.addEventListener("DOMContentLoaded", function() {
     $(".menu_carbohydrate").val(menu_carbohydrate.toFixed(1));
     $(".menu_salt").val(menu_salt.toFixed(1));
   }
-});
 
+}
 
+document.addEventListener("DOMContentLoaded", onLoad);
+document.addEventListener("turbo:load", onLoad);
