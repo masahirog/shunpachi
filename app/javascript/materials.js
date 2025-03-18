@@ -124,6 +124,7 @@ function onLoad() {
 
   function cal_food_ingredient($row){
     if ($row) {
+      console.log($row.find(".unit_calorie").val())
       var gram_quantity = parseFloat($row.find(".gram_quantity").val()) || 0;
       var unit_calorie = parseFloat($row.find('.unit_calorie').val()) || 0;
       var unit_protein = parseFloat($row.find('.unit_protein').val()) || 0;

@@ -3,19 +3,17 @@ tr.nested-fields
   td
     = f.collection_select :material_id, @materials, :id, :name, {include_blank: true}, class: "form-select material_select2"
     .food_ingredient.mt-1.ps-2
-      - if f.object.material_id.present?
-        - if f.object.material.food_ingredient.present?
-          .food_ingredient_a
+      .food_ingredient_a
+        - if f.object.material_id.present? && f.object.material.food_ingredient.present?
             = link_to f.object.material.food_ingredient.name,"/food_ingredients/#{f.object.material.food_ingredient.id}/edit"
-          .food_ingredient_info.d-none
+      .food_ingredient_info.d-none
+        - if f.object.material_id.present? && f.object.material.food_ingredient.present?
             input.food_ingredient_info_input.unit_calorie value = "#{f.object.material.food_ingredient.calorie}"
             input.food_ingredient_info_input.unit_protein value = "#{f.object.material.food_ingredient.protein}"
             input.food_ingredient_info_input.unit_lipid value = "#{f.object.material.food_ingredient.lipid}"
             input.food_ingredient_info_input.unit_carbohydrate value = "#{f.object.material.food_ingredient.carbohydrate}"
             input.food_ingredient_info_input.unit_salt value = "#{f.object.material.food_ingredient.salt}"
         - else
-          .food_ingredient_a
-          .food_ingredient_info.d-none
             input.food_ingredient_info_input.unit_calorie
             input.food_ingredient_info_input.unit_protein
             input.food_ingredient_info_input.unit_lipid
