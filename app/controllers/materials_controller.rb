@@ -53,7 +53,6 @@ class MaterialsController < ApplicationController
   def edit; end
 
   def update
-    binding.pry
     if @material.update(material_params)
       redirect_to materials_path, notice: '材料を更新しました。'
     else

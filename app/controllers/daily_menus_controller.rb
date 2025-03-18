@@ -40,10 +40,7 @@ class DailyMenusController < ApplicationController
   end
 
   def edit
-    # 関連するデータをプリロード
-    @daily_menu = DailyMenu.includes(
-      { daily_menu_products: [:product, { store_daily_menu_products: :store }] }
-    ).find(params[:id])
+
   end
 
   def update
@@ -64,21 +61,30 @@ class DailyMenusController < ApplicationController
   private
   
   def set_daily_menu
-    @daily_menu = DailyMenu.find(params[:id])
+    @daily_menu = DailyMenu.includes(
+      { daily_menu_products: [:product, :store_daily_menu_products] }
+    ).find(params[:id])
+
+
   end
   
   def daily_menu_params
-    params.require(:daily_menu).permit(
-      :date, :manufacturing_number, :worktime,
-      daily_menu_products_attributes: [
-        :id, :product_id, :row_order, :manufacturing_number, 
-        :sell_price, :total_cost_price, :_destroy,
-        store_daily_menu_products_attributes: [:id, :store_id, :number, :total_price, :_destroy]
-      ]
+    params.require(:daily_menu).permit(:date, :manufacturing_number, :worktime,
+      daily_menu_products_attributes: [:id, :product_id, :row_order, :manufacturing_number, :sell_price, :total_cost_price, :_destroy,
+        store_daily_menu_products_attributes: [:id, :store_id, :number, :total_price, :_destroy]]
     )
   end
-  
+
   def update_totals(daily_menu)
+    # 各商品の製造数を店舗配分の合計から計算
+    total_manufacturing = 0
+    
+    daily_menu.daily_menu_products.each do |dmp|
+      total_number = dmp.store_daily_menu_products.sum(:number)
+      dmp.update_column(:manufacturing_number, total_number) if total_number != dmp.manufacturing_number
+      total_manufacturing += total_number
+    end
+    
     # 合計金額の再計算
     total_selling_price = daily_menu.daily_menu_products.sum do |dmp|
       dmp.sell_price * dmp.manufacturing_number
@@ -88,11 +94,15 @@ class DailyMenusController < ApplicationController
       dmp.total_cost_price * dmp.manufacturing_number
     end
     
+    # 左上の製造数も更新
     daily_menu.update_columns(
       total_selling_price: total_selling_price,
-      total_cost_price: total_cost_price
+      total_cost_price: total_cost_price,
+      manufacturing_number: total_manufacturing
     )
   end
+
+
   
   def generate_calendar_data(current_month)
     # 月の開始日と終了日を取得

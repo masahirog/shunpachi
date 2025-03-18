@@ -11,8 +11,9 @@ class CreateMenus < ActiveRecord::Migration[7.1]
       t.float :lipid, null: false, default: 0
       t.float :carbohydrate, null: false, default: 0
       t.float :salt, null: false, default: 0
-
       t.timestamps
+      t.integer :product_menus_count, default: 0, null: false
+      t.integer :menu_materials_count, default: 0, null: false
     end
   end
 end

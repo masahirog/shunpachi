@@ -43,7 +43,7 @@ class MenusController < ApplicationController
   end
 
   def index
-    @menus = Menu.includes(:menu_materials).all
+    @menus = Menu.all.paginate(page: params[:page], per_page: 30)
   end
 
   def new

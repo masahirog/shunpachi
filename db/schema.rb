@@ -20,6 +20,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_16_054619) do
     t.integer "sell_price", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "store_daily_menu_products_count", default: 0, null: false
     t.index ["daily_menu_id", "product_id"], name: "index_daily_menu_products_on_daily_menu_id_and_product_id", unique: true
     t.index ["daily_menu_id"], name: "index_daily_menu_products_on_daily_menu_id"
     t.index ["product_id"], name: "index_daily_menu_products_on_product_id"
@@ -33,6 +34,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_16_054619) do
     t.float "worktime"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "daily_menu_products_count", default: 0, null: false
     t.index ["date"], name: "index_daily_menus_on_date", unique: true
   end
 
@@ -123,6 +125,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_16_054619) do
     t.float "salt", default: 0.0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "product_menus_count", default: 0, null: false
+    t.integer "menu_materials_count", default: 0, null: false
   end
 
   create_table "product_menus", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -157,6 +161,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_16_054619) do
     t.boolean "unused_flag", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "daily_menu_products_count", default: 0, null: false
+    t.integer "product_menus_count", default: 0, null: false
     t.index ["container_id"], name: "index_products_on_container_id"
     t.index ["name"], name: "index_products_on_name", unique: true
   end
@@ -179,6 +185,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_16_054619) do
     t.boolean "unused_flag", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "store_daily_menu_products_count", default: 0, null: false
     t.index ["name"], name: "index_stores_on_name", unique: true
   end
 

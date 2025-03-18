@@ -22,6 +22,8 @@ class CreateProducts < ActiveRecord::Migration[7.1]
       t.boolean :unused_flag, null: false, default: false
 
       t.timestamps
+      t.integer :daily_menu_products_count, default: 0, null: false
+      t.integer :product_menus_count, default: 0, null: false
     end
     add_index :products, :name, unique: true
   end

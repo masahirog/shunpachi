@@ -6,9 +6,7 @@ tr.nested-fields.js-daily-menu-product-row data-product-id=f.object.product_id d
     = f.hidden_field :sell_price
     = f.hidden_field :total_cost_price
     = f.object.product&.name
-    .small.text-muted
-      - if f.object.product&.product_menus&.exists?
-        = "#{f.object.product.product_menus.count}種のメニュー"
+
   td.text-center
     - if f.object.product
       span.badge.rounded-pill.bg-info.text-dark = f.object.product.category_i18n
@@ -16,15 +14,20 @@ tr.nested-fields.js-daily-menu-product-row data-product-id=f.object.product_id d
     = number_to_currency(f.object.sell_price, unit: "¥")
   td.text-end.js-product-total-cost-price
     = number_to_currency(f.object.total_cost_price, unit: "¥")
+  - stores = Store.where(unused_flag: false)
+  - store_products_map = f.object.store_daily_menu_products.index_by(&:store_id)
+  - stores.each do |store|
+    - store_daily_menu_product = store_products_map[store.id]
+    - current_quantity = store_daily_menu_product ? store_daily_menu_product.number : 0
+    td.text-center.js-store-quantity-cell data-store-id=store.id
+      - field_id = "#{f.object.id || 'new'}_store_#{store.id}"
+      = number_field_tag "quantity_#{field_id}", current_quantity, class: "form-control form-control-sm js-store-quantity text-center", min: 0, data: { daily_menu_product_id: f.object.id, store_id: store.id }, autocomplete: "off"
+      = f.fields_for :store_daily_menu_products, store_daily_menu_product || f.object.store_daily_menu_products.build(store_id: store.id) do |sdmp|
+        = sdmp.hidden_field :store_id
+        = sdmp.hidden_field :number, class: "js-store-quantity-hidden", value: current_quantity
+        = sdmp.hidden_field :total_price, class: "js-store-total-price-hidden", value: (current_quantity * f.object.sell_price.to_i)
   td.text-center
-    = f.number_field :manufacturing_number, class: "form-control form-control-sm js-manufacturing-number text-center", min: 0
-  td.text-center
-    .d-flex.align-items-center.justify-content-center
-      - binding.pry
-      - total_store_quantity = f.object.store_daily_menu_products.sum(:number) if f.object.store_daily_menu_products.present?
-      span.badge.me-1.js-store-distribution-badge class="#{total_store_quantity > 0 ? 'bg-success' : 'bg-secondary'}" = total_store_quantity
-      button.btn.btn-sm.btn-outline-primary.js-store-distribution-item-btn type="button" data-daily-menu-product-id=f.object.id
-        i.bi.bi-pencil-square
+    = f.number_field :manufacturing_number, class: "form-control form-control-sm js-manufacturing-number text-center", min: 0, readonly: true
   td.text-center
     = link_to_remove_association f, class: "btn btn-sm btn-outline-danger" do
       i.bi.bi-trash

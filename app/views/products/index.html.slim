@@ -49,7 +49,7 @@
               span class="#{cost_ratio <= 30 ? 'text-success' : cost_ratio <= 40 ? 'text-warning' : 'text-danger'}"
                 = "#{cost_ratio}%"
             td.text-center
-              span.badge.bg-secondary = product.product_menus.count
+              span.badge.bg-secondary = product.product_menus_count
             td.text-center
               - if product.unused_flag?
                 span.badge.bg-secondary 停止中
@@ -58,4 +58,4 @@
 
   .d-flex.justify-content-between.align-items-center.mt-2
     small.text-muted 全 #{@products.count} 件
-    = paginate @products if @products.respond_to?(:total_pages)
+    = will_paginate @products, renderer: WillPaginate::ActionView::BootstrapLinkRenderer if @products.respond_to?(:total_pages)
