@@ -4,7 +4,6 @@
     = link_to new_product_path, class: "btn btn-primary" do
       i.bi.bi-plus-circle.me-1
       | 新規登録
-
   .card.shadow-sm.mb-3
     .card-body.py-2.px-3
       .row.g-2
@@ -18,49 +17,45 @@
             option value="" すべてのカテゴリ
             - Product.categories.keys.each do |category|
               option value=category = category
-
   .table-responsive
     table.table.table-hover.table-bordered.mb-0
       thead.table-light
         tr
+          th.text-center
           th 商品名
           th 食品表示名称
           th.text-center カテゴリ
           th.text-end 売価
           th.text-end 原価
-          th.text-end 利益率
+          th.text-end 原価率
+          th.text-center メニュー数
           th.text-center ステータス
-          th.text-center.no-wrap 操作
       tbody
         - @products.each do |product|
-          - profit_rate = product.sell_price.to_f > 0 ? ((product.sell_price - product.cost_price) / product.sell_price * 100).round(1) : 0
+          - cost_ratio = product.sell_price.to_f > 0 ? ((product.cost_price / product.sell_price) * 100).round(1) : 0
           tr.js-product-item
+            td.text-center
+              = link_to edit_product_path(product), class: "btn btn-sm btn-outline-primary" do
+                i.bi.bi-pencil-square
             td
               .fw-bold = product.name
               small.text-muted = truncate(product.introduction, length: 40)
             td = product.food_label_name
             td.text-center
-              span.badge.rounded-pill.bg-info.text-dark = product.category
+              span.badge.rounded-pill.bg-info.text-dark = product.category_i18n
             td.text-end = number_to_currency(product.sell_price, unit: "¥")
             td.text-end = number_to_currency(product.cost_price, unit: "¥")
             td.text-end
-              span class="#{profit_rate >= 30 ? 'text-success' : profit_rate >= 20 ? 'text-warning' : 'text-danger'}"
-                = "#{profit_rate}%"
+              span class="#{cost_ratio <= 30 ? 'text-success' : cost_ratio <= 40 ? 'text-warning' : 'text-danger'}"
+                = "#{cost_ratio}%"
+            td.text-center
+              span.badge.bg-secondary = product.product_menus.count
             td.text-center
               - if product.unused_flag?
                 span.badge.bg-secondary 停止中
               - else
                 span.badge.bg-success 使用中
-            td.text-center
-              .btn-group.btn-group-sm
-                = link_to edit_product_path(product), class: "btn btn-outline-primary" do
-                  i.bi.bi-pencil-square
-                = link_to product_path(product), class: "btn btn-outline-info mx-1" do
-                  i.bi.bi-eye
-                = link_to product_path(product), method: :delete, data: { confirm: "「#{product.name}」を削除してもよろしいですか？" }, class: "btn btn-outline-danger" do
-                  i.bi.bi-trash
 
   .d-flex.justify-content-between.align-items-center.mt-2
     small.text-muted 全 #{@products.count} 件
     = paginate @products if @products.respond_to?(:total_pages)
-

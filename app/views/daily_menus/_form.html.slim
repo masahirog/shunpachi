@@ -1,36 +1,179 @@
-
 = form_with(model: daily_menu, local: true) do |f|
-  .clearfix.mb-3
-    .me-3.float-start
-      = f.label :manufacturing_number,"合計数", class: "form-label"
-      = f.number_field :manufacturing_number, class: "form-control"
+  .container-fluid.py-4.px-3
+    .d-flex.justify-content-between.align-items-center.mb-3
+      h3.mb-0
+        = l daily_menu.date, format: :long
+        | の献立
+      .d-flex
+        = link_to daily_menus_path, class: "btn btn-outline-secondary me-2" do
+          i.bi.bi-arrow-left.me-1
+          | カレンダーに戻る
+        = f.submit "保存する", class: "btn btn-success"
 
-    .me-3.float-start
-      = f.label :total_selling_price,"想定売上", class: "form-label"
-      = f.number_field :total_selling_price, class: "form-control"
+    .row.mb-4
+      .col-md-6
+        .card.shadow-sm
+          .card-header.bg-light
+            h5.mb-0 基本情報
+          .card-body
+            = f.hidden_field :date
+            
+            .row.mb-3
+              .col-md-6
+                = f.label :manufacturing_number, "製造数", class: "form-label"
+                = f.number_field :manufacturing_number, class: "form-control", min: 0
+              .col-md-6
+                = f.label :worktime, "作業時間", class: "form-label"
+                .input-group
+                  = f.number_field :worktime, class: "form-control", min: 0, step: 0.1
+                  span.input-group-text 時間
+            
+            .row
+              .col-md-6
+                .mb-3
+                  label.form-label 売上合計
+                  .input-group
+                    span.input-group-text ¥
+                    input.form-control.daily-menu-total-selling-price type="text" value=daily_menu.total_selling_price readonly=true
+              .col-md-6
+                .mb-3
+                  label.form-label 原価合計
+                  .input-group
+                    span.input-group-text ¥
+                    input.form-control.daily-menu-total-cost-price type="text" value=daily_menu.total_cost_price readonly=true
+            
+            .mb-3
+              label.form-label 原価率
+              .input-group
+                input.form-control.daily-menu-cost-ratio type="text" value="#{daily_menu.total_selling_price.to_f > 0 ? ((daily_menu.total_cost_price.to_f / daily_menu.total_selling_price.to_f) * 100).round(1) : 0}" readonly=true
+                span.input-group-text %
 
-    .me-3.float-start
-      = f.label :total_cost_price,"原価合計", class: "form-label"
-      = f.number_field :total_cost_price, class: "form-control"
+      .col-md-6
+        .card.shadow-sm
+          .card-header.bg-light
+            h5.mb-0 店舗配分
+          .card-body
+            .table-responsive
+              table.table.table-sm.table-bordered
+                thead.table-light
+                  tr
+                    th 店舗
+                    th.text-center 状態
+                    th.text-end 総数
+                    th.text-end 合計金額
+                tbody
+                  - total_count = 0
+                  - total_price = 0
+                  - Store.where(unused_flag: false).each do |store|
+                    - store_count = daily_menu.store_daily_menu_products.joins(:daily_menu_product).where(store_id: store.id).sum(:number)
+                    - store_price = daily_menu.store_daily_menu_products.joins(:daily_menu_product).where(store_id: store.id).sum(:total_price)
+                    - total_count += store_count
+                    - total_price += store_price
+                    tr
+                      td= store.name
+                      td.text-center
+                        - if store_count > 0
+                          span.badge.bg-success 配分済
+                        - else
+                          span.badge.bg-secondary 未設定
+                      td.text-end= store_count
+                      td.text-end= number_to_currency(store_price, unit: "¥")
+                tfoot.table-light
+                  tr
+                    td.fw-bold 合計
+                    td
+                    td.text-end.fw-bold= total_count
+                    td.text-end.fw-bold= number_to_currency(total_price, unit: "¥")
 
-    .me-3.float-start
-      = f.label :worktime,"稼働時間", class: "form-label"
-      = f.number_field :worktime, class: "form-control"
+    .card.shadow-sm.mb-4
+      .card-header.bg-light.d-flex.justify-content-between.align-items-center
+        h5.mb-0 献立商品一覧
+        button.btn.btn-outline-primary.btn-sm.js-add-product-modal-btn type="button" data-bs-toggle="modal" data-bs-target="#addProductModal"
+          i.bi.bi-plus-circle.me-1
+          | 商品追加
+      .card-body
+        .table-responsive
+          table.table.table-hover.table-bordered.daily-menu-products-table
+            thead.table-light
+              tr
+                th style="width: 50px;"
+                th 商品名
+                th.text-center カテゴリ
+                th.text-end 売価
+                th.text-end 原価
+                th.text-center style="width: 120px;" 製造数
+                th.text-center 各店舗数量
+                th style="width: 50px;"
+            tbody.js-daily-menu-products-container
+              = f.fields_for :daily_menu_products do |dmp|
+                = render 'daily_menu_product_fields', f: dmp
+            tfoot.table-light
+              tr
+                td colspan="3" 合計
+                td.text-end.daily-menu-products-total-selling-price
+                td.text-end.daily-menu-products-total-cost-price
+                td.text-center.daily-menu-products-total-manufacturing-number
+                td.text-center
+                  button.btn.btn-sm.btn-outline-secondary.js-store-distribution-btn type="button" data-bs-toggle="modal" data-bs-target="#storeDistributionModal"
+                    i.bi.bi-shop.me-1
+                    | 店舗配分
+                td
+
+  / 商品追加モーダル
+  #addProductModal.modal.fade tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true"
+    .modal-dialog.modal-lg
+      .modal-content
+        .modal-header
+          h5#addProductModalLabel.modal-title 商品を追加
+          button.btn-close type="button" data-bs-dismiss="modal" aria-label="Close"
+        .modal-body
+          .mb-3
+            input.form-control.js-product-search type="text" placeholder="商品名で検索..."
+          .table-responsive style="max-height: 400px;"
+            table.table.table-hover.table-bordered.js-products-table
+              thead.table-light.sticky-top
+                tr
+                  th 商品名
+                  th.text-center カテゴリ
+                  th.text-end 売価
+                  th
+              tbody
+                - Product.where(unused_flag: false).each do |product|
+                  tr.js-product-row data-id=product.id data-name=product.name data-category=product.category_i18n data-sell-price=product.sell_price data-cost-price=product.cost_price
+                    td= product.name
+                    td.text-center
+                      span.badge.rounded-pill.bg-info.text-dark= product.category_i18n
+                    td.text-end= number_to_currency(product.sell_price, unit: "¥")
+                    td.text-center
+                      button.btn.btn-sm.btn-primary.js-add-product-btn type="button"
+                        i.bi.bi-plus
+                        |  追加
 
 
-  h4 商品情報
-  table.table
-    thead
-      tr
-        th style='width:400px;' 商品名
-        th 食数
-        th 想定売上
-        th 原価合計
-        th
-    tbody#daily_menu_products-add-point
-      = f.fields_for :daily_menu_products do |daily_menu_detail_form|
-        = render 'daily_menu_detail_fields', f: daily_menu_detail_form
-  = link_to_add_association "商品追加", f, :daily_menu_products,data: {association_insertion_node: '#daily_menu_products-add-point',association_insertion_method: 'append' },class:'btn btn-outline-primary'
+        .modal-footer
+          button.btn.btn-secondary type="button" data-bs-dismiss="modal" 閉じる
 
-  .mt-3
-    = f.submit "保存する", class: "btn btn-success"
+  / 店舗配分モーダル
+  #storeDistributionModal.modal.fade tabindex="-1" aria-labelledby="storeDistributionModalLabel" aria-hidden="true"
+    .modal-dialog.modal-xl
+      .modal-content
+        .modal-header
+          h5#storeDistributionModalLabel.modal-title 店舗ごとの配分数設定
+          button.btn-close type="button" data-bs-dismiss="modal" aria-label="Close"
+        .modal-body
+          .table-responsive
+            table.table.table-bordered.table-hover.js-store-distribution-table
+              thead.table-light
+                tr
+                  th.align-middle rowspan="2" 商品名
+                  th.align-middle.text-center rowspan="2" 製造数
+                  th.text-center colspan=Store.where(unused_flag: false).count 店舗別数量
+                  th.align-middle.text-center rowspan="2" 残数
+                tr.store-headers
+                  - Store.where(unused_flag: false).each do |store|
+                    th.text-center.store-header data-store-id=store.id = store.name
+              tbody.js-store-distribution-body
+                / 動的に生成される行
+        .modal-footer
+          button.btn.btn-primary.js-apply-distribution-btn type="button" 適用して閉じる
+          button.btn.btn-secondary type="button" data-bs-dismiss="modal" キャンセル

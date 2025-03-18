@@ -1,14 +1,30 @@
-tr.nested-fields
-  = f.hidden_field :row_order,class:'daily_menu_products_row_order'
-
-  td 
-    = f.collection_select :product_id, Product.all, :id, :name, {}, class: "form-control"
+tr.nested-fields.js-daily-menu-product-row data-product-id=f.object.product_id data-sell-price=f.object.sell_price data-cost-price=f.object.total_cost_price data-daily-menu-product-id=f.object.id
+  td.handle
+    i.bi.bi-grip-vertical.text-muted
   td
-    = f.number_field :manufacturing_number, readonly:true, class:'form-control'
-  td
-    = f.number_field :sell_price, readonly:true, class:'form-control'
-  td
-    = f.number_field :total_cost_price, readonly:true, class:'form-control'
-
-  td
-    = link_to_remove_association "削除", f, class: "btn btn-danger"
+    = f.hidden_field :product_id
+    = f.hidden_field :sell_price
+    = f.hidden_field :total_cost_price
+    = f.object.product&.name
+    .small.text-muted
+      - if f.object.product&.product_menus&.exists?
+        = "#{f.object.product.product_menus.count}種のメニュー"
+  td.text-center
+    - if f.object.product
+      span.badge.rounded-pill.bg-info.text-dark = f.object.product.category_i18n
+  td.text-end.js-product-sell-price
+    = number_to_currency(f.object.sell_price, unit: "¥")
+  td.text-end.js-product-total-cost-price
+    = number_to_currency(f.object.total_cost_price, unit: "¥")
+  td.text-center
+    = f.number_field :manufacturing_number, class: "form-control form-control-sm js-manufacturing-number text-center", min: 0
+  td.text-center
+    .d-flex.align-items-center.justify-content-center
+      - binding.pry
+      - total_store_quantity = f.object.store_daily_menu_products.sum(:number) if f.object.store_daily_menu_products.present?
+      span.badge.me-1.js-store-distribution-badge class="#{total_store_quantity > 0 ? 'bg-success' : 'bg-secondary'}" = total_store_quantity
+      button.btn.btn-sm.btn-outline-primary.js-store-distribution-item-btn type="button" data-daily-menu-product-id=f.object.id
+        i.bi.bi-pencil-square
+  td.text-center
+    = link_to_remove_association f, class: "btn btn-sm btn-outline-danger" do
+      i.bi.bi-trash

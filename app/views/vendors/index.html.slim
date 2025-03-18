@@ -1,22 +1,47 @@
-h3 仕入れ業者一覧
-= link_to "新規登録", new_vendor_path, class: "btn btn-primary mb-3"
+.container-fluid.py-4.px-3
+  .d-flex.justify-content-between.align-items-center.mb-3
+    h3.mb-0 仕入れ業者一覧
+    = link_to new_vendor_path, class: "btn btn-primary" do
+      i.bi.bi-plus-circle.me-1
+      | 新規登録
 
-table.table.table-striped
-  thead
-    tr
-      th style='width:200px;' 名称
-      th style='width:200px;' 電話番号
-      th style='width:200px;' メール
-      th style='width:300px;' 住所
-      th style='width:200px;' 取引担当者
-      th メモ
-  tbody
-    - @vendors.each do |vendor|
-      tr
-        td
-          = link_to vendor.name, edit_vendor_path(vendor), class: ""
-        td = vendor.phone
-        td = vendor.mail
-        td = vendor.address
-        td = vendor.trading_person_name
-        td = text_url_to_link(simple_format(h(vendor.memo))).html_safe
+  .card.shadow-sm.mb-3
+    .card-body.py-2.px-3
+      .row.g-2
+        .col-md-12
+          .input-group
+            span.input-group-text.py-1
+              i.bi.bi-search
+            input.form-control.js-vendor-search type="text" placeholder="業者名で検索..."
+
+  .table-responsive
+    table.table.table-hover.table-bordered.mb-0
+      thead.table-light
+        tr
+          th.text-center
+          th 名称
+          th 電話番号
+          th メール
+          th 取引担当者
+          th 住所
+          th.text-center 状態
+      tbody
+        - @vendors.each do |vendor|
+          tr.js-vendor-item
+            td.text-center
+              = link_to edit_vendor_path(vendor), class: "btn btn-sm btn-outline-primary" do
+                i.bi.bi-pencil-square
+            td = vendor.name
+            td = vendor.phone
+            td = vendor.mail
+            td = vendor.trading_person_name
+            td = truncate(vendor.address, length: 30)
+            td.text-center
+              - if vendor.unused_flag
+                span.badge.bg-secondary 停止中
+              - else
+                span.badge.bg-success 使用中
+
+  .d-flex.justify-content-between.align-items-center.mt-2
+    small.text-muted 全 #{@vendors.count} 件
+    = will_paginate @vendors, renderer: WillPaginate::ActionView::BootstrapLinkRenderer if @vendors.respond_to?(:total_pages)

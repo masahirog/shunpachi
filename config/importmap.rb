@@ -1,4 +1,3 @@
-# config/importmap.rb の修正
 pin "application"
 pin "turbo", to: "turbo.min.js"
 pin "turbo-rails"
@@ -8,3 +7,5 @@ pin "bootstrap", to: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/boots
 pin "cocoon"
 pin "select2"
 pin "materials"
+pin "menus"
+pin "daily_menus"

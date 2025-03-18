@@ -23,23 +23,29 @@
     table.table.table-hover.table-bordered.mb-0
       thead.table-light
         tr
+          th.text-center
           th メニュー名
           th.text-center カテゴリ
           th.text-end 原価
+          th.text-center 材料数
           th.text-center 栄養情報
           th.text-center 工程
-          th.text-center 操作
       tbody
         - @menus.each do |menu|
           tr.js-menu-item
+            td.text-center
+              = link_to edit_menu_path(menu), class: "btn btn-sm btn-outline-primary" do
+                i.bi.bi-pencil-square
             td
               .fw-bold = menu.name
               - if menu.menu_materials.exists?
                 small.text-muted = "#{menu.menu_materials.count}種類の材料"
             td.text-center
-              span.badge.rounded-pill.bg-info.text-dark = menu.category
+              span.badge.rounded-pill.bg-info.text-dark = menu.category_i18n
             td.text-end
               = number_to_currency(menu.cost_price, unit: "¥")
+            td.text-center
+              span.badge.bg-secondary = menu.menu_materials.count
             td.text-center
               small
                 span.me-2 
@@ -56,16 +62,7 @@
                   span.badge.bg-success 当日
               - else
                 span.text-muted なし
-            td.text-center
-              .btn-group.btn-group-sm
-                = link_to edit_menu_path(menu), class: "btn btn-outline-primary" do
-                  i.bi.bi-pencil-square
-                = link_to menu_path(menu), class: "btn btn-outline-info mx-1" do
-                  i.bi.bi-eye
-                = link_to menu_path(menu), method: :delete, data: { confirm: "「#{menu.name}」を削除してもよろしいですか？" }, class: "btn btn-outline-danger" do
-                  i.bi.bi-trash
 
   .d-flex.justify-content-between.align-items-center.mt-2
     small.text-muted 全 #{@menus.count} 件
     = paginate @menus if @menus.respond_to?(:total_pages)
-

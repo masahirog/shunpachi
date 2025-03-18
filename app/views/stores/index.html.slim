@@ -1,20 +1,43 @@
-h3 店舗一覧
-= link_to "新規登録", new_store_path, class: "btn btn-success mb-3"
+.container-fluid.py-4.px-3
+  .d-flex.justify-content-between.align-items-center.mb-3
+    h3.mb-0 店舗一覧
+    = link_to new_store_path, class: "btn btn-primary" do
+      i.bi.bi-plus-circle.me-1
+      | 新規登録
 
-table.table.table-striped
-  thead
-    tr
-      th 名称
-      th 電話番号
-      th 住所
-      th 使用状況
-      th 操作
-  tbody
-    - @stores.each do |store|
-      tr
-        td = link_to store.name, edit_store_path(store)
-        td = store.phone
-        td = store.address
-        td = store.unused_flag ? '未使用' : '使用中'
-        td
-          = link_to "削除", store, method: :delete, data: { confirm: "本当に削除しますか？" }, class: "btn btn-danger btn-sm"
+  .card.shadow-sm.mb-3
+    .card-body.py-2.px-3
+      .row.g-2
+        .col-md-12
+          .input-group
+            span.input-group-text.py-1
+              i.bi.bi-search
+            input.form-control.js-store-search type="text" placeholder="店舗名で検索..."
+
+  .table-responsive
+    table.table.table-hover.table-bordered.mb-0
+      thead.table-light
+        tr
+          th.text-center
+          th 名称
+          th 電話番号
+          th 住所
+          th.text-center 状態
+      tbody
+        - @stores.each do |store|
+          tr.js-store-item
+            td.text-center
+              = link_to edit_store_path(store), class: "btn btn-sm btn-outline-primary" do
+                i.bi.bi-pencil-square
+            td = store.name
+            td = store.phone
+            td = store.address
+            td.text-center
+              - if store.unused_flag
+                span.badge.bg-secondary 停止中
+              - else
+                span.badge.bg-success 使用中
+
+  .d-flex.justify-content-between.align-items-center.mt-2
+    small.text-muted 全 #{@stores.count} 件
+    = will_paginate @stores, renderer: WillPaginate::ActionView::BootstrapLinkRenderer if @stores.respond_to?(:total_pages)

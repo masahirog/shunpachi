@@ -1,6 +1,8 @@
 ja:
   date:
     day_names: [日, 月, 火, 水, 木, 金, 土]
+    formats:
+      month_year: "%Y年%m月"
   enums:
     material:
       recipe_unit:

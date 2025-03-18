@@ -11,10 +11,18 @@ Rails.application.routes.draw do
       get 'get_details'
     end
   end
-  resources :menus
+  resources :menus do
+    member do
+      get :details
+    end
+  end
   resources :products
   resources :food_additives
-  resources :daily_menus
+  resources :daily_menus do
+    member do
+      post :distribute
+    end
+  end
   resources :stores
   resources :food_ingredients do
     collection do

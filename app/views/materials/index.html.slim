@@ -1,26 +1,55 @@
-h3 材料一覧
-= link_to "新規登録", new_material_path, class: "btn btn-primary mb-3"
+.container-fluid.py-4.px-3
+  .d-flex.justify-content-between.align-items-center.mb-3
+    h3.mb-0 材料一覧
+    = link_to new_material_path, class: "btn btn-primary" do
+      i.bi.bi-plus-circle.me-1
+      | 新規登録
 
-table.table.table-striped
-  thead
-    tr
-      th 名称
-      th 仕入先
-      th カテゴリ
-      th レシピ単位
-      th 単価
-      th 栄養計算
-      th 
-  tbody
-    - @materials.each do |material|
-      tr
-        td = link_to material.name, edit_material_path(material), class: ""
-        td = material.vendor.name
-        td = enum_l(material, :category)
-        td = enum_l(material, :recipe_unit)
-        td = material.recipe_unit_price
-        td = material.food_ingredient.name if material.food_ingredient.present?
-        td = material.unused_flag ? '使用停止' : ''
+  .card.shadow-sm.mb-3
+    .card-body.py-2.px-3
+      .row.g-2
+        .col-md-8.col-lg-9
+          .input-group
+            span.input-group-text.py-1
+              i.bi.bi-search
+            input.form-control.js-material-search type="text" placeholder="材料名で検索..."
+        .col-md-4.col-lg-3
+          select.form-select.js-category-filter
+            option value="" すべてのカテゴリ
+            - Material.categories.keys.each do |category|
+              option value=category = category
 
-.mt-4
-  = will_paginate @materials, renderer: WillPaginate::ActionView::BootstrapLinkRenderer
+  .table-responsive
+    table.table.table-hover.table-bordered.mb-0
+      thead.table-light
+        tr
+          th.text-center
+          th 名称
+          th 仕入先
+          th.text-center カテゴリ
+          th.text-center レシピ単位
+          th.text-end 単価
+          th 栄養計算
+          th.text-center 状態
+      tbody
+        - @materials.each do |material|
+          tr.js-material-item
+            td.text-center
+              = link_to edit_material_path(material), class: "btn btn-sm btn-outline-primary" do
+                i.bi.bi-pencil-square
+            td = material.name
+            td = material.vendor&.name
+            td.text-center
+              span.badge.rounded-pill.bg-info.text-dark = material.category_i18n
+            td.text-center = material.recipe_unit_i18n
+            td.text-end = number_to_currency(material.recipe_unit_price, unit: "¥")
+            td = material.food_ingredient&.name || '-'
+            td.text-center
+              - if material.unused_flag
+                span.badge.bg-secondary 停止中
+              - else
+                span.badge.bg-success 使用中
+
+  .d-flex.justify-content-between.align-items-center.mt-2
+    small.text-muted 全 #{@materials.count} 件
+    = will_paginate @materials, renderer: WillPaginate::ActionView::BootstrapLinkRenderer if @materials.respond_to?(:total_pages)

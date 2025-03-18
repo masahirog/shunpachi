@@ -1,26 +1,46 @@
-h1 食品成分一覧
+.container-fluid.py-4.px-3
+  .d-flex.justify-content-between.align-items-center.mb-3
+    h3.mb-0 食品成分一覧
+    = link_to new_food_ingredient_path, class: "btn btn-primary" do
+      i.bi.bi-plus-circle.me-1
+      | 新規登録
 
-= link_to "新規登録", new_food_ingredient_path, class: "btn btn-success mb-3"
+  .card.shadow-sm.mb-3
+    .card-body.py-2.px-3
+      .row.g-2
+        .col-md-12
+          .input-group
+            span.input-group-text.py-1
+              i.bi.bi-search
+            input.form-control.js-food-ingredient-search type="text" placeholder="食品成分名で検索..."
 
-table.table.table-striped
-  thead
-    tr
-      th 名称
-      th カロリー
-      th タンパク質
-      th 脂質
-      th 炭水化物
-      th 塩分
-      th 操作
-  tbody
-    - @food_ingredients.each do |food_ingredient|
-      tr
-        td = food_ingredient.name
-        td = food_ingredient.calorie
-        td = food_ingredient.protein
-        td = food_ingredient.lipid
-        td = food_ingredient.carbohydrate
-        td = food_ingredient.salt
-        td
-          = link_to "編集", edit_food_ingredient_path(food_ingredient), class: "btn btn-primary btn-sm"
-          = link_to "削除", food_ingredient, method: :delete, data: { confirm: "本当に削除しますか？" }, class: "btn btn-danger btn-sm"
+  .table-responsive
+    table.table.table-hover.table-bordered.mb-0
+      thead.table-light
+        tr
+          th.text-center
+          th 名称
+          th.text-end カロリー
+          th.text-end タンパク質
+          th.text-end 脂質
+          th.text-end 炭水化物
+          th.text-end 塩分
+          th.text-center 使用材料数
+      tbody
+        - @food_ingredients.each do |food_ingredient|
+          tr.js-food-ingredient-item
+            td.text-center
+              = link_to edit_food_ingredient_path(food_ingredient), class: "btn btn-sm btn-outline-primary" do
+                i.bi.bi-pencil-square
+            td = food_ingredient.name
+            td.text-end = "#{food_ingredient.calorie} kcal"
+            td.text-end = "#{food_ingredient.protein} g"
+            td.text-end = "#{food_ingredient.lipid} g"
+            td.text-end = "#{food_ingredient.carbohydrate} g"
+            td.text-end = "#{food_ingredient.salt} g"
+            td.text-center
+              span.badge.bg-secondary = food_ingredient.materials.count
+
+  .d-flex.justify-content-between.align-items-center.mt-2
+    small.text-muted 全 #{@food_ingredients.count} 件
+    = will_paginate @food_ingredients, renderer: WillPaginate::ActionView::BootstrapLinkRenderer if @food_ingredients.respond_to?(:total_pages)

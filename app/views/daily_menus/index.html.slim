@@ -1,19 +1,87 @@
-h3.text-center = "#{@date.year}年#{@date.month}月 献立"
-.row.justify-content-between.mb-2
-  .col-auto
-    = link_to "<< 先月", daily_menus_path(date: @date.prev_month), class: "btn btn-outline-primary"
-  .col-auto
-    = link_to "翌月 >>", daily_menus_path(date: @date.next_month), class: "btn btn-outline-primary"
+.container-fluid.py-4.px-3
+  .d-flex.justify-content-between.align-items-center.mb-3
+    h3.mb-0 日別献立カレンダー
+    .d-flex.align-items-center
+      = link_to new_daily_menu_path, class: "btn btn-primary me-2" do
+        i.bi.bi-plus-circle.me-1
+        | 新規献立作成
+      .btn-group
+        button.btn.btn-outline-secondary
+          i.bi.bi-calendar3.me-2
+          = @current_month.strftime('%Y年%m月')
+        button.btn.btn-outline-secondary.dropdown-toggle.dropdown-toggle-split data-bs-toggle="dropdown" aria-expanded="false"
+          span.visually-hidden 月選択
+        ul.dropdown-menu
+          - 6.times do |i|
+            - date = i.months.ago
+            li
+              = link_to date.strftime('%Y年%m月'), daily_menus_path(date: date), class: "dropdown-item"
+          li
+            hr.dropdown-divider
+          - 6.times do |i|
+            - date = (i+1).months.from_now
+            li
+              = link_to date.strftime('%Y年%m月'), daily_menus_path(date: date), class: "dropdown-item"
 
-= month_calendar events: @daily_menus, attribute: :date do |date, daily_menu|
-  - daily_menu = daily_menu[0]
-  = link_to edit_daily_menu_path(daily_menu) ,style:'text-decoration: none;' do
-    .calendar-event.card.shadow-sm
-      .card-body style='padding: 10px;'
-        h5.text-dark.font-weight-bold = date.day
-        p.mb-1.text-muted
-          strong 製造数：
-          = "#{daily_menu.manufacturing_number} 食"
-        p.mb-1.text-muted
-          strong 総売上：
-          = "#{daily_menu.total_selling_price} 円"
+  .card.shadow-sm.mb-4
+    .card-body.p-0
+      .table-responsive
+        table.table.table-bordered.mb-0.calendar-table
+          thead.table-light
+            tr
+              - %w(日 月 火 水 木 金 土).each_with_index do |day, index|
+                th.text-center class="#{index == 0 ? 'text-danger' : index == 6 ? 'text-primary' : ''}"
+                  = day
+          tbody
+            - @calendar_data.each_slice(7) do |week|
+              tr style="height: 120px;"
+                - week.each_with_index do |day_data, index|
+                  - date = day_data[:date]
+                  - daily_menu = day_data[:daily_menu]
+                  td class="#{date.month != @current_month.month ? 'bg-light' : ''} #{Date.today == date ? 'today bg-light-warning' : ''} #{daily_menu ? 'has-menu' : ''} position-relative p-0" style="width: 14.28%"
+                    .p-2
+                      .d-flex.justify-content-between.mb-2
+                        span class="#{index == 0 ? 'text-danger' : index == 6 ? 'text-primary' : ''}"
+                          = date.day
+                        - if daily_menu
+                          = link_to edit_daily_menu_path(daily_menu), class: "badge bg-success text-decoration-none" do
+                            i.bi.bi-cup-hot.me-1
+                            = daily_menu.manufacturing_number
+                      
+                      - if daily_menu && daily_menu.daily_menu_products.any?
+                        - product_count = daily_menu.daily_menu_products.count
+                        .menu-summary.small
+                          .d-flex.justify-content-between.align-items-center
+                            span.badge.bg-light.text-dark.border
+                              = "#{product_count}品"
+                            span.text-success.fw-bold
+                              = number_to_currency(daily_menu.total_selling_price, unit: "¥")
+                        
+                        - if product_count <= 3
+                          ul.menu-list.list-unstyled.mt-1.mb-0.ps-0
+                            - daily_menu.daily_menu_products.includes(:product).order(:row_order).limit(3).each do |dmp|
+                              li.text-truncate.small.py-1
+                                i.bi.bi-dot
+                                = dmp.product.name
+                        - else
+                          .text-center.mt-1
+                            = link_to edit_daily_menu_path(daily_menu), class: "btn btn-sm btn-light w-100" do
+                              | #{product_count}品目を表示
+                      - elsif !daily_menu && date.month == @current_month.month && date >= Date.today
+                        = link_to new_daily_menu_path(date: date), class: "btn btn-sm btn-outline-secondary w-100 mt-2" do
+                          i.bi.bi-plus-circle.me-1
+                          | 献立作成
+
+  .d-flex.justify-content-between.align-items-center.mt-2.mb-4
+    .calendar-legend.d-flex.align-items-center
+      .legend-item.me-3.d-flex.align-items-center
+        span.legend-color.bg-success.rounded-circle.me-1 style="width: 12px; height: 12px;"
+        | 献立作成済み
+      .legend-item.d-flex.align-items-center
+        span.legend-color.bg-light.border.rounded-circle.me-1 style="width: 12px; height: 12px;"
+        | 未作成
+    
+    /.text-end
+      button.btn.btn-outline-secondary type="button"
+        i.bi.bi-file-earmark-bar-graph.me-1
+        | 集計レポート（準備中）

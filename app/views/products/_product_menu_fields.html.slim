@@ -1,6 +1,44 @@
-tr.nested-fields
-  td.mb-3
-    = f.collection_select :menu_id, Menu.all, :id, :name, {}, class: "form-control"
-  td
-  td
-    = link_to_remove_association "削除", f, class: "btn btn-danger"
+.product-menu-item.mb-3.border.rounded.nested-fields
+  .row.g-0
+    .col-md-4.border-end
+      .p-3
+        = f.collection_select :menu_id, Menu.all, :id, :name, {include_blank: "メニューを選択"}, class: "form-control menu-select"
+        .d-flex.justify-content-end.mt-2
+          = link_to_remove_association '<i class="bi bi-trash"></i> 削除'.html_safe, f, class: "btn btn-outline-danger btn-sm", title: "削除"
+    .col-md-8
+      .menu-details.p-3
+        .menu-info.d-none
+          .d-flex.align-items-center.mb-3
+            span.badge.bg-info.menu-category.me-2
+            span.fw-bold 原価：
+            span.menu-cost.ms-1.fw-bold --
+          
+          .materials-container
+            h6.small.text-muted.mb-2 使用材料
+            .materials-list.pb-1
+              .text-center.small.text-muted 読み込み中...
+          
+          .mt-3
+            button.btn.btn-sm.btn-outline-secondary.collapsed.nutrition-toggle type="button" data-bs-toggle="collapse" data-bs-target="#nutritionInfo_#{f.object_id}" aria-expanded="false" aria-controls="nutritionInfo_#{f.object_id}"
+              | 栄養成分を表示
+              i.bi.bi-chevron-down.ms-1
+            .collapse id="nutritionInfo_#{f.object_id}"
+              .card.mt-2.bg-light
+                .card-body.p-2
+                  .row.g-1.small
+                    .col-md-4
+                      span.text-muted カロリー：
+                      span.menu-calorie --
+                    .col-md-4
+                      span.text-muted たんぱく質：
+                      span.menu-protein --
+                    .col-md-4
+                      span.text-muted 脂質：
+                      span.menu-lipid --
+                  .row.g-1.small.mt-1
+                    .col-md-4
+                      span.text-muted 炭水化物：
+                      span.menu-carbohydrate --
+                    .col-md-4
+                      span.text-muted 塩分：
+                      span.menu-salt --

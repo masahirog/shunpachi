@@ -13,7 +13,7 @@ class FoodIngredientsController < ApplicationController
   end
 
   def index
-    @food_ingredients = FoodIngredient.all
+    @food_ingredients = FoodIngredient.all.paginate(page: params[:page], per_page: 30)
   end
 
   def new
