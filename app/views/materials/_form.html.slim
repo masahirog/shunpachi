@@ -13,7 +13,7 @@
     = f.label :food_label_name,'食品表示名', class: "form-label required"
     = f.text_field :food_label_name, class: "form-control",required:true
   .mb-3
-    = f.label :food_ingredient_id,'栄養計算時の食材照らし合わせ', class: "form-label"
+    = f.label :food_ingredient_id,'食品成分表 一致', class: "form-label"
     = f.collection_select :food_ingredient_id, FoodIngredient.all, :id, :name, { include_blank: true }, class: "form-control select2"
 
 
@@ -39,12 +39,19 @@
       = f.label :recipe_unit_price,"単位税抜単価", class: "form-label label-recipe_unit_price required"
     = f.number_field :recipe_unit_price, class: "form-control",required:true
 
+
   h4 アレルギー情報
   #allergies.mb-4
-    = f.fields_for :material_allergies do |allergy_form|
-      = render 'materials/material_allergy_fields', f: allergy_form
+  - MaterialAllergy.allergens.each do |key, _|
+    - checked = @material.material_allergies.any? { |ma| ma.allergen == key }
 
-    = link_to_add_association "アレルギー追加", f, :material_allergies, class: "btn btn-outline-primary"
+    .form-check
+      = check_box_tag "material[allergens][]", key, checked, id: "material_allergen_#{key}", class: "form-check-input"
+      = label_tag "material_allergen_#{key}", MaterialAllergy.allergens_i18n[key], class: 'form-check-label'
+
+
+
+
 
   h4 食品添加物
   #food_additives.mb-4

@@ -59,7 +59,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_16_054619) do
 
   create_table "material_allergies", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "material_id"
-    t.integer "allergy"
+    t.integer "allergen"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["material_id"], name: "index_material_allergies_on_material_id"

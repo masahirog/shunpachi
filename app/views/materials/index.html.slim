@@ -5,6 +5,20 @@
       i.bi.bi-plus-circle.me-1
       | 新規登録
 
+  / .card.shadow-sm.mb-3
+  /   .card-body.py-2.px-3
+  /     .row.g-2
+  /       .col-md-8.col-lg-9
+  /         .input-group
+  /           span.input-group-text.py-1
+  /             i.bi.bi-search
+  /           input.form-control.js-material-search type="text" placeholder="材料名で検索..."
+  /       .col-md-4.col-lg-3
+  /         select.form-select.js-category-filter
+  /           option value="" すべてのカテゴリ
+  /           - Material.categories.keys.each do |category|
+  /             option value=category = category
+
   .card.shadow-sm.mb-3
     .card-body.py-2.px-3
       .row.g-2
@@ -12,12 +26,15 @@
           .input-group
             span.input-group-text.py-1
               i.bi.bi-search
-            input.form-control.js-material-search type="text" placeholder="材料名で検索..."
+            input.form-control.js-material-search type="text" placeholder="材料名で検索..." value="#{params[:query]}"
         .col-md-4.col-lg-3
           select.form-select.js-category-filter
             option value="" すべてのカテゴリ
             - Material.categories.keys.each do |category|
-              option value=category = category
+              option value=category selected=("selected" if params[:category] == category) = category
+
+
+
 
   .table-responsive
     table.table.table-hover.table-bordered.mb-0

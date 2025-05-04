@@ -21,3 +21,13 @@ ja:
         souzai: 惣菜
         bento: 弁当
         hankanhin: 1.5次品
+    material_allergy:
+      allergen:
+        shrimp: えび
+        crab: かに
+        walnut: くるみ
+        wheat: 小麦
+        buckwheat: そば
+        egg: 卵
+        milk: 乳
+        peanut: 落花生

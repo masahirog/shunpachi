@@ -12,6 +12,38 @@ function onLoad() {
   });
 
 
+  // 検索機能
+  function performSearch() {
+    const query = $('.js-material-search').val();
+    const category = $('.js-category-filter').val();
+    
+    let url = window.location.pathname + '?';
+    
+    if (query) url += `query=${encodeURIComponent(query)}&`;
+    if (category) url += `category=${encodeURIComponent(category)}&`;
+    
+    // 末尾の&を削除
+    if (url.endsWith('&')) {
+      url = url.slice(0, -1);
+    }
+    
+    Turbo.visit(url);
+  }
+
+  // Enterキーが押された時に検索
+  $('.js-material-search').on('keypress', function(e) {
+    if (e.which === 13) { // Enterキー
+      e.preventDefault();
+      performSearch();
+    }
+  });
+
+  // カテゴリフィルター
+  $('.js-category-filter').on('change', function() {
+    performSearch();
+  });
+
+
   function material_select2(){
     $(".material_select2").select2({
       width: "100%",
