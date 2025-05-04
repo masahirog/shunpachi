@@ -53,21 +53,34 @@ class MaterialsController < ApplicationController
     @material = Material.new
   end
 
+
+  def edit; end
+
+
   def create
     @material = Material.new(material_params)
     if @material.save
+      save_allergens(@material)
       redirect_to materials_path, notice: '材料を作成しました。'
     else
       render :new
     end
   end
 
-  def edit; end
-
   def update
+    # デバッグ用：パラメータを確認
+    Rails.logger.debug "Params: #{params.inspect}"
+    
     if @material.update(material_params)
+      # デバッグ用：更新成功を確認
+      Rails.logger.debug "Material updated successfully"
+      
+      save_allergens(@material)
       redirect_to materials_path, notice: '材料を更新しました。'
     else
+      # デバッグ用：エラーを確認
+      Rails.logger.debug "Update failed: #{@material.errors.full_messages}"
+      
       render :edit
     end
   end
@@ -84,6 +97,22 @@ class MaterialsController < ApplicationController
   end
 
   def material_params
-    params.require(:material).permit(:vendor_id, :food_ingredient_id, :name, :food_label_name, :category, :recipe_unit, :recipe_unit_price, :memo, :unused_flag,:recipe_unit_gram_quantity)
+    params.require(:material).permit(:vendor_id, :food_ingredient_id, :name, :food_label_name, :category, :recipe_unit, :recipe_unit_price, :memo, :unused_flag, :recipe_unit_gram_quantity)
   end
+
+  def save_allergens(material)
+    # 既存のアレルゲン情報を削除
+    material.material_allergies.destroy_all
+    
+    # 選択されたアレルゲンを保存
+    if params[:material][:allergens].present?
+      params[:material][:allergens].each do |allergen|
+        next if allergen.blank?
+        material.material_allergies.create!(allergen: allergen)
+      end
+    end
+  rescue => e
+    Rails.logger.error "Failed to save allergens: #{e.message}"
+  end
+
 end

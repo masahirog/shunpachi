@@ -1,6 +1,7 @@
 class Material < ApplicationRecord
   belongs_to :vendor
-  belongs_to :food_ingredient
+  belongs_to :food_ingredient, optional: true
+
   has_many :menu_materials, dependent: :destroy
   has_many :material_allergies, dependent: :destroy
   has_many :material_food_additives, dependent: :destroy
