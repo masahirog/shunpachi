@@ -1,6 +1,6 @@
 require "test_helper"
 
-class MaterialFoodAdditiveTest < ActiveSupport::TestCase
+class MaterialRawMaterialTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

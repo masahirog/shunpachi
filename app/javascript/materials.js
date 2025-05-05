@@ -11,7 +11,6 @@ function onLoad() {
     cal_food_ingredient();
   });
 
-
   // 検索機能
   function performSearch() {
     const query = $('.js-material-search').val();
@@ -42,7 +41,6 @@ function onLoad() {
   $('.js-category-filter').on('change', function() {
     performSearch();
   });
-
 
   function material_select2(){
     $(".material_select2").select2({
@@ -123,13 +121,10 @@ function onLoad() {
     cal_food_ingredient($row);
   });
 
-
   $('#material_recipe_unit').on('change', function() {
     var unit = $(this).find("option:selected").text(); // 選択されたoptionのテキストを取得
     $(".label-recipe_unit_price").text("1" + unit + "の税抜価格");
   });
-
-
 
   function cal_gram_quantity($row){
     var recipe_unit_gram_quantity = $row.find('.recipe_unit_gram_quantity').val();
@@ -195,14 +190,49 @@ function onLoad() {
     $(".menu_carbohydrate").val(menu_carbohydrate.toFixed(1));
     $(".menu_salt").val(menu_salt.toFixed(1));
   }
-
 }
 
 $(document).on("turbo:before-cache", function() {
   $('.material_select2').select2('destroy');
 });
 
+// グローバル関数として定義（onclick属性から直接呼び出せるようにする）
+function moveRowUp(btn) {
+  const row = btn.closest('tr');
+  const prevRow = row.previousElementSibling;
+  if (prevRow) {
+    row.parentNode.insertBefore(row, prevRow);
+    updateRowPositions();
+  }
+}
 
+function moveRowDown(btn) {
+  const row = btn.closest('tr');
+  const nextRow = row.nextElementSibling;
+  if (nextRow) {
+    row.parentNode.insertBefore(nextRow, row);
+    updateRowPositions();
+  }
+}
 
+function updateRowPositions() {
+  const rows = document.querySelectorAll('#material-raw-materials tr.nested-fields');
+  rows.forEach((row, index) => {
+    const posInput = row.querySelector('input[name*=position]');
+    if (posInput) {
+      posInput.value = index + 1;
+      console.log(`Row ${index + 1} position updated`);
+    }
+  });
+}
+
+// DOMの準備ができたら初期化
 document.addEventListener("DOMContentLoaded", onLoad);
 document.addEventListener("turbo:load", onLoad);
+
+// Cocoonのイベントリスナー（jQuery形式）
+$(document).on('cocoon:after-insert', function() {
+  console.log('New row added via Cocoon');
+  // 新しい行にもposition値を設定
+  updateRowPositions();
+});

@@ -97,7 +97,9 @@ class MaterialsController < ApplicationController
   end
 
   def material_params
-    params.require(:material).permit(:vendor_id, :food_ingredient_id, :name, :food_label_name, :category, :recipe_unit, :recipe_unit_price, :memo, :unused_flag, :recipe_unit_gram_quantity)
+    params.require(:material).permit(:vendor_id, :food_ingredient_id, :name, :food_label_name, :category, :recipe_unit,
+     :recipe_unit_price, :memo, :unused_flag, :recipe_unit_gram_quantity,
+    material_raw_materials_attributes: [:id, :raw_material_id, :quantity_ratio, :position, :_destroy])
   end
 
   def save_allergens(material)

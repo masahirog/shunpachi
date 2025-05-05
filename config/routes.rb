@@ -17,7 +17,7 @@ Rails.application.routes.draw do
     end
   end
   resources :products
-  resources :food_additives
+  resources :raw_materials
   resources :daily_menus do
     member do
       post :distribute

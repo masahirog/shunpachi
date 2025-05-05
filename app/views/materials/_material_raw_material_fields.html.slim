@@ -1,0 +1,13 @@
+tr.nested-fields
+  td
+    = f.collection_select :raw_material_id, RawMaterial.all, :id, :display_name, 
+      { include_blank: "選択してください" }, { class: "form-select" }
+    = f.hidden_field :position
+  td.text-center
+    .btn-group
+      button.btn.btn-sm.btn-outline-secondary type="button" title="上に移動" onclick="moveRowUp(this)"
+        i.bi.bi-arrow-up
+      button.btn.btn-sm.btn-outline-secondary type="button" title="下に移動" onclick="moveRowDown(this)"
+        i.bi.bi-arrow-down
+    = link_to_remove_association f, class: "btn btn-outline-danger btn-sm ms-2", title: "削除" do
+      i.bi.bi-trash

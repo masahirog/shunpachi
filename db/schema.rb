@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_02_16_054619) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_05_045302) do
   create_table "daily_menu_products", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "daily_menu_id"
     t.bigint "product_id"
@@ -38,13 +38,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_16_054619) do
     t.index ["date"], name: "index_daily_menus_on_date", unique: true
   end
 
-  create_table "food_additives", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["name"], name: "index_food_additives_on_name", unique: true
-  end
-
   create_table "food_ingredients", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.float "calorie", default: 0.0, null: false
@@ -65,13 +58,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_16_054619) do
     t.index ["material_id"], name: "index_material_allergies_on_material_id"
   end
 
-  create_table "material_food_additives", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "material_id"
-    t.bigint "food_additive_id"
+  create_table "material_raw_materials", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "material_id", null: false
+    t.bigint "raw_material_id", null: false
+    t.integer "position"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["food_additive_id"], name: "index_material_food_additives_on_food_additive_id"
-    t.index ["material_id"], name: "index_material_food_additives_on_material_id"
+    t.index ["material_id", "raw_material_id"], name: "idx_on_material_id_raw_material_id_6fc0de680e", unique: true
+    t.index ["material_id"], name: "index_material_raw_materials_on_material_id"
+    t.index ["raw_material_id"], name: "index_material_raw_materials_on_raw_material_id"
   end
 
   create_table "materials", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -167,6 +162,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_16_054619) do
     t.index ["name"], name: "index_products_on_name", unique: true
   end
 
+  create_table "raw_materials", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name"
+    t.integer "category"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_raw_materials_on_name", unique: true
+  end
+
   create_table "store_daily_menu_products", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "store_id"
     t.bigint "daily_menu_product_id"
@@ -217,4 +221,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_16_054619) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "material_raw_materials", "materials"
+  add_foreign_key "material_raw_materials", "raw_materials"
 end

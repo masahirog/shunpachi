@@ -27,6 +27,7 @@ gem 'image_processing'
 gem 'sassc-rails'
 gem 'jquery-rails'
 gem 'enum_help'
+gem 'acts_as_list'
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
