@@ -1,14 +1,62 @@
 function onLoad() {
+  console.log("Materials.js onLoad called");
+  
+  // jQuery UIが読み込まれているか確認
+  if (typeof $.fn.sortable === 'undefined') {
+    console.error("jQuery UI Sortable is not loaded!");
+  } else {
+    console.log("jQuery UI Sortable is available");
+  }
+  
+  // 材料選択用のselect2を初期化
   material_select2();
-  $('.add_material_fields').on('click',function(){
+  
+  // Raw Material選択用のselect2を初期化
+  initRawMaterialSelect2();
+  
+  // Sortable初期化 - setTimeout で少し遅らせる
+  setTimeout(function() {
+    initSortable();
+  }, 500);
+  
+  // 材料追加ボタン押下時のイベント
+  $('.add_material_fields').on('click', function(){
     setTimeout(function(){
       material_select2();
-    },5);
+    }, 5);
   });
 
+  // Raw Material追加時のイベント
+  $('#material-raw-materials').on('cocoon:after-insert', function(e, insertedItem) {
+    console.log("Raw material added");
+    // 新しく追加された行のみにselect2を適用
+    $(insertedItem).find('.raw-material-select2').select2({
+      width: "100%",
+      placeholder: "原材料を検索",
+      allowClear: true,
+      language: "ja"
+    });
+    
+    // sortableを再初期化
+    setTimeout(function() {
+      refreshSortable();
+    }, 100);
+    
+    // 行の位置を更新
+    updateRowPositions();
+  });
+
+  // 材料削除後のイベント
   $(document).on('cocoon:after-remove', function(e, removed_item) {
+    console.log("Raw material removed");
     cal_cost_price();
     cal_food_ingredient();
+    updateRowPositions();
+    
+    // sortableを再初期化
+    setTimeout(function() {
+      refreshSortable();
+    }, 100);
   });
 
   // 検索機能
@@ -42,7 +90,100 @@ function onLoad() {
     performSearch();
   });
 
+  // Sortable初期化関数
+  function initSortable() {
+    console.log("Initializing sortable on", $('#material-raw-materials').length, "elements");
+    
+    if ($.fn.sortable && $('#material-raw-materials').length > 0) {
+      try {
+        $("#material-raw-materials").sortable({
+          items: "tr.nested-fields",
+          handle: ".handle",
+          axis: "y",
+          cursor: "move",
+          opacity: 0.7,
+          placeholder: "ui-state-highlight",
+          forcePlaceholderSize: true,
+          start: function(e, ui) {
+            console.log("Sort started");
+            // select2が開いていたら閉じる
+            $('.select2-container--open').select2('close');
+          },
+          helper: function(e, tr) {
+            console.log("Sort helper created");
+            var $originals = tr.children();
+            var $helper = tr.clone();
+            $helper.children().each(function(index) {
+              // 幅を固定
+              $(this).width($originals.eq(index).outerWidth());
+            });
+            return $helper;
+          },
+          update: function(e, ui) {
+            console.log("Sort updated");
+            updateRowPositions();
+          }
+        });
+        console.log("Sortable initialized successfully");
+      } catch (e) {
+        console.error("Error initializing sortable:", e);
+      }
+    } else {
+      console.warn("Cannot initialize sortable - either jQuery UI is not loaded or target element not found");
+    }
+  }
+
+  // Sortable再初期化関数
+  function refreshSortable() {
+    console.log("Refreshing sortable");
+    if ($("#material-raw-materials").data('ui-sortable')) {
+      $("#material-raw-materials").sortable('refresh');
+      console.log("Sortable refreshed");
+    } else {
+      console.log("Sortable not initialized yet, initializing now");
+      initSortable();
+    }
+  }
+
+  // 行の位置を更新する関数
+  function updateRowPositions() {
+    console.log("Updating row positions");
+    $('#material-raw-materials tr.nested-fields').each(function(index) {
+      $(this).find('input[name*="position"]').val(index + 1);
+      console.log(`Row ${index + 1} position updated`);
+    });
+  }
+
+  // Raw Materialのselect2初期化関数
+  function initRawMaterialSelect2() {
+    console.log("Initializing raw material select2");
+    // 初期化されているselect2をチェックして、初期化済みのものだけdestroyする
+    $('.raw-material-select2').each(function() {
+      // data属性やクラスでselect2が適用済みかチェック
+      if ($(this).hasClass('select2-hidden-accessible')) {
+        $(this).select2('destroy');
+      }
+    });
+    
+    // select2を適用
+    $('.raw-material-select2').select2({
+      width: "100%",
+      placeholder: "原材料を検索",
+      allowClear: true,
+      language: "ja"
+    });
+  }
+
+  // 材料選択用のselect2初期化関数
   function material_select2(){
+    console.log("Initializing material select2");
+    // 初期化されているselect2をチェック
+    $(".material_select2").each(function() {
+      if ($(this).hasClass('select2-hidden-accessible')) {
+        $(this).select2('destroy');
+      }
+    });
+
     $(".material_select2").select2({
       width: "100%",
       placeholder: "食材を検索",
@@ -190,49 +331,45 @@ function onLoad() {
     $(".menu_carbohydrate").val(menu_carbohydrate.toFixed(1));
     $(".menu_salt").val(menu_salt.toFixed(1));
   }
+
+  // 初期化時に行の位置を設定
+  updateRowPositions();
 }
 
+// Turboの前にselect2破棄
 $(document).on("turbo:before-cache", function() {
-  $('.material_select2').select2('destroy');
+  console.log("turbo:before-cache triggered");
+  // Select2が初期化されているものだけdestroyする
+  $('.material_select2.select2-hidden-accessible').select2('destroy');
+  $('.raw-material-select2.select2-hidden-accessible').select2('destroy');
+  
+  // Sortableも破棄
+  if ($("#material-raw-materials").data('ui-sortable')) {
+    console.log("Destroying sortable");
+    $("#material-raw-materials").sortable('destroy');
+  }
 });
 
-// グローバル関数として定義（onclick属性から直接呼び出せるようにする）
-function moveRowUp(btn) {
-  const row = btn.closest('tr');
-  const prevRow = row.previousElementSibling;
-  if (prevRow) {
-    row.parentNode.insertBefore(row, prevRow);
-    updateRowPositions();
-  }
-}
-
-function moveRowDown(btn) {
-  const row = btn.closest('tr');
-  const nextRow = row.nextElementSibling;
-  if (nextRow) {
-    row.parentNode.insertBefore(nextRow, row);
-    updateRowPositions();
-  }
-}
-
-function updateRowPositions() {
-  const rows = document.querySelectorAll('#material-raw-materials tr.nested-fields');
-  rows.forEach((row, index) => {
-    const posInput = row.querySelector('input[name*=position]');
-    if (posInput) {
-      posInput.value = index + 1;
-      console.log(`Row ${index + 1} position updated`);
+// 直接初期化を試みる - jQuery UI CDNの読み込み完了を待つため
+$(document).ready(function() {
+  console.log("Document ready");
+  setTimeout(function() {
+    if ($.fn.sortable && $('#material-raw-materials').length > 0) {
+      console.log("Direct sortable initialization on document ready");
+      $("#material-raw-materials").sortable({
+        items: "tr.nested-fields",
+        handle: ".handle",
+        axis: "y",
+        update: function() {
+          $('#material-raw-materials tr.nested-fields').each(function(index) {
+            $(this).find('input[name*="position"]').val(index + 1);
+          });
+        }
+      });
     }
-  });
-}
+  }, 1000);
+});
 
-// DOMの準備ができたら初期化
+// ページロード時の初期化
 document.addEventListener("DOMContentLoaded", onLoad);
 document.addEventListener("turbo:load", onLoad);
-
-// Cocoonのイベントリスナー（jQuery形式）
-$(document).on('cocoon:after-insert', function() {
-  console.log('New row added via Cocoon');
-  // 新しい行にもposition値を設定
-  updateRowPositions();
-});

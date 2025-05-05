@@ -31,3 +31,19 @@ ja:
         egg: 卵
         milk: 乳
         peanut: 落花生
+    raw_material:
+      category:
+        food: 食品
+        additive: 添加物
+        allergen: アレルゲン
+        other: その他
+
+  activerecord:
+    models:
+      raw_material: 原材料
+    attributes:
+      raw_material:
+        name: 原材料名
+        category: カテゴリー
+        description: 説明
+  
