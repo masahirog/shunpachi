@@ -3,9 +3,18 @@ tr.nested-fields
     .d-flex.align-items-center
       span.handle.me-2 style="cursor: move; padding: 5px; color: #6c757d; font-size: 1.2em;"
         i.bi.bi-grip-vertical
-      = f.collection_select :raw_material_id, RawMaterial.all, :id, :display_name, 
-        { include_blank: "選択してください" }, { class: "form-select raw-material-select2", style: "flex-grow: 1;" }
+      .d-flex.flex-grow-1.align-items-center
+        = f.collection_select :raw_material_id, RawMaterial.all, :id, :display_name, 
+          { include_blank: "選択してください" }, { class: "form-select raw-material-select2", style: "width: 75%;" }
+        button.btn.btn-outline-success.btn-sm.ms-2.new-raw-material-btn type="button" data-bs-toggle="modal" data-bs-target="#newRawMaterialModal" title="新規原材料作成"
+          i.bi.bi-plus-circle
     = f.hidden_field :position
+  td.text-center
+    - if f.object.raw_material&.category.present?
+      span.badge.rounded-pill.bg-info.text-dark.category-badge data-raw-material-id=f.object.raw_material_id
+        = t("enums.raw_material.category.#{f.object.raw_material.category}")
+    - else
+      span.badge.rounded-pill.bg-info.text-dark.category-badge.d-none data-raw-material-id=""
   td.text-center
     = link_to_remove_association f, class: "btn btn-outline-danger btn-sm", title: "削除" do
       i.bi.bi-trash

@@ -35,7 +35,6 @@ ja:
       category:
         food: 食品
         additive: 添加物
-        allergen: アレルゲン
         other: その他
 
   activerecord:

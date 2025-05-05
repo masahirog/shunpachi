@@ -1,6 +1,8 @@
 .container-fluid.py-4.px-3
   .d-flex.justify-content-between.align-items-center.mb-3
-    h3.mb-0 食品成分一覧
+    h3.mb-0
+      i.bi.bi-database.me-2
+      | 食品成分一覧
     = link_to new_food_ingredient_path, class: "btn btn-primary" do
       i.bi.bi-plus-circle.me-1
       | 新規登録
@@ -14,33 +16,55 @@
               i.bi.bi-search
             input.form-control.js-food-ingredient-search type="text" placeholder="食品成分名で検索..."
 
-  .table-responsive
-    table.table.table-hover.table-bordered.mb-0
-      thead.table-light
-        tr
-          th.text-center
-          th 名称
-          th.text-end カロリー
-          th.text-end タンパク質
-          th.text-end 脂質
-          th.text-end 炭水化物
-          th.text-end 塩分
-          th.text-center 使用材料数
-      tbody
-        - @food_ingredients.each do |food_ingredient|
-          tr.js-food-ingredient-item
-            td.text-center
-              = link_to edit_food_ingredient_path(food_ingredient), class: "btn btn-sm btn-outline-primary" do
-                i.bi.bi-pencil-square
-            td = food_ingredient.name
-            td.text-end = "#{food_ingredient.calorie} kcal"
-            td.text-end = "#{food_ingredient.protein} g"
-            td.text-end = "#{food_ingredient.lipid} g"
-            td.text-end = "#{food_ingredient.carbohydrate} g"
-            td.text-end = "#{food_ingredient.salt} g"
-            td.text-center
-              span.badge.bg-secondary = food_ingredient.materials.count
+  .card.shadow-sm.mb-4
+    .card-body.p-0
+      .table-responsive
+        table.table.table-hover.table-bordered.mb-0
+          thead.table-light
+            tr
+              th.text-center style="width: 5%"
+              th style="width: 20%" 名称
+              th.text-center style="width: 15%" カロリー
+              th.text-center style="width: 15%" タンパク質
+              th.text-center style="width: 15%" 脂質
+              th.text-center style="width: 15%" 炭水化物
+              th.text-center style="width: 15%" 塩分
+          tbody
+            - @food_ingredients.each do |food_ingredient|
+              tr.js-food-ingredient-item
+                td.text-center
+                  = link_to edit_food_ingredient_path(food_ingredient), class: "btn btn-sm btn-outline-primary" do
+                    i.bi.bi-pencil-square
+                td = food_ingredient.name
+                td.text-end = "#{format_number(food_ingredient.calorie)} kcal"
+                td.text-end = "#{format_number(food_ingredient.protein)} g"
+                td.text-end = "#{format_number(food_ingredient.lipid)} g"
+                td.text-end = "#{format_number(food_ingredient.carbohydrate)} g"
+                td.text-end = "#{format_number(food_ingredient.salt)} g"
 
-  .d-flex.justify-content-between.align-items-center.mt-2
+  .d-flex.justify-content-between.align-items-center.mt-3
     small.text-muted 全 #{@food_ingredients.count} 件
     = will_paginate @food_ingredients, renderer: WillPaginate::ActionView::BootstrapLinkRenderer if @food_ingredients.respond_to?(:total_pages)
+  
+  javascript:
+    // 検索機能
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.querySelector('.js-food-ingredient-search');
+      
+      if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+          const searchText = this.value.toLowerCase();
+          const items = document.querySelectorAll('.js-food-ingredient-item');
+          
+          items.forEach(function(item) {
+            const name = item.querySelector('td:nth-child(2)').textContent.toLowerCase();
+            
+            if (name.includes(searchText)) {
+              item.style.display = '';
+            } else {
+              item.style.display = 'none';
+            }
+          });
+        });
+      }
+    });

@@ -1,0 +1,27 @@
+#newRawMaterialModal.modal.fade tabindex="-1" aria-labelledby="newRawMaterialModalLabel" aria-hidden="true"
+  .modal-dialog
+    .modal-content
+      .modal-header
+        h5#newRawMaterialModalLabel.modal-title 新規原材料登録
+        button.btn-close type="button" data-bs-dismiss="modal" aria-label="閉じる"
+      .modal-body
+        .mb-3
+          label.form-label.required for="new_raw_material_name" 原材料名
+          input#new_raw_material_name.form-control type="text" required="required"
+        
+        .mb-3
+          label.form-label for="new_raw_material_category" カテゴリー
+          select#new_raw_material_category.form-select
+            option value="" 選択してください
+            - RawMaterial.categories.keys.each do |category|
+              option value=category = t("enums.raw_material.category.#{category}")
+        
+        .mb-3
+          label.form-label for="new_raw_material_description" 説明
+          textarea#new_raw_material_description.form-control rows="3"
+        
+        #rawMaterialFormError.alert.alert-danger.d-none role="alert"
+      
+      .modal-footer
+        button.btn.btn-secondary type="button" data-bs-dismiss="modal" キャンセル
+        button#saveRawMaterial.btn.btn-success type="button" 保存する

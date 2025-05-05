@@ -4,7 +4,7 @@ class RawMaterial < ApplicationRecord
 
   validates :name, presence: true, uniqueness: true
   
-  enum category: { food: 1, additive: 2, allergen: 3, other: 4 }
+  enum category: { food: 1, additive: 2, other: 3 }
   
   def display_name
     name

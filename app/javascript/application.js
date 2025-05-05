@@ -14,7 +14,6 @@ window.bootstrap = bootstrap;
 document.addEventListener('DOMContentLoaded', function() {
   // jQuery UIが読み込まれているか確認
   if (typeof $.fn.sortable === 'undefined') {
-    console.log("jQuery UI not loaded, trying to load from CDN");
     
     // jQuery UIのCSSを追加
     const cssLink = document.createElement('link');
@@ -26,11 +25,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/npm/jquery-ui@1.13.2/dist/jquery-ui.min.js';
     script.onload = function() {
-      console.log("jQuery UI loaded from CDN");
       
       // jQuery UIが読み込まれた後、sortableを初期化
       if ($.fn.sortable && $('#material-raw-materials').length > 0) {
-        console.log("Initializing sortable from application.js");
         $("#material-raw-materials").sortable({
           items: "tr.nested-fields",
           handle: ".handle",
@@ -45,6 +42,5 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     document.head.appendChild(script);
   } else {
-    console.log("jQuery UI already loaded");
   }
 });

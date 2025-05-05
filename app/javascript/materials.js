@@ -1,12 +1,4 @@
 function onLoad() {
-  console.log("Materials.js onLoad called");
-  
-  // jQuery UIが読み込まれているか確認
-  if (typeof $.fn.sortable === 'undefined') {
-    console.error("jQuery UI Sortable is not loaded!");
-  } else {
-    console.log("jQuery UI Sortable is available");
-  }
   
   // 材料選択用のselect2を初期化
   material_select2();
@@ -28,27 +20,56 @@ function onLoad() {
 
   // Raw Material追加時のイベント
   $('#material-raw-materials').on('cocoon:after-insert', function(e, insertedItem) {
-    console.log("Raw material added");
-    // 新しく追加された行のみにselect2を適用
+    // 新しく追加された行のselect2を初期化
     $(insertedItem).find('.raw-material-select2').select2({
       width: "100%",
       placeholder: "原材料を検索",
       allowClear: true,
       language: "ja"
+    }).on('select2:select', function(e) {
+      // 原材料が選択されたときのイベント処理
+      const rawMaterialId = e.params.data.id;
+      if (!rawMaterialId) return;
+      
+      const $row = $(this).closest('tr.nested-fields');
+      const $badge = $row.find('td:nth-child(2) .category-badge');
+      
+      // カテゴリ情報を取得
+      $.ajax({
+        url: `/raw_materials/${rawMaterialId}.json`,
+        type: 'GET',
+        headers: {
+          'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(data) {
+          if (!data) return;
+          
+          if (data.category) {
+            $badge.text(data.category_name).removeClass('d-none');
+            $badge.attr('data-raw-material-id', rawMaterialId);
+          } else {
+            $badge.addClass('d-none');
+          }
+        },
+        error: function() {
+          $badge.addClass('d-none');
+        }
+      });
+    }).on('select2:clear', function() {
+      // 選択解除されたとき
+      const $row = $(this).closest('tr.nested-fields');
+      const $badge = $row.find('td:nth-child(2) .category-badge');
+      
+      // バッジを非表示
+      $badge.addClass('d-none').attr('data-raw-material-id', '');
     });
     
-    // sortableを再初期化
-    setTimeout(function() {
-      refreshSortable();
-    }, 100);
-    
-    // 行の位置を更新
+    // 位置番号を更新
     updateRowPositions();
   });
 
   // 材料削除後のイベント
   $(document).on('cocoon:after-remove', function(e, removed_item) {
-    console.log("Raw material removed");
     cal_cost_price();
     cal_food_ingredient();
     updateRowPositions();
@@ -92,7 +113,6 @@ function onLoad() {
 
   // Sortable初期化関数
   function initSortable() {
-    console.log("Initializing sortable on", $('#material-raw-materials').length, "elements");
     
     if ($.fn.sortable && $('#material-raw-materials').length > 0) {
       try {
@@ -105,12 +125,10 @@ function onLoad() {
           placeholder: "ui-state-highlight",
           forcePlaceholderSize: true,
           start: function(e, ui) {
-            console.log("Sort started");
             // select2が開いていたら閉じる
             $('.select2-container--open').select2('close');
           },
           helper: function(e, tr) {
-            console.log("Sort helper created");
             var $originals = tr.children();
             var $helper = tr.clone();
             $helper.children().each(function(index) {
@@ -120,11 +138,9 @@ function onLoad() {
             return $helper;
           },
           update: function(e, ui) {
-            console.log("Sort updated");
             updateRowPositions();
           }
         });
-        console.log("Sortable initialized successfully");
       } catch (e) {
         console.error("Error initializing sortable:", e);
       }
@@ -135,48 +151,22 @@ function onLoad() {
 
   // Sortable再初期化関数
   function refreshSortable() {
-    console.log("Refreshing sortable");
     if ($("#material-raw-materials").data('ui-sortable')) {
       $("#material-raw-materials").sortable('refresh');
-      console.log("Sortable refreshed");
     } else {
-      console.log("Sortable not initialized yet, initializing now");
       initSortable();
     }
   }
 
   // 行の位置を更新する関数
   function updateRowPositions() {
-    console.log("Updating row positions");
     $('#material-raw-materials tr.nested-fields').each(function(index) {
       $(this).find('input[name*="position"]').val(index + 1);
-      console.log(`Row ${index + 1} position updated`);
-    });
-  }
-
-  // Raw Materialのselect2初期化関数
-  function initRawMaterialSelect2() {
-    console.log("Initializing raw material select2");
-    // 初期化されているselect2をチェックして、初期化済みのものだけdestroyする
-    $('.raw-material-select2').each(function() {
-      // data属性やクラスでselect2が適用済みかチェック
-      if ($(this).hasClass('select2-hidden-accessible')) {
-        $(this).select2('destroy');
-      }
-    });
-    
-    // select2を適用
-    $('.raw-material-select2').select2({
-      width: "100%",
-      placeholder: "原材料を検索",
-      allowClear: true,
-      language: "ja"
     });
   }
 
   // 材料選択用のselect2初期化関数
   function material_select2(){
-    console.log("Initializing material select2");
     // 初期化されているselect2をチェック
     $(".material_select2").each(function() {
       if ($(this).hasClass('select2-hidden-accessible')) {
@@ -292,7 +282,6 @@ function onLoad() {
 
   function cal_food_ingredient($row){
     if ($row) {
-      console.log($row.find(".unit_calorie").val())
       var gram_quantity = parseFloat($row.find(".gram_quantity").val()) || 0;
       var unit_calorie = parseFloat($row.find('.unit_calorie').val()) || 0;
       var unit_protein = parseFloat($row.find('.unit_protein').val()) || 0;
@@ -336,26 +325,175 @@ function onLoad() {
   updateRowPositions();
 }
 
+// Raw Materialのselect2初期化関数 - 既存の初期化関数を更新
+function initRawMaterialSelect2() {
+  console.log("Initializing raw material select2");
+  
+  // CSRFトークン取得
+  const csrfToken = $('meta[name="csrf-token"]').attr('content');
+  
+  // 初期化されているselect2をチェックして、初期化済みのものだけdestroyする
+  $('.raw-material-select2').each(function() {
+    // data属性やクラスでselect2が適用済みかチェック
+    if ($(this).hasClass('select2-hidden-accessible')) {
+      $(this).select2('destroy');
+    }
+  });
+  
+  // select2を適用
+  $('.raw-material-select2').select2({
+    width: "100%",
+    placeholder: "原材料を検索",
+    allowClear: true,
+    language: "ja"
+  }).on('select2:select', function(e) {
+    // 原材料が選択されたとき
+    const rawMaterialId = e.params.data.id;
+    const $row = $(this).closest('tr.nested-fields');
+    const $badge = $row.find('td:nth-child(2) .category-badge');
+    
+    // カテゴリ情報を取得
+    $.ajax({
+      url: `/raw_materials/${rawMaterialId}.json`,
+      type: 'GET',
+      headers: {
+        'X-CSRF-Token': csrfToken
+      },
+      success: function(data) {
+        if (data.category) {
+          $badge.text(data.category_name).removeClass('d-none');
+          $badge.attr('data-raw-material-id', rawMaterialId);
+        } else {
+          $badge.addClass('d-none');
+        }
+      },
+      error: function() {
+        $badge.addClass('d-none');
+      }
+    });
+  }).on('select2:clear', function() {
+    // 選択解除されたとき
+    const $row = $(this).closest('tr.nested-fields');
+    const $badge = $row.find('td:nth-child(2) .category-badge');
+    
+    // バッジを非表示
+    $badge.addClass('d-none').attr('data-raw-material-id', '');
+  });
+}
+
+// 原材料作成のための関数
+function initRawMaterialCreation() {
+  // 保存ボタンのクリックイベント
+  $('#saveRawMaterial').on('click', function() {
+    const name = $('#new_raw_material_name').val();
+    const category = $('#new_raw_material_category').val();
+    const description = $('#new_raw_material_description').val();
+    
+    // 入力チェック
+    if (!name) {
+      $('#rawMaterialFormError').removeClass('d-none').text('原材料名は必須です');
+      return;
+    }
+    
+    // エラーメッセージをクリア
+    $('#rawMaterialFormError').addClass('d-none');
+    
+    // 保存中の表示
+    const originalBtnText = $(this).text();
+    $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 保存中...').prop('disabled', true);
+    
+    // CSRFトークン取得
+    const csrfToken = $('meta[name="csrf-token"]').attr('content');
+    
+    // 非同期で原材料を作成
+    $.ajax({
+      url: '/raw_materials',
+      type: 'POST',
+      headers: {
+        'X-CSRF-Token': csrfToken
+      },
+      data: {
+        raw_material: {
+          name: name,
+          category: category,
+          description: description
+        },
+        format: 'json'
+      },
+      success: function(data) {
+        // 全てのraw-material-select2を更新
+        $('.raw-material-select2').each(function() {
+          // 現在の値を保持
+          const currentValue = $(this).val();
+          
+          // 新しいオプションを追加
+          const newOption = new Option(data.name, data.id, false, false);
+          $(this).append(newOption);
+          
+          // モーダルを開いたセレクトボックスがあれば、そこに新しい値を設定
+          const $currentSelect = $('.currently-adding-raw-material');
+          if ($currentSelect.length) {
+            $currentSelect.val(data.id).trigger('change');
+            $currentSelect.removeClass('currently-adding-raw-material');
+          }
+        });
+        
+        // モーダルをリセットして閉じる
+        $('#new_raw_material_name').val('');
+        $('#new_raw_material_category').val('');
+        $('#new_raw_material_description').val('');
+        $('#newRawMaterialModal').modal('hide');
+        
+        // 保存ボタンを元に戻す
+        $('#saveRawMaterial').html(originalBtnText).prop('disabled', false);
+        
+        // 成功メッセージ
+        toastr.success('原材料を作成しました');
+      },
+      error: function(xhr) {
+        let errorMessage = '原材料の作成に失敗しました';
+        if (xhr.responseJSON && xhr.responseJSON.errors) {
+          errorMessage = xhr.responseJSON.errors.join('<br>');
+        }
+        $('#rawMaterialFormError').removeClass('d-none').html(errorMessage);
+        
+        // 保存ボタンを元に戻す
+        $('#saveRawMaterial').html(originalBtnText).prop('disabled', false);
+      }
+    });
+  });
+  
+  // 新規作成ボタンのクリックイベント
+  $(document).on('click', '.new-raw-material-btn', function() {
+    // クリックされたボタンに関連するセレクトボックスをマーク
+    $(this).closest('.d-flex').find('.raw-material-select2').addClass('currently-adding-raw-material');
+  });
+  
+  // モーダルが閉じられたとき
+  $('#newRawMaterialModal').on('hidden.bs.modal', function() {
+    // エラーメッセージをクリア
+    $('#rawMaterialFormError').addClass('d-none');
+    // 現在追加中のマークをクリア
+    $('.currently-adding-raw-material').removeClass('currently-adding-raw-material');
+  });
+}
+
 // Turboの前にselect2破棄
 $(document).on("turbo:before-cache", function() {
-  console.log("turbo:before-cache triggered");
   // Select2が初期化されているものだけdestroyする
   $('.material_select2.select2-hidden-accessible').select2('destroy');
   $('.raw-material-select2.select2-hidden-accessible').select2('destroy');
   
   // Sortableも破棄
   if ($("#material-raw-materials").data('ui-sortable')) {
-    console.log("Destroying sortable");
     $("#material-raw-materials").sortable('destroy');
   }
 });
 
 // 直接初期化を試みる - jQuery UI CDNの読み込み完了を待つため
 $(document).ready(function() {
-  console.log("Document ready");
   setTimeout(function() {
     if ($.fn.sortable && $('#material-raw-materials').length > 0) {
-      console.log("Direct sortable initialization on document ready");
       $("#material-raw-materials").sortable({
         items: "tr.nested-fields",
         handle: ".handle",
@@ -371,5 +509,11 @@ $(document).ready(function() {
 });
 
 // ページロード時の初期化
-document.addEventListener("DOMContentLoaded", onLoad);
-document.addEventListener("turbo:load", onLoad);
+document.addEventListener("DOMContentLoaded", function() {
+  onLoad();
+  initRawMaterialCreation();
+});
+document.addEventListener("turbo:load", function() {
+  onLoad();
+  initRawMaterialCreation();
+});

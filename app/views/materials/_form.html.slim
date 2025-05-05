@@ -69,18 +69,17 @@
   .card.mb-4
     .card-header.bg-light.d-flex.justify-content-between.align-items-center
       h5.mb-0 原材料構成
-      = link_to_add_association '原材料追加', f, :material_raw_materials, 
-        data: { association_insertion_node: '#material-raw-materials', association_insertion_method: 'append' },
-        class: 'btn btn-outline-primary btn-sm'
+      .d-flex
+        = link_to_add_association '原材料追加', f, :material_raw_materials, 
+          data: { association_insertion_node: '#material-raw-materials', association_insertion_method: 'append' },
+          class: 'btn btn-outline-primary btn-sm'
     
     .card-body
-      - if f.object.material_raw_materials.empty?
-        .alert.alert-light.text-center
-          | 原材料が登録されていません。「原材料追加」ボタンをクリックして追加してください。
       table.table.table-bordered.mb-0#raw-materials-table
         thead.table-light
           tr
-            th.col-9 原材料
+            th.col-6 原材料
+            th.col-3.text-center カテゴリ
             th.col-3.text-center 操作
         tbody#material-raw-materials
           = f.fields_for :material_raw_materials do |mrm|
@@ -96,3 +95,6 @@
 
   .mt-4.d-flex.justify-content-center
     = f.submit "保存する", class: "btn btn-success px-4 py-2"
+
+/ 原材料新規作成用モーダル
+= render 'raw_material_modal'
