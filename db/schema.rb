@@ -73,7 +73,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_05_045302) do
     t.bigint "vendor_id"
     t.bigint "food_ingredient_id"
     t.string "name", null: false
-    t.string "food_label_name"
     t.integer "category", null: false
     t.integer "recipe_unit", null: false
     t.float "recipe_unit_price", default: 0.0, null: false
@@ -221,6 +220,5 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_05_045302) do
     t.datetime "updated_at", null: false
   end
 
-  add_foreign_key "material_raw_materials", "materials"
   add_foreign_key "material_raw_materials", "raw_materials"
 end
