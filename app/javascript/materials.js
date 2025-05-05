@@ -1,4 +1,11 @@
 function onLoad() {
+
+  if (typeof $.fn.sortable !== 'undefined') {
+    initSortable();
+  } else {
+    // jQueryUIが読み込まれたらinitSortableを実行
+    document.addEventListener('jquery-ui-loaded', initSortable);
+  }
   
   // 材料選択用のselect2を初期化
   material_select2();
@@ -142,10 +149,8 @@ function onLoad() {
           }
         });
       } catch (e) {
-        console.error("Error initializing sortable:", e);
       }
     } else {
-      console.warn("Cannot initialize sortable - either jQuery UI is not loaded or target element not found");
     }
   }
 
@@ -327,7 +332,6 @@ function onLoad() {
 
 // Raw Materialのselect2初期化関数 - 既存の初期化関数を更新
 function initRawMaterialSelect2() {
-  console.log("Initializing raw material select2");
   
   // CSRFトークン取得
   const csrfToken = $('meta[name="csrf-token"]').attr('content');
@@ -490,23 +494,6 @@ $(document).on("turbo:before-cache", function() {
   }
 });
 
-// 直接初期化を試みる - jQuery UI CDNの読み込み完了を待つため
-$(document).ready(function() {
-  setTimeout(function() {
-    if ($.fn.sortable && $('#material-raw-materials').length > 0) {
-      $("#material-raw-materials").sortable({
-        items: "tr.nested-fields",
-        handle: ".handle",
-        axis: "y",
-        update: function() {
-          $('#material-raw-materials tr.nested-fields').each(function(index) {
-            $(this).find('input[name*="position"]').val(index + 1);
-          });
-        }
-      });
-    }
-  }, 1000);
-});
 
 // ページロード時の初期化
 document.addEventListener("DOMContentLoaded", function() {
