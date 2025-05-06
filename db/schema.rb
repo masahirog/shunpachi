@@ -144,7 +144,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_05_045302) do
     t.text "memo"
     t.string "image"
     t.text "serving_infomation"
-    t.text "food_label_contents"
+    t.text "raw_materials_food_contents"
+    t.text "raw_materials_additive_contents"
     t.float "calorie", default: 0.0, null: false
     t.float "protein", default: 0.0, null: false
     t.float "lipid", default: 0.0, null: false

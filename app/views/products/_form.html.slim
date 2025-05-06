@@ -54,8 +54,12 @@
             = f.label :sales_unit_amount,"内容量", class: "form-label"
             = f.text_field :sales_unit_amount, class: "form-control"
       .mb-3
-        = f.label :food_label_contents,"食品表示内容物", class: "form-label"
-        = f.text_area :food_label_contents, class: "form-control"
+        = f.label :raw_materials_food_contents,"原材料表示（食品）", class: "form-label"
+        = f.text_area :raw_materials_food_contents, class: "form-control"
+      .mb-3
+        = f.label :raw_materials_food_contents,"原材料表示（添加物）", class: "form-label"
+        = f.text_area :raw_materials_food_contents, class: "form-control"
+
       .mb-3
         = f.label :how_to_save,"保存方法", class: "form-label"
         = f.text_field :how_to_save, class: "form-control"

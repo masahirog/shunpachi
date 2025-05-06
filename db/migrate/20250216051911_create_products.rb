@@ -11,7 +11,8 @@ class CreateProducts < ActiveRecord::Migration[7.1]
       t.text :memo
       t.string :image
       t.text :serving_infomation
-      t.text :food_label_contents
+      t.text :raw_materials_food_contents
+      t.text :raw_materials_additive_contents
       t.float :calorie, null: false, default: 0
       t.float :protein, null: false, default: 0
       t.float :lipid, null: false, default: 0
