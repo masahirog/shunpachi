@@ -3,16 +3,32 @@
     .col-md-4.border-end
       .p-3
         = f.collection_select :menu_id, Menu.all, :id, :name, {include_blank: "メニューを選択"}, class: "form-control menu-select"
-        .d-flex.justify-content-end.mt-2
-          = link_to_remove_association '<i class="bi bi-trash"></i> 削除'.html_safe, f, class: "btn btn-outline-danger btn-sm", title: "削除"
-    .col-md-8
-      .menu-details.p-3
-        .menu-info.d-none
-          .d-flex.align-items-center.mb-3
+        
+        / アレルギー情報を左側に移動
+        .menu-info.d-none.mt-3
+          .d-flex.align-items-center.mb-2
             span.badge.bg-info.menu-category.me-2
             span.fw-bold 原価：
             span.menu-cost.ms-1.fw-bold --
           
+          / アレルギー情報
+          .mb-3
+            h6.small.text-muted.mb-1 アレルギー情報
+            .allergens-list
+              .text-center.small.text-muted アレルギー情報はありません
+          
+          / メニュー編集・削除ボタン - 古いボタンを削除
+          .d-flex.justify-content-between.mt-3.edit-buttons-container
+            - if f.object.menu_id.present?
+              = link_to edit_menu_path(f.object.menu_id), class: "btn btn-outline-info btn-sm edit-menu-link", title: "メニューを編集", target: "_blank" do
+                i.bi.bi-pencil-square
+                |  メニュー編集
+            = link_to_remove_association '<i class="bi bi-trash"></i> 削除'.html_safe, f, class: "btn btn-outline-danger btn-sm", title: "削除"
+    
+    .col-md-8
+      .menu-details.p-3
+        .menu-info.d-none
+          / 右側は材料情報のみ表示
           .materials-container
             h6.small.text-muted.mb-2 使用材料
             .materials-list.pb-1

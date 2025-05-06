@@ -1,11 +1,33 @@
 function onLoad() {
-
   // メニュー選択時のイベント処理
   $("#product_menus-container").on('change', '.menu-select', function() {
     var menuId = $(this).val();
     var card = $(this).closest('.product-menu-item');
     var menuInfo = card.find('.menu-info');
     var materialsList = card.find('.materials-list');
+    var allergensList = card.find('.allergens-list');
+    
+    // 編集リンクの更新 - 左側の編集ボタンコンテナを探す
+    var editButtonsContainer = card.find('.edit-buttons-container');
+    
+    if (menuId && menuId !== '') {
+      // メニュー編集リンクを更新または作成
+      var editLink = editButtonsContainer.find('.edit-menu-link');
+      
+      if (editLink.length > 0) {
+        // 既存のリンクを更新
+        editLink.attr('href', '/menus/' + menuId + '/edit');
+      } else {
+        // 削除ボタンの前にリンクを新規作成
+        editButtonsContainer.prepend(
+          '<a href="/menus/' + menuId + '/edit" class="btn btn-outline-info btn-sm edit-menu-link" title="メニューを編集" target="_blank">' +
+          '<i class="bi bi-pencil-square"></i> メニュー編集</a>'
+        );
+      }
+    } else {
+      // メニュー未選択の場合は編集リンクを削除
+      editButtonsContainer.find('.edit-menu-link').remove();
+    }
     
     // 未選択の場合は情報を非表示
     if (!menuId || menuId === '') {
@@ -14,6 +36,8 @@ function onLoad() {
     }
     menuInfo.removeClass('d-none');
     materialsList.html('<div class="text-center"><small>読み込み中...</small></div>');
+    allergensList.html('<div class="text-center"><small>読み込み中...</small></div>');
+    
     
     $.ajax({
       url: '/menus/' + menuId + '/details',
@@ -36,9 +60,10 @@ function onLoad() {
         if (data.menu_materials && data.menu_materials.length > 0) {
           var materialsHtml = '<div class="table-responsive"><table class="table table-sm table-hover mb-0">' +
                               '<thead class="table-light"><tr>' +
-                              '<th class="small" style="width: 40%;">材料名</th>' +
-                              '<th class="small" style="width: 25%;">数量</th>' +
+                              '<th class="small" style="width: 35%;">材料名</th>' +
+                              '<th class="small" style="width: 20%;">数量</th>' +
                               '<th class="small" style="width: 35%;">下処理</th>' +
+                              '<th class="small" style="width: 10%;">操作</th>' +
                               '</tr></thead><tbody>';
           
           data.menu_materials.forEach(function(material) {
@@ -46,7 +71,15 @@ function onLoad() {
                              '<td class="small">' + material.name + '</td>' +
                              '<td class="small">' + material.amount_used + ' ' + material.unit + '</td>' +
                              '<td class="small">' + (material.preparation || '—') + '</td>' +
-                             '</tr>';
+                             '<td class="small">';
+            
+            // 材料編集リンクを追加
+            if (material.material_id) {
+              materialsHtml += '<a href="/materials/' + material.material_id + '/edit" class="btn btn-outline-info btn-sm" title="材料を編集" target="_blank">' +
+                               '<i class="bi bi-pencil-square"></i></a>';
+            }
+            
+            materialsHtml += '</td></tr>';
           });
           
           materialsHtml += '</tbody></table></div>';
@@ -54,12 +87,27 @@ function onLoad() {
         } else {
           materialsList.html('<div class="text-center"><small class="text-muted">登録されている材料はありません</small></div>');
         }
+
+        // アレルギー情報を表示
+        if (data.allergens && data.allergens.length > 0) {
+          var allergensHtml = '<div class="mt-2">';
+          data.allergens.forEach(function(allergen) {
+            allergensHtml += '<span class="badge bg-warning text-dark me-1 mb-1">' + allergen[1] + '</span>';
+          });
+          allergensHtml += '</div>';
+          allergensList.html(allergensHtml);
+        } else {
+          allergensList.html('<div class="text-center"><small class="text-muted">アレルギー情報はありません</small></div>');
+        }
         
         // 商品の合計を更新
         updateProductTotals();
+        // 商品全体のアレルギー情報を更新
+        updateProductAllergens();
       },
       error: function(xhr, status, error) {
         menuInfo.addClass('d-none');
+        allergensList.empty();
         alert("メニュー情報の取得に失敗しました");
       }
     });
@@ -67,18 +115,15 @@ function onLoad() {
   
   // Cocoonのイベントハンドラ
   $("#product_menus-container").on('cocoon:after-insert', function(e, insertedItem) {
-    console.log("新しいメニュー項目が追加されました");
     // 追加された項目にフォーカス
     insertedItem.find('.menu-select').focus();
-  });
-  
-  $("#product_menus-container").on('cocoon:before-remove', function(e, item) {
-    // 削除前の処理（確認など必要であれば）
   });
   
   $("#product_menus-container").on('cocoon:after-remove', function() {
     // 項目が削除された後に合計を更新
     updateProductTotals();
+    // 商品全体のアレルギー情報を更新
+    updateProductAllergens();
   });
   
   // 既存のメニューを初期化
@@ -87,6 +132,33 @@ function onLoad() {
       $(this).trigger('change');
     }
   });
+
+  // 商品全体のアレルギー情報を更新
+  function updateProductAllergens() {
+    const $productAllergensList = $('#product-allergens-list');
+    $productAllergensList.empty();
+    
+    // メニューごとのアレルギー情報を収集
+    const allAllergens = new Set();
+    $('.allergens-list .badge').each(function() {
+      const allergenName = $(this).text();
+      if (allergenName && !allergenName.includes('アレルギー情報はありません')) {
+        allAllergens.add(allergenName);
+      }
+    });
+    
+    // アレルギー情報を表示
+    if (allAllergens.size > 0) {
+      Array.from(allAllergens).forEach(function(allergenName) {
+        $productAllergensList.append(
+          `<span class="badge bg-warning text-dark me-2 mb-2">${allergenName}</span>`
+        );
+      });
+      $('#allergens-container').removeClass('d-none');
+    } else {
+      $('#allergens-container').addClass('d-none');
+    }
+  }
 
   // 商品の合計原価と栄養価を計算
   function updateProductTotals() {
@@ -150,7 +222,6 @@ function onLoad() {
     
     // 原価率の更新
     updateCostRatio();
-
   }
 
   // 原価率の計算
@@ -176,12 +247,9 @@ function onLoad() {
   
   // 売価が変更されたときに原価率を更新
   $(".price").on('change keyup', '.product_sell_price', function() {
-    console.log('money')
     updateCostRatio();
   });
-
 }
-
 
 document.addEventListener("DOMContentLoaded", onLoad);
 document.addEventListener("turbo:load", onLoad);

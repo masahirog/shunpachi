@@ -1,7 +1,10 @@
-<!-- :container -->
-<!-- :image -->
-/ が実装出来ていない
-= form_with(model: product, local: true) do |f|
+= form_with(model: product, local: true, id: "product-form") do |f|
+  - if product.persisted?
+    = hidden_field_tag 'product-id', product.id
+  - else
+    = hidden_field_tag 'product-id', ''
+  #message-container
+
   .card.mb-4
     .card-header.bg-light
       h5.mb-0 基本情報
@@ -53,16 +56,46 @@
           .mb-3
             = f.label :sales_unit_amount,"内容量", class: "form-label"
             = f.text_field :sales_unit_amount, class: "form-control"
+
+      .d-flex.justify-content-end.mb-2
+        button#generate-raw-materials-btn.btn.btn-outline-primary type="button"
+          i.bi.bi-magic.me-1
+          | 原材料表示自動生成
+      
       .mb-3
         = f.label :raw_materials_food_contents,"原材料表示（食品）", class: "form-label"
-        = f.text_area :raw_materials_food_contents, class: "form-control"
+        = f.text_area :raw_materials_food_contents, class: "form-control", rows: 3
       .mb-3
-        = f.label :raw_materials_food_contents,"原材料表示（添加物）", class: "form-label"
-        = f.text_area :raw_materials_food_contents, class: "form-control"
+        = f.label :raw_materials_additive_contents,"原材料表示（添加物）", class: "form-label"
+        = f.text_area :raw_materials_additive_contents, class: "form-control", rows: 3
+      
+ 
+      .mb-3#allergens-container class="#{product.persisted? && product.product_menus.any? ? '' : 'd-none'}"
+        label.form-label アレルギー情報
+        #product-allergens-list.d-flex.flex-wrap
+          - if product.persisted? && product.product_menus.any?
+            - allergens = []
+            - product.product_menus.includes(menu: { menu_materials: { material: :material_allergies } }).each do |pm|
+              - next unless pm.menu
+              - pm.menu.menu_materials.each do |mm|
+                - next unless mm.material
+                - mm.material.material_allergies.each do |ma|
+                  - allergens << ma.allergen if ma.allergen.present?
+            - allergens.uniq.each do |allergen|
+              span.badge.bg-warning.text-dark.me-2.mb-2 = MaterialAllergy.allergens_i18n[allergen]
+
+
+
 
       .mb-3
-        = f.label :how_to_save,"保存方法", class: "form-label"
-        = f.text_field :how_to_save, class: "form-control"
+        = f.label :how_to_save, "保存方法", class: "form-label"
+        .input-group
+          .input-group-prepend
+            button.btn.btn-outline-secondary.dropdown-toggle type="button" data-bs-toggle="dropdown" aria-expanded="false" プリセット
+            .dropdown-menu
+              a.dropdown-item.preservation-preset href="#" data-value="10℃以下で保存" 10℃以下で保存
+              a.dropdown-item.preservation-preset href="#" data-value="直射日光及び高温多湿を避けてください" 直射日光及び高温多湿を避けてください
+          = f.text_field :how_to_save, class: "form-control", id: "how_to_save_field"
 
   .card.mb-4
     .card-header.bg-light
@@ -87,9 +120,10 @@
   .card.mb-4
     .card-header.bg-light.d-flex.justify-content-between.align-items-center.product_menus-add_button
       h5.mb-0 レシピ情報
-      = link_to_add_association "メニュー追加", f, :product_menus, 
-        data: {association_insertion_node: '#product_menus-container',association_insertion_method: 'append'},
-        class: 'btn btn-outline-primary btn-sm add_menu_fields'
+      .d-flex
+        = link_to_add_association "メニュー追加", f, :product_menus, 
+          data: {association_insertion_node: '#product_menus-container',association_insertion_method: 'append'},
+          class: 'btn btn-outline-primary btn-sm add_menu_fields'
     .card-body
       #product_menus-container
         = f.fields_for :product_menus do |product_menu_form|

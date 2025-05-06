@@ -6,6 +6,7 @@ import "select2"
 import "materials"
 import "menus"
 import "daily_menus"
+import "products"
 
 // グローバル変数の設定
 window.$ = window.jQuery = jQuery;
