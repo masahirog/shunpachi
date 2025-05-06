@@ -1,4 +1,5 @@
 function onLoad() {
+  initSelect2();
 
   if (typeof $.fn.sortable !== 'undefined') {
     initSortable();
@@ -329,6 +330,43 @@ function onLoad() {
   // 初期化時に行の位置を設定
   updateRowPositions();
 }
+
+
+// Select2を初期化する関数
+function initSelect2() {
+  // 基本的な初期化
+  $('.select2').select2({
+    placeholder: '選択してください',
+    allowClear: true,
+    width: '100%',
+    language: {
+      noResults: function() {
+        return "一致する食品成分がありません";
+      }
+    }
+  });
+
+  // FoodIngredient用の特別な設定
+  $('select[name="material[food_ingredient_id]"]').select2({
+    placeholder: '食品成分を検索...',
+    allowClear: true,
+    width: '100%',
+    minimumInputLength: 1,
+    language: {
+      inputTooShort: function() {
+        return "検索するには文字を入力してください";
+      },
+      noResults: function() {
+        return "一致する食品成分がありません";
+      },
+      searching: function() {
+        return "検索中...";
+      }
+    }
+  });
+}
+
+
 
 // Raw Materialのselect2初期化関数 - 既存の初期化関数を更新
 function initRawMaterialSelect2() {
