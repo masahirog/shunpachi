@@ -27,13 +27,13 @@
           .mb-3
             = f.label :calorie, "カロリー", class: "form-label"
             .input-group
-              = f.number_field :calorie, class: "form-control", step: "0.1", min: "0", placeholder: "0.0"
+              = f.number_field :calorie, class: "form-control", step: "0.001", min: "0", placeholder: "0.0"
               span.input-group-text kcal
         .col-md-6
           .mb-3
             = f.label :protein, "タンパク質", class: "form-label"
             .input-group
-              = f.number_field :protein, class: "form-control", step: "0.1", min: "0", placeholder: "0.0"
+              = f.number_field :protein, class: "form-control", step: "0.001", min: "0", placeholder: "0.0"
               span.input-group-text g
       
       .row
@@ -41,13 +41,13 @@
           .mb-3
             = f.label :lipid, "脂質", class: "form-label"
             .input-group
-              = f.number_field :lipid, class: "form-control", step: "0.1", min: "0", placeholder: "0.0"
+              = f.number_field :lipid, class: "form-control", step: "0.001", min: "0", placeholder: "0.0"
               span.input-group-text g
         .col-md-6
           .mb-3
             = f.label :carbohydrate, "炭水化物", class: "form-label"
             .input-group
-              = f.number_field :carbohydrate, class: "form-control", step: "0.1", min: "0", placeholder: "0.0"
+              = f.number_field :carbohydrate, class: "form-control", step: "0.001", min: "0", placeholder: "0.0"
               span.input-group-text g
       
       .row
@@ -55,7 +55,7 @@
           .mb-3
             = f.label :salt, "食塩相当量", class: "form-label"
             .input-group
-              = f.number_field :salt, class: "form-control", step: "0.1", min: "0", placeholder: "0.0"
+              = f.number_field :salt, class: "form-control", step: "0.001", min: "0", placeholder: "0.0"
               span.input-group-text g
         .col-md-6.d-flex.align-items-end.mb-3
           .alert.alert-info.mb-0.w-100

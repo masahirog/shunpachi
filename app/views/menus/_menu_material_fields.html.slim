@@ -22,11 +22,11 @@ tr.nested-fields
 
   td
     .clearfix
-      = f.number_field :amount_used, style:'float:left;width:100px;',class:'form-control amount_used', step: "0.1"
+      = f.number_field :amount_used, style:'float:left;width:100px;',class:'form-control amount_used', step: "0.01"
       span.float-start.material_unit.ms-2.mt-2 = f.object.material.recipe_unit_i18n if f.object.material_id.present?
 
     .clearfix.mt-1
-      = f.number_field :gram_quantity, style:'float:left;width:100px;border: 1px solid #ccc;border-radius: 3px;padding:0 10px;',class:'gram_quantity', step: "0.1"
+      = f.number_field :gram_quantity, style:'float:left;width:100px;border: 1px solid #ccc;border-radius: 3px;padding:0 10px;',class:'gram_quantity', step: "0.01"
       - if f.object.material_id.present?
         input.recipe_unit_gram_quantity.d-none value="#{f.object.material.recipe_unit_gram_quantity}"
       - else

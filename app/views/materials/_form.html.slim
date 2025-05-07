@@ -44,14 +44,14 @@
         .col-md-6
           .mb-3
             = f.label :recipe_unit_gram_quantity,'1単位あたりのグラム数', class: "form-label required"
-            = f.number_field :recipe_unit_gram_quantity, class: "form-control"
+            = f.number_field :recipe_unit_gram_quantity, class: "form-control", step: "0.01", min: "0"
         .col-md-6
           .mb-3
             - if f.object.recipe_unit.present?
               = f.label :recipe_unit_price,"1#{enum_l(f.object, :recipe_unit)}の税抜価格", class: "form-label label-recipe_unit_price required"
             - else
               = f.label :recipe_unit_price,"単位税抜単価", class: "form-label label-recipe_unit_price required"
-            = f.number_field :recipe_unit_price, class: "form-control", required: true
+            = f.number_field :recipe_unit_price, class: "form-control", required: true, step: "0.001", min: "0"
 
   .card.mb-4
     .card-header.bg-light
