@@ -9,46 +9,59 @@
 
   .card.shadow-sm.mb-3
     .card-body.py-2.px-3
-      .row.g-2
-        .col-md-12
-          .input-group
-            span.input-group-text.py-1
-              i.bi.bi-search
-            input.form-control.js-food-ingredient-search type="text" placeholder="食品成分名で検索..."
+      = form_with url: food_ingredients_path, method: :get, local: true, data: { turbo_frame: "food_ingredients_list" } do |f|
+        .row.g-2
+          .col-md-9
+            .input-group
+              span.input-group-text.py-1
+                i.bi.bi-search
+              = f.text_field :query, value: @query, class: "form-control", placeholder: "食品成分名で検索...", autocomplete: "off"
+          .col-md-3
+            .d-flex
+              = f.submit "検索", class: "btn btn-primary me-2"
+              - if @query.present?
+                = link_to "クリア", food_ingredients_path, class: "btn btn-outline-secondary"
 
-  .card.shadow-sm.mb-4
-    .card-body.p-0
-      .table-responsive
-        table.table.table-hover.table-bordered.mb-0
-          thead.table-light
-            tr
-              th.text-center style="width: 5%"
-              th style="width: 20%" 名称
-              th.text-center style="width: 15%" カロリー
-              th.text-center style="width: 15%" タンパク質
-              th.text-center style="width: 15%" 脂質
-              th.text-center style="width: 15%" 炭水化物
-              th.text-center style="width: 15%" 塩分
-          tbody
-            - @food_ingredients.each do |food_ingredient|
-              tr.js-food-ingredient-item
-                td.text-center
-                  = link_to edit_food_ingredient_path(food_ingredient), class: "btn btn-sm btn-outline-primary" do
-                    i.bi.bi-pencil-square
-                td = food_ingredient.name
-                td.text-end = "#{format_number(food_ingredient.calorie)} kcal"
-                td.text-end = "#{format_number(food_ingredient.protein)} g"
-                td.text-end = "#{format_number(food_ingredient.lipid)} g"
-                td.text-end = "#{format_number(food_ingredient.carbohydrate)} g"
-                td.text-end = "#{format_number(food_ingredient.salt)} g"
+  #food_ingredients_list
+    .card.shadow-sm.mb-4
+      .card-body.p-0
+        .table-responsive
+          table.table.table-hover.table-bordered.mb-0
+            thead.table-light
+              tr
+                th.text-center style="width: 5%"
+                th style="width: 20%" 名称
+                th.text-center style="width: 15%" カロリー
+                th.text-center style="width: 15%" タンパク質
+                th.text-center style="width: 15%" 脂質
+                th.text-center style="width: 15%" 炭水化物
+                th.text-center style="width: 15%" 塩分
+            tbody
+              - @food_ingredients.each do |food_ingredient|
+                tr
+                  td.text-center
+                    = link_to edit_food_ingredient_path(food_ingredient), class: "btn btn-sm btn-outline-primary" do
+                      i.bi.bi-pencil-square
+                  td = food_ingredient.name
+                  td.text-end = "#{format_number(food_ingredient.calorie)} kcal"
+                  td.text-end = "#{format_number(food_ingredient.protein)} g"
+                  td.text-end = "#{format_number(food_ingredient.lipid)} g"
+                  td.text-end = "#{format_number(food_ingredient.carbohydrate)} g"
+                  td.text-end = "#{format_number(food_ingredient.salt)} g"
 
-  .d-flex.justify-content-between.align-items-center.mt-3
-    small.text-muted 全 #{@food_ingredients.count} 件
-    = will_paginate @food_ingredients, renderer: WillPaginate::ActionView::BootstrapLinkRenderer if @food_ingredients.respond_to?(:total_pages)
+    .d-flex.justify-content-between.align-items-center.mt-3
+      - if @query.present?
+        small.text-muted 
+          | 「#{@query}」の検索結果: #{@food_ingredients.total_entries}件
+      - else
+        small.text-muted 全 #{@food_ingredients.total_entries} 件
+      
+      .pagination-container
+        = will_paginate @food_ingredients, renderer: WillPaginate::ActionView::BootstrapLinkRenderer, class: 'pagination'
   
   javascript:
-    // 検索機能
-    document.addEventListener('DOMContentLoaded', function() {
+    // 検索機能を初期化する関数
+    function initFoodIngredientSearch() {
       const searchInput = document.querySelector('.js-food-ingredient-search');
       
       if (searchInput) {
@@ -67,4 +80,13 @@
           });
         });
       }
-    });
+    }
+
+    // DOMContentLoadedイベントで初期化
+    document.addEventListener('DOMContentLoaded', initFoodIngredientSearch);
+    
+    // Turboドライブのロードイベントでも初期化
+    document.addEventListener('turbo:load', initFoodIngredientSearch);
+    
+    // ページが部分的に更新された場合にも対応
+    document.addEventListener('turbo:render', initFoodIngredientSearch);

@@ -13,7 +13,16 @@ class FoodIngredientsController < ApplicationController
   end
 
   def index
-    @food_ingredients = FoodIngredient.all.paginate(page: params[:page], per_page: 30)
+    # 検索クエリがある場合は検索結果を表示、なければ全件表示
+    @query = params[:query]
+    @food_ingredients = if @query.present?
+                        FoodIngredient.where("name LIKE ?", "%#{@query}%")
+                      else
+                        FoodIngredient.all
+                      end
+    
+    # ページネーション
+    @food_ingredients = @food_ingredients.paginate(page: params[:page], per_page: 30)
   end
 
   def new
