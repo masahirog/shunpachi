@@ -1,4 +1,7 @@
 function onLoad() {
+  // メニュー選択にselect2を適用
+  initProductMenuSelect2();
+
   // 保存方法プリセット選択の処理
   $(document).on('click', '.preservation-preset', function(e) {
     e.preventDefault();
@@ -8,35 +11,53 @@ function onLoad() {
 
   // 原材料表示自動生成ボタンのイベント処理
   $(document).on('click', '#generate-raw-materials-btn', function(e) {
-    e.preventDefault();
+    e.preventDefault(); // フォーム送信を防止
     
     // ボタンの状態を更新
     const $btn = $(this);
     const originalBtnText = $btn.html();
     $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 計算中...').prop('disabled', true);
     
-    // 商品IDを取得
+    // 商品IDを取得 (data-product-id属性から)
     const productId = $('#product-id').val();
-    let url = '/products/generate_raw_materials_display';
     
-    if (productId && productId.trim() !== '') {
-      // 既存の商品の場合
-      url = `/products/${productId}/generate_raw_materials_display`;
-    }
+    console.log('原材料表示自動生成 - 開始:', { productId: productId });
     
-    // フォームデータを取得
-    let formData = null;
-    try {
-      formData = new FormData($('#product-form')[0]);
-    } catch (error) {
-      // フォームデータが取得できない場合は空のオブジェクトを送信
-      formData = new FormData();
-    }
+    // 現在のフォームデータを取得
+    const formData = new FormData();
     
-    // CSRFトークンを取得
+    // 基本的な商品データをフォームから収集
+    formData.append('product[name]', $('#product_name').val());
+    formData.append('product[category]', $('#product_category').val());
+    
+    // プロダクトメニューデータを収集
+    $('.menu-select').each(function(index) {
+      const menuId = $(this).val();
+      if (menuId) {
+        formData.append(`product[product_menus_attributes][${index}][menu_id]`, menuId);
+        
+        // 既存のメニューIDがある場合は追加
+        const existingId = $(this).closest('.nested-fields').find('input[name*="[id]"]').val();
+        if (existingId) {
+          formData.append(`product[product_menus_attributes][${index}][id]`, existingId);
+        }
+        
+        formData.append(`product[product_menus_attributes][${index}][_destroy]`, 'false');
+      }
+    });
+    
+    // CSRF トークン
     const csrfToken = $('meta[name="csrf-token"]').attr('content');
     
-    // Ajaxリクエストを送信
+    // URLを決定（新規作成か編集かで分岐）
+    let url = '/products/generate_raw_materials';
+    if (productId && productId !== '') {
+      url = `/products/${productId}/generate_raw_materials`;
+    }
+    
+    console.log('原材料表示自動生成 - リクエスト送信:', { url: url, method: 'POST' });
+    
+    // Ajaxリクエスト
     $.ajax({
       url: url,
       type: 'POST',
@@ -47,29 +68,32 @@ function onLoad() {
         'X-CSRF-Token': csrfToken
       },
       success: function(response) {
+        console.log('原材料表示自動生成 - 成功:', response);
+        
         // 原材料表示を更新
-        $('#product_raw_materials_food_contents').val(response.food_contents);
-        $('#product_raw_materials_additive_contents').val(response.additive_contents);
+        $('#product_raw_materials_food_contents').val(response.food_contents || '');
+        $('#product_raw_materials_additive_contents').val(response.additive_contents || '');
         
         // アレルギー情報を更新
-        updateAllergensDisplay(response.allergens);
+        updateAllergensDisplay(response.allergens || []);
         
-        // メニューがない場合、または結果が空の場合のメッセージ
-        if (!response.food_contents && !response.additive_contents && (!response.allergens || response.allergens.length === 0)) {
-          showMessage('原材料表示を計算できませんでした。商品にメニューが関連付けられていない可能性があります。まずメニューを追加してください。', 'warning');
-        } else {
-          // 成功メッセージを表示
-          showMessage('原材料表示を計算しました。必要に応じて手動で調整してください。', 'success');
-        }
+        // 成功メッセージを表示
+        showMessage('原材料表示を計算しました', 'success');
         
-        // ボタンの状態を元に戻す
+        // ボタンを元に戻す
         $btn.html(originalBtnText).prop('disabled', false);
       },
       error: function(xhr, status, error) {
-        // エラーメッセージを表示
-        showMessage('原材料表示の計算中にエラーが発生しました。', 'danger');
+        console.error('原材料表示自動生成 - エラー:', {
+          status: status,
+          error: error,
+          response: xhr.responseText
+        });
         
-        // ボタンの状態を元に戻す
+        // エラーメッセージを表示
+        showMessage('エラーが発生しました: ' + error, 'danger');
+        
+        // ボタンを元に戻す
         $btn.html(originalBtnText).prop('disabled', false);
       }
     });
@@ -139,6 +163,77 @@ function onLoad() {
       alertDiv.alert('close');
     }, 5000);
   }
+  
+  // メニュー選択にselect2を適用する関数
+  function initProductMenuSelect2() {
+    // 既存のselect2を破棄（二重初期化防止）
+    $('.menu-select').each(function() {
+      if ($(this).hasClass('select2-hidden-accessible')) {
+        $(this).select2('destroy');
+      }
+    });
+
+    // select2を適用
+    $('.menu-select').select2({
+      placeholder: 'メニューを選択',
+      allowClear: true,
+      width: '100%'
+    });
+
+    // select2の選択イベントを設定
+    $('.menu-select').on('select2:select', function(e) {
+      // 既存のchangeイベントを手動でトリガー
+      $(this).trigger('change');
+    });
+  }
+
+  // 商品メニュー追加時のイベント
+  $("#product_menus-container").on('cocoon:after-insert', function(e, insertedItem) {
+    // 新しく追加されたメニュー選択に対してselect2を適用
+    const newSelect = insertedItem.find('.menu-select');
+    
+    if (newSelect.length) {
+      newSelect.select2({
+        placeholder: 'メニューを選択',
+        allowClear: true,
+        width: '100%'
+      });
+      
+      // フォーカスを設定
+      setTimeout(function() {
+        newSelect.select2('focus');
+      }, 100);
+    }
+  });
+
+  // フォーム送信時のバリデーション
+  $('#product-form').on('submit', function(e) {
+    // 必須項目のチェック
+    const requiredFields = $('.form-control.required');
+    let hasErrors = false;
+    
+    requiredFields.each(function() {
+      if (!$(this).val()) {
+        $(this).addClass('is-invalid');
+        hasErrors = true;
+      } else {
+        $(this).removeClass('is-invalid');
+      }
+    });
+    
+    if (hasErrors) {
+      e.preventDefault();
+      showMessage('必須項目が入力されていません。', 'danger');
+      
+      // 最初のエラーフィールドにフォーカス
+      $('.form-control.is-invalid').first().focus();
+    }
+  });
+  
+  // Turbo処理前のselect2のクリーンアップ
+  $(document).on('turbo:before-cache', function() {
+    $('.menu-select.select2-hidden-accessible').select2('destroy');
+  });
 }
 
 // ページ読み込み時に初期化

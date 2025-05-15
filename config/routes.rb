@@ -16,14 +16,13 @@ Rails.application.routes.draw do
       get :details
     end
   end
-
   resources :products do
     member do
-      post :generate_raw_materials_display
-      patch :generate_raw_materials_display  # PATCHメソッドも追加
+      post :generate_raw_materials # 既存の商品用
     end
+    
     collection do
-      post :generate_raw_materials_display
+      post :generate_raw_materials # 新規作成時用
     end
   end
   resources :raw_materials

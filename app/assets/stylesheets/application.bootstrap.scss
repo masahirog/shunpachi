@@ -174,3 +174,19 @@ a {
 .ui-sortable-helper {
   opacity: 0.8;
 }
+
+/* 必須項目のラベルに赤い「*」を表示 */
+.form-label.required:after {
+  content: " *";
+  color: #dc3545;
+  font-weight: bold;
+}
+
+/* バリデーションエラー時のスタイル */
+.field_with_errors .form-control {
+  border-color: #dc3545;
+}
+
+.field_with_errors .form-label {
+  color: #dc3545;
+}

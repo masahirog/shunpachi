@@ -2,8 +2,9 @@
   .row.g-0
     .col-md-4.border-end
       .p-3
-        = f.collection_select :menu_id, Menu.all, :id, :name, {include_blank: "メニューを選択"}, class: "form-control menu-select"
-        
+        = f.collection_select :menu_id, Menu.all, :id, :name, 
+            { include_blank: "メニューを選択" }, 
+            { class: "form-control menu-select" }
         / アレルギー情報を左側に移動
         .menu-info.d-none.mt-3
           .d-flex.align-items-center.mb-2
