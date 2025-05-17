@@ -234,6 +234,52 @@ function onLoad() {
   $(document).on('turbo:before-cache', function() {
     $('.menu-select.select2-hidden-accessible').select2('destroy');
   });
+
+  // 画像削除ボタンのイベント処理
+  $(document).on('click', '.image-delete-btn', function() {
+    if (confirm('画像を削除してもよろしいですか？')) {
+      // 画像削除用のhidden fieldを追加
+      $('#product-form').append('<input type="hidden" name="product[remove_image]" value="1">');
+      
+      // 画像プレビューを非表示
+      $(this).closest('.card-body').find('.img-thumbnail').parent().hide();
+      
+      // ファイル選択をクリア
+      $('#product_image').val('');
+      
+      // ボタンを無効化
+      $(this).prop('disabled', true);
+    }
+  });
+
+  // 画像プレビュー機能
+  $('#product_image').on('change', function() {
+    const file = this.files[0];
+    if (file) {
+      const reader = new FileReader();
+      const imgPreviewContainer = $(this).closest('.card-body').find('.img-preview');
+      
+      reader.onload = function(e) {
+        // 既存のプレビューがなければ作成
+        if (imgPreviewContainer.length === 0) {
+          $(this).closest('.card-body').append(
+            '<div class="mt-3 text-center img-preview">' +
+            '<img src="' + e.target.result + '" class="img-thumbnail" style="max-height: 300px;">' +
+            '</div>'
+          );
+        } else {
+          // 既存のプレビューを更新
+          imgPreviewContainer.find('img').attr('src', e.target.result);
+          imgPreviewContainer.show();
+        }
+        
+        // 削除ボタンを有効化
+        $('.image-delete-btn').prop('disabled', false);
+      }.bind(this);
+      
+      reader.readAsDataURL(file);
+    }
+  });
 }
 
 // ページ読み込み時に初期化

@@ -40,6 +40,21 @@
       .mb-3
         = f.label :introduction, "商品紹介", class: "form-label"
         = f.text_area :introduction, class: "form-control"
+  .card.mb-4
+    .card-header.bg-light
+      h5.mb-0 商品画像
+    .card-body
+      .mb-3
+        = f.label :image, "商品画像", class: "form-label"
+        .input-group
+          = f.file_field :image, class: "form-control", accept: "image/jpeg,image/png,image/gif"
+          - if f.object.image.attached?
+            button.btn.btn-outline-secondary.image-delete-btn type="button" 画像を削除
+        small.form-text.text-muted JPG、PNG、GIF形式（5MB以下）でアップロードしてください
+      
+      - if f.object.image.attached?
+        .mt-3.text-center
+          = image_tag f.object.image.variant(resize_to_limit: [300, 300]), class: "img-thumbnail"
 
   .card.mb-4
     .card-header.bg-light

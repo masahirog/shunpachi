@@ -9,7 +9,6 @@ class CreateProducts < ActiveRecord::Migration[7.1]
       t.integer :category, null: false
       t.text :introduction
       t.text :memo
-      t.string :image
       t.text :serving_infomation
       t.text :raw_materials_food_contents
       t.text :raw_materials_additive_contents

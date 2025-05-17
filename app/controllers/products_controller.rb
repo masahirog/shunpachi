@@ -25,13 +25,17 @@ class ProductsController < ApplicationController
   end
 
   def update
+    # 画像削除パラメータの処理
+    if params[:product][:remove_image] == '1' && @product.image.attached?
+      @product.image.purge
+    end
+    
     if @product.update(product_params)
       redirect_to products_path, notice: '商品を更新しました。'
     else
       render :edit
     end
   end
-
   def destroy
     @product.destroy
     redirect_to products_path, notice: '商品を削除しました。'
@@ -113,9 +117,11 @@ class ProductsController < ApplicationController
   end
 
   def product_params
-    params.require(:product).permit(:name, :food_label_name, :sell_price, :cost_price, :category, :introduction, :memo, :image,
-     :serving_infomation, :raw_materials_food_contents, :raw_materials_additive_contents, :calorie, :protein, :lipid, :carbohydrate, :salt, :how_to_save, :sales_unit_amount, :unused_flag,
-     product_menus_attributes: [:id, :menu_id, :product_id, :row_order, :_destroy])
+    params.require(:product).permit(:name, :food_label_name, :sell_price, :cost_price, :category, 
+    :introduction, :memo, :image, :serving_infomation, :raw_materials_food_contents, 
+    :raw_materials_additive_contents, :calorie, :protein, :lipid, :carbohydrate, :salt, 
+    :how_to_save, :sales_unit_amount, :unused_flag,
+    product_menus_attributes: [:id, :menu_id, :product_id, :row_order, :_destroy])
   end
   
   # calculate_allergens メソッドを修正して、未保存のメニューも処理できるようにする
