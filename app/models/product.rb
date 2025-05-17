@@ -3,6 +3,8 @@ class Product < ApplicationRecord
   accepts_nested_attributes_for :product_menus, allow_destroy: true
   has_many :daily_menu_products
   has_one_attached :image  # Active Storageの設定
+  belongs_to :container, optional: true, counter_cache: true
+
 
   enum category: { souzai: 0, bento: 1, hankanhin: 2 }
   

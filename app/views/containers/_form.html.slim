@@ -1,0 +1,7 @@
+= form_with(model: container, local: true) do |f|
+  .mb-3
+    = f.label :name, "容器名", class: "form-label required"
+    = f.text_field :name, class: "form-control", required: true
+
+  .mt-3
+    = f.submit "保存する", class: "btn btn-success"
