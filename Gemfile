@@ -29,7 +29,8 @@ gem 'jquery-rails'
 gem 'enum_help'
 gem 'acts_as_list'
 gem 'aws-sdk-s3', require: false
-
+gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ]

@@ -1,10 +1,4 @@
 Rails.application.routes.draw do
-  get 'containers/index'
-  get 'containers/new'
-  get 'containers/create'
-  get 'containers/edit'
-  get 'containers/update'
-  get 'containers/destroy'
   root "daily_menus#index" # トップページを日別メニュー一覧に設定
   devise_for :users
 
@@ -45,4 +39,11 @@ Rails.application.routes.draw do
     end
   end
   get 'calendar', to: 'daily_menus#index', as: :calendar
+
+  resources :pdfs do
+    collection do
+      get :manufacturing_instruction
+      get :distribution_instruction
+    end
+  end
 end

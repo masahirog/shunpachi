@@ -27,3 +27,12 @@ module ApplicationHelper
     I18n.t("enums.#{model.class.name.underscore}.#{attribute}.#{model.send(attribute)}")
   end
 end
+
+def format_number(number)
+  # 四捨五入して整数なら整数表示、小数点以下があれば小数点以下1桁まで表示
+  if number.round == number.to_i
+    number.to_i.to_s
+  else
+    number.round(1).to_s
+  end
+end

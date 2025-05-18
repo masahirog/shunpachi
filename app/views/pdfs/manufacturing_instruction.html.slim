@@ -1,0 +1,87 @@
+- @daily_menu.daily_menu_products.each_with_index do |daily_menu_product, index|
+  - if index > 0
+    .page-break
+  
+  .header-container
+    .header
+      span.title 製造指示書 #{l @daily_menu.date, format: :long}
+      span.print-time 印刷: #{Time.now.strftime('%Y/%m/%d %H:%M')}
+  
+  .product-header
+    h2.product-name = daily_menu_product.product.name
+    .product-info
+      span.info-item
+        span.info-label カテゴリ:
+        span.info-value = daily_menu_product.product.category_i18n
+      span.info-item
+        span.info-label 容器:
+        span.info-value = daily_menu_product.product&.container&.name || "—"
+      span.info-item
+        span.info-label 製造数:
+        span.info-value = "#{daily_menu_product.manufacturing_number}個"
+      span.info-item
+        span.info-label 売価:
+        span.info-value = "#{daily_menu_product.sell_price}円"
+      span.info-item
+        span.info-label 原価:
+        span.info-value = "#{daily_menu_product.product.cost_price}円"
+      span.info-item
+        span.info-label 原価率:
+        span.info-value = "#{((daily_menu_product.product.cost_price/daily_menu_product.sell_price)*100).round(1)}%"
+  
+  hr.section-divider
+  
+  - product_menus = daily_menu_product.product.product_menus.includes(menu: { menu_materials: :material })
+  - if product_menus.any?
+    - product_menus.each do |product_menu|
+      - menu = product_menu.menu
+      - if menu.category != '容器' # カテゴリが「容器」でない場合のみ表示
+        .menu-section
+          h3.menu-title = menu.name
+          
+          - if menu.menu_materials.any?
+            table.materials-table
+              colgroup
+                col style="width: 29%"
+                col style="width: 5%"
+                col style="width: 11%"
+                col style="width: 7%"
+                col style="width: 40%"
+                col style="width: 8%"
+              thead
+                tr
+                  th.text-center 材料名
+                  th.text-center ✔
+                  th.text-center 総量
+                  th.text-center 調味料G
+                  th.text-center 調理区分
+                  th.text-center 1人分
+              tbody
+                - menu.menu_materials.order(:row_order).each do |menu_material|
+                  - if menu_material.material.present?
+                    - per_person = menu_material.amount_used
+                    - total_amount = (per_person * daily_menu_product.manufacturing_number).round
+                    tr
+                      td = menu_material.material.name
+                      td.text-center.checkbox-cell □
+                      td.text-center 
+                        = "#{number_with_delimiter(format_number(total_amount))} #{menu_material.material.recipe_unit_i18n}"
+                      td.text-center = menu_material.source_group.present? ? menu_material.source_group : "—"
+                      td.text-center = menu_material.preparation.present? ? menu_material.preparation : "—"
+                      td.text-center
+                        = "#{format_number(per_person)} #{menu_material.material.recipe_unit_i18n}"
+        
+        - if menu.cook_before.present? || menu.cook_on_the_day.present?
+          table.process-table
+            tr
+              - if menu.cook_before.present?
+                td.process-cell
+                  .process-title 前日工程
+                  .process-content = simple_format(menu.cook_before)
+              - if menu.cook_on_the_day.present?
+                td.process-cell
+                  .process-title 当日工程
+                  .process-content = simple_format(menu.cook_on_the_day)
+  
+  - else
+    p.no-recipe.text-center ※このアイテムにはレシピ情報がありません

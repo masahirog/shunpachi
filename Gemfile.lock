@@ -214,6 +214,7 @@ GEM
     nokogiri (1.18.2-x86_64-linux-gnu)
       racc (~> 1.4)
     orm_adapter (0.5.0)
+    ostruct (0.6.1)
     pp (0.6.2)
       prettyprint
     prettyprint (0.2.0)
@@ -347,9 +348,13 @@ GEM
       base64
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
+    wicked_pdf (2.8.2)
+      activesupport
+      ostruct
     will_paginate (4.0.1)
     will_paginate-bootstrap-style (0.3.0)
       will_paginate (~> 4.0, >= 4.0.0)
+    wkhtmltopdf-binary (0.12.6.9)
     xpath (3.2.0)
       nokogiri (~> 1.8)
     zeitwerk (2.6.18)
@@ -393,8 +398,10 @@ DEPENDENCIES
   turbo-rails
   tzinfo-data
   web-console
+  wicked_pdf
   will_paginate
   will_paginate-bootstrap-style
+  wkhtmltopdf-binary
 
 RUBY VERSION
    ruby 3.1.4p223

@@ -5,11 +5,16 @@
         = l daily_menu.date, format: :long
         | の献立
       .d-flex
+        = link_to manufacturing_instruction_pdfs_path(daily_menu_id:@daily_menu.id,:format => :pdf), class: "btn btn-primary me-2", target: "_blank" do
+          i.bi.bi-file-earmark-pdf.me-1
+          | 製造指示書
+        = link_to distribution_instruction_pdfs_path(daily_menu_id:@daily_menu.id, format: :pdf), class: "btn btn-info me-2", target: "_blank" do
+          i.bi.bi-file-earmark-pdf.me-1
+          | 積載仕分け指示書
+
         = link_to daily_menus_path, class: "btn btn-outline-secondary me-2" do
           i.bi.bi-arrow-left.me-1
           | カレンダーに戻る
-        = f.submit "保存する", class: "btn btn-success"
-
     .row.mb-4
       .col-md-6
         .card.shadow-sm
@@ -110,6 +115,7 @@
                   td.text-center.js-store-total data-store-id=store.id 0
                 td.text-center.daily-menu-products-total-manufacturing-number
                 td
+    = f.submit "保存する", class: "btn btn-success"
 
   / 商品追加モーダル
   #addProductModal.modal.fade tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true"

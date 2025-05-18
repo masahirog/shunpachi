@@ -1,0 +1,70 @@
+- stores = Store.where(unused_flag: false)
+
+.header-container
+  .header
+    span.title 積載仕分け指示書 #{l @daily_menu.date, format: :long}
+  .header-info
+    span.print-time 印刷: #{Time.now.strftime('%Y/%m/%d %H:%M')}
+
+
+.distribution-table
+  h3.section-title 店舗別配分表
+  
+  - if stores.any? && @daily_menu.daily_menu_products.any?
+    table.allocation-table
+      thead
+        tr
+          th.text-center.product-col 商品名
+          th.text-center.category-col カテゴリ
+          - stores.each do |store|
+            th.text-center.store-col = store.name
+          th.text-center.total-col 合計
+      
+      tbody
+        - @daily_menu.daily_menu_products.order(:row_order).each do |daily_menu_product|
+          - product = daily_menu_product.product
+          tr
+            td = product.name
+            td.text-center = product.category_i18n
+            
+            - store_products_map = daily_menu_product.store_daily_menu_products.index_by(&:store_id)
+            - stores.each do |store|
+              - store_daily_menu_product = store_products_map[store.id]
+              - number = store_daily_menu_product ? store_daily_menu_product.number : 0
+              td.text-center.quantity-cell class="#{'has-quantity' if number > 0}" = number
+            
+            td.text-center.total-cell = daily_menu_product.manufacturing_number
+        
+        tr.summary-row
+          td.text-right colspan="2" 
+            strong 合計数量
+          - stores.each do |store|
+            - store_total = @daily_menu.store_daily_menu_products.select { |sdmp| sdmp.store_id == store.id }.sum(&:number)
+            td.text-center.store-total 
+              strong = store_total
+          td.text-center.grand-total
+            strong = @daily_menu.manufacturing_number
+
+  hr.section-divider
+
+  h3.section-title 店舗別合計金額
+  
+  - if stores.any?
+    table.store-summary-table
+      thead
+        tr
+          th.text-center 店舗
+          th.text-center 個数
+          th.text-center 金額
+          th.text-center 配送状況
+      
+      tbody
+        - stores.each do |store|
+          - store_count = @daily_menu.store_daily_menu_products.joins(:daily_menu_product).where(store_id: store.id).sum(:number)
+          - store_price = @daily_menu.store_daily_menu_products.joins(:daily_menu_product).where(store_id: store.id).sum(:total_price)
+          tr
+            td = store.name
+            td.text-center = store_count
+            td.text-right = number_to_currency(store_price, unit: '¥')
+            td.text-center
+              .status-box
