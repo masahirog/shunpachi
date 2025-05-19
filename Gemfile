@@ -29,7 +29,6 @@ gem 'enum_help'
 gem 'acts_as_list'
 gem 'aws-sdk-s3', require: false
 gem 'wicked_pdf'
-gem 'wkhtmltopdf-binary'
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
@@ -39,7 +38,7 @@ end
 group :development do
   gem "web-console"
   gem 'bullet'
-
+  gem 'wkhtmltopdf-binary'
   gem "error_highlight", ">= 0.4.0", platforms: [:ruby]
 end
 
