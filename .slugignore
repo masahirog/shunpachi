@@ -1,0 +1,26 @@
+# 一時ファイル
+tmp/
+tmp/cache/
+tmp/pids/
+tmp/sockets/
+
+# ログファイル
+log/
+*.log
+
+# 開発用ファイル 
+.git/
+.github/
+.vscode/
+.idea/
+
+# テストファイル
+test/
+spec/
+
+# その他不要なファイル
+node_modules/
+doc/
+*.pdf
+*.psd
+*.zip
