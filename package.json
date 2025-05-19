@@ -27,7 +27,7 @@
     "defaults"
   ],
    "engines": {
-    "node": "16.x",
+    "node": "22.x",
     "yarn": "1.22.x"
   }
 }
