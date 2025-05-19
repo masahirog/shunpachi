@@ -3,7 +3,8 @@
 # WickedPdf.config を WickedPdf.configure に変更する（非推奨警告を避けるため）
 if Rails.env.production?
   WickedPdf.configure do |config|
-    config.exe_path = '/usr/local/bin/wkhtmltopdf'
+    config.exe_path = '/app/bin/wkhtmltopdf'
+
     config.enable_local_file_access = true
   
     config.default_options = {
