@@ -4,10 +4,7 @@
 if Rails.env.production?
   WickedPdf.configure do |config|
     config.exe_path = '/app/bin/wkhtmltopdf'
-    config.default_font_family = "IPAexGothic"
-
     config.enable_local_file_access = true
-  
     config.default_options = {
       page_size: 'A4',
       encoding: 'UTF-8'
