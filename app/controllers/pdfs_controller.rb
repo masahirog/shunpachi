@@ -1,22 +1,4 @@
 class PdfsController < ApplicationController
-  # def manufacturing_instruction
-  #   @daily_menu = DailyMenu.includes(daily_menu_products: [{ product: { product_menus: { menu: { menu_materials: :material } } } }]).find(params[:daily_menu_id])
-  #   respond_to do |format|
-  #     format.html
-  #     format.pdf do
-  #       render pdf: "製造指示書_#{@daily_menu.date.strftime('%Y%m%d')}",
-  #              template: "pdfs/manufacturing_instruction",
-  #              layout: "layouts/pdf",
-  #              formats: [:html],
-  #              disposition: 'inline',
-  #              encoding: "UTF-8",
-  #              page_size: "A4",
-  #              margin: { top: 8, bottom: 8, left: 8, right: 8 },
-  #              dpi: 300,
-  #              orientation: "Landscape"
-  #     end
-  #   end
-  # end
   def manufacturing_instruction
     @daily_menu = DailyMenu.includes(
       daily_menu_products: [
@@ -46,6 +28,30 @@ class PdfsController < ApplicationController
     end
   end
 
+  def product_recipe
+    @product = Product.includes(
+      :container,
+      product_menus: { menu: { menu_materials: :material } }
+    ).find(params[:product_id])
+    
+    @serving_size = params[:serving_size].to_i
+    @serving_size = 1 if @serving_size <= 0
+    
+    respond_to do |format|
+      format.html
+      format.pdf do
+        render pdf: "レシピ_#{@product.name}_#{@serving_size}人前",
+               template: "pdfs/product_recipe",
+               layout: "layouts/pdf",
+               formats: [:html],
+               disposition: 'inline',
+               encoding: "UTF-8",
+               page_size: "A4",
+               orientation: "Portrait",
+               margin: { top: 5, bottom: 10, left: 5, right: 5 }
+      end
+    end
+  end
 
   def distribution_instruction
     @daily_menu = DailyMenu.includes(
@@ -75,5 +81,4 @@ class PdfsController < ApplicationController
       end
     end
   end
-
 end

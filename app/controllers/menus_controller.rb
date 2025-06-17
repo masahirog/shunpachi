@@ -49,9 +49,21 @@ class MenusController < ApplicationController
 
 
   def index
-    @menus = Menu.all.paginate(page: params[:page], per_page: 30)
+    @menus = Menu.all
+    
+    # 検索機能
+    if params[:query].present?
+      @menus = @menus.where("name LIKE ?", "%#{params[:query]}%")
+    end
+    
+    # カテゴリフィルター
+    if params[:category].present?
+      @menus = @menus.where(category: params[:category])
+    end
+    
+    # 新しいものを上に表示
+    @menus = @menus.order(id: :desc).paginate(page: params[:page], per_page: 30)
   end
-
   def new
     @materials = Material.first(10)
     @menu = Menu.new

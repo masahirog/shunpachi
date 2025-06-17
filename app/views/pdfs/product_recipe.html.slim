@@ -1,0 +1,105 @@
+.header-container
+  .header
+    span.title #{@product.name} レシピ（#{@serving_size}人前）
+    span.print-time 印刷: #{Time.now.strftime('%Y/%m/%d %H:%M')}
+
+.product-header
+  h2.product-name = @product.name
+  .product-info
+    span.info-item
+      span.info-label カテゴリ:
+      span.info-value = @product.category_i18n
+    span.info-item
+      span.info-label 容器:
+      span.info-value = @product.container&.name || "—"
+    span.info-item
+      span.info-label 1人前売価:
+      span.info-value = "#{@product.sell_price}円"
+    span.info-item
+      span.info-label 1人前原価:
+      span.info-value = "#{@product.cost_price}円"
+    span.info-item
+      span.info-label 原価率:
+      span.info-value = "#{(((@product.cost_price/@product.sell_price)*100).round(1) rescue 0)}%"
+
+hr.section-divider
+
+- product_menus = @product.product_menus.includes(menu: { menu_materials: :material })
+- if product_menus.any?
+  - product_menus.each do |product_menu|
+    - menu = product_menu.menu
+    - if menu.category != '容器'
+      .menu-section
+        h3.menu-title = menu.name
+        
+        - if menu.menu_materials.any?
+          table.materials-table
+            colgroup
+              col style="width: 30%"
+              col style="width: 5%"
+              col style="width: 12%;"
+              col style="width: 10%"
+              col style="width: 26%"
+              col style="width: 12%"
+            thead
+              tr
+                th.text-center 材料名
+                th.text-center ✔
+                th.text-center style="font-size: 1.2em;" #{@serving_size}人前
+                th.text-center 調味料G
+                th.text-center 調理区分
+                th.text-center 1人前
+            tbody
+              - menu.menu_materials.order(:row_order).each do |menu_material|
+                - if menu_material.material.present?
+                  - one_serving = menu_material.amount_used.round(1)
+                  - total_amount = (menu_material.amount_used * @serving_size).round(1)
+                  tr
+                    td = menu_material.material.name
+                    td.text-center.checkbox-cell □
+                    td.text-center style="font-size: 1.2em;"
+                      = "#{number_with_delimiter(format_number(total_amount))} #{menu_material.material.recipe_unit_i18n}"
+                    td.text-center = menu_material.source_group.present? ? menu_material.source_group : "—"
+                    td.text-center = menu_material.preparation.present? ? menu_material.preparation : "—"
+                    td.text-center
+                      = "#{number_with_delimiter(format_number(one_serving))} #{menu_material.material.recipe_unit_i18n}"
+      - if menu.cook_before.present? || menu.cook_on_the_day.present?
+        table.process-table
+          tr
+            - if menu.cook_before.present?
+              td.process-cell
+                .process-title 前日工程
+                .process-content = simple_format(menu.cook_before)
+            - if menu.cook_on_the_day.present?
+              td.process-cell
+                .process-title 当日工程
+                .process-content = simple_format(menu.cook_on_the_day)
+
+- else
+  p.no-recipe.text-center ※この商品にはレシピ情報がありません
+
+css:
+  .nutrition-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  .nutrition-table th,
+  .nutrition-table td {
+    padding: 5px 10px;
+    border: 1px solid #000;
+    font-size: 9pt;
+  }
+  
+  .nutrition-table th {
+    background-color: #e6e6e6;
+    text-align: left;
+    font-weight: bold;
+    width: 20%;
+  }
+  
+  .nutrition-table td {
+    text-align: left;
+    width: 30%;
+  }

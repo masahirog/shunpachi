@@ -7,17 +7,19 @@
 
   .card.shadow-sm.mb-3
     .card-body.py-2.px-3
-      .row.g-2
-        .col-md-8.col-lg-9
-          .input-group
-            span.input-group-text.py-1
-              i.bi.bi-search
-            input.form-control.js-menu-search type="text" placeholder="メニュー名で検索..."
-        .col-md-4.col-lg-3
-          select.form-select.js-category-filter
-            option value="" すべてのカテゴリ
-            - Menu.categories.keys.each do |category|
-              option value=category = category
+      = form_with url: menus_path, method: :get, local: true do |f|
+        .row.g-2
+          .col-md-8.col-lg-9
+            .input-group
+              span.input-group-text.py-1
+                i.bi.bi-search
+              = f.text_field :query, value: params[:query], class: "form-control", placeholder: "メニュー名で検索...", autocomplete: "off"
+          .col-md-4.col-lg-3
+            = f.select :category, options_for_select([["すべてのカテゴリ", ""]] + Menu.categories.keys.map { |c| [c, c] }, params[:category]), {}, class: "form-select"
+          .col-md-12.text-end.mt-2
+            = f.submit "検索", class: "btn btn-primary btn-sm me-2"
+            - if params[:query].present? || params[:category].present?
+              = link_to "クリア", menus_path, class: "btn btn-outline-secondary btn-sm"
 
   .table-responsive
     table.table.table-hover.table-bordered.mb-0

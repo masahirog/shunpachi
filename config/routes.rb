@@ -44,6 +44,7 @@ Rails.application.routes.draw do
     collection do
       get :manufacturing_instruction
       get :distribution_instruction
+      get :product_recipe
     end
   end
 end

@@ -2,7 +2,20 @@ class ProductsController < ApplicationController
   before_action :set_product, only: %i[edit update destroy]
 
   def index
-    @products = Product.all.paginate(page: params[:page], per_page: 30)
+    @products = Product.all
+    
+    # 検索機能
+    if params[:query].present?
+      @products = @products.where("name LIKE ? OR food_label_name LIKE ?", "%#{params[:query]}%", "%#{params[:query]}%")
+    end
+    
+    # カテゴリフィルター
+    if params[:category].present?
+      @products = @products.where(category: params[:category])
+    end
+    
+    # 新しいものを上に表示
+    @products = @products.order(id: :desc).paginate(page: params[:page], per_page: 30)
   end
 
   def new
