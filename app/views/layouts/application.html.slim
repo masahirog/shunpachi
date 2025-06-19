@@ -23,15 +23,12 @@ html
             ul.navbar-nav.me-auto
               li.nav-item
                 = link_to "献立情報", daily_menus_path, class: "nav-link"
-
               li.nav-item.dropdown
                 a.nav-link.dropdown-toggle href="#" id="menuMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false"
                   | レシピ管理
                 ul.dropdown-menu aria-labelledby="menuMenu"
                   li = link_to "メニュー", menus_path, class: "dropdown-item"
                   li = link_to "商品", products_path, class: "dropdown-item"
-
-
               li.nav-item.dropdown
                 a.nav-link.dropdown-toggle href="#" id="masterMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false"
                   | マスター管理
@@ -42,9 +39,6 @@ html
                   li = link_to " └ 食品成分", food_ingredients_path, class: "dropdown-item"
                   li = link_to " └ 原材料管理", raw_materials_path, class: "dropdown-item"
                   li = link_to "容器管理", containers_path, class: "dropdown-item"
-
-
-
             ul.navbar-nav.ms-auto
               - if user_signed_in?
                 li.nav-item
