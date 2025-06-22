@@ -3,10 +3,12 @@ tmp/
 tmp/cache/
 tmp/pids/
 tmp/sockets/
+storage/
 
 # ログファイル
 log/
 *.log
+yarn-error.log
 
 # 開発用ファイル 
 .git/
@@ -18,9 +20,31 @@ log/
 test/
 spec/
 
-# その他不要なファイル
-node_modules/
+# ドキュメント
 doc/
 *.pdf
 *.psd
 *.zip
+README.md
+
+# 開発環境用設定
+.env.local
+.env.development
+
+# Node.js関連（Rails アセットパイプラインに不要な場合）
+node_modules/
+yarn.lock
+package-lock.json
+
+# その他の開発用ファイル
+.rubocop.yml
+.eslintrc
+.prettierrc
+
+# macOS
+.DS_Store
+
+# エディタ関連
+*.swp
+*.swo
+*~
