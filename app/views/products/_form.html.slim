@@ -17,7 +17,6 @@
           .mb-3
             = f.label :name, "名称", class: "form-label required"
             = f.text_field :name, class: "form-control required"
-            small.form-text.text-muted 必須項目です
         .col-md-6
           .mb-3
             = f.label :container_id, "容器", class: "form-label"
@@ -26,6 +25,11 @@
           .mb-3
             = f.label :category, "カテゴリー", class: "form-label required"
             = f.select :category, options_for_select_from_enum(Product, :category), {}, { class: "form-control category required" }
+        .col-md-6
+          .mb-3
+            = f.label :jancode, "JANコード", class: "form-label"
+            = f.text_field :jancode, class: "form-control"
+
       .row.price
         .col-md-4
           .mb-3

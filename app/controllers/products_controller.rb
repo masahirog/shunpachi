@@ -133,7 +133,7 @@ class ProductsController < ApplicationController
     params.require(:product).permit(:name, :food_label_name, :sell_price, :cost_price, :category, :container_id, 
     :introduction, :memo, :image, :serving_infomation, :raw_materials_food_contents, 
     :raw_materials_additive_contents, :calorie, :protein, :lipid, :carbohydrate, :salt, 
-    :how_to_save, :sales_unit_amount, :unused_flag,
+    :how_to_save, :sales_unit_amount, :unused_flag,:jancode,
     product_menus_attributes: [:id, :menu_id, :product_id, :row_order, :_destroy])
   end
   

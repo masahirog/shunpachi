@@ -178,7 +178,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_17_011813) do
     t.integer "category", null: false
     t.text "introduction"
     t.text "memo"
-    t.string "image"
     t.text "serving_infomation"
     t.text "raw_materials_food_contents"
     t.text "raw_materials_additive_contents"
@@ -194,6 +193,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_17_011813) do
     t.datetime "updated_at", null: false
     t.integer "daily_menu_products_count", default: 0, null: false
     t.integer "product_menus_count", default: 0, null: false
+    t.string "jancode"
     t.index ["container_id"], name: "index_products_on_container_id"
     t.index ["name"], name: "index_products_on_name", unique: true
   end
