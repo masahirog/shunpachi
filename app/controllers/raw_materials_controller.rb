@@ -2,7 +2,20 @@ class RawMaterialsController < ApplicationController
   before_action :set_raw_material, only: %i[edit update destroy show]
 
   def index
-    @raw_materials = RawMaterial.all.paginate(page: params[:page], per_page: 30)
+    @raw_materials = RawMaterial.all
+    
+    # 検索機能
+    if params[:query].present?
+      @raw_materials = @raw_materials.where("name LIKE ?", "%#{params[:query]}%")
+    end
+    
+    # カテゴリーフィルター
+    if params[:category].present?
+      @raw_materials = @raw_materials.where(category: params[:category])
+    end
+    
+    # 新しいものを上に表示
+    @raw_materials = @raw_materials.order(id: :desc).paginate(page: params[:page], per_page: 30)
   end
 
   def new
@@ -25,6 +38,7 @@ class RawMaterialsController < ApplicationController
       }
     end
   end
+  
   def create
     @raw_material = RawMaterial.new(raw_material_params)
     

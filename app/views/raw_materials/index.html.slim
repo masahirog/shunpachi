@@ -8,17 +8,19 @@
 
   .card.shadow-sm.mb-3
     .card-body.py-2.px-3
-      .row.g-2
-        .col-md-8.col-lg-9
-          .input-group
-            span.input-group-text.py-1
-              i.bi.bi-search
-            input.form-control.js-raw-material-search type="text" placeholder="原材料名で検索..."
-        .col-md-4.col-lg-3
-          select.form-select.js-category-filter
-            option value="" すべてのカテゴリ
-            - RawMaterial.categories.keys.each do |category|
-              option value=category selected=("selected" if params[:category] == category) = t("enums.raw_material.category.#{category}")
+      = form_with url: raw_materials_path, method: :get, local: true do |f|
+        .row.g-2
+          .col-md-6
+            .input-group
+              span.input-group-text.py-1
+                i.bi.bi-search
+              = f.text_field :query, value: params[:query], class: "form-control", placeholder: "原材料名で検索...", autocomplete: "off"
+          .col-md-4
+            = f.select :category, options_for_select([["すべてのカテゴリ", ""]] + RawMaterial.categories.keys.map { |c| [t("enums.raw_material.category.#{c}"), c] }, params[:category]), {}, class: "form-select"
+          .col-md-2.text-end
+            = f.submit "検索", class: "btn btn-primary btn-sm me-2"
+            - if params[:query].present? || params[:category].present?
+              = link_to "クリア", raw_materials_path, class: "btn btn-outline-secondary btn-sm"
 
   .table-responsive
     table.table.table-hover.table-bordered.mb-0
@@ -46,5 +48,13 @@
               span.badge.bg-secondary = raw_material.materials.count
 
   .d-flex.justify-content-between.align-items-center.mt-2
-    small.text-muted 全 #{@raw_materials.count} 件
-    = will_paginate @raw_materials, renderer: WillPaginate::ActionView::BootstrapLinkRenderer if @raw_materials.respond_to?(:total_pages)
+    - if params[:query].present? || params[:category].present?
+      small.text-muted 
+        - if params[:query].present?
+          | 「#{params[:query]}」
+        - if params[:category].present?
+          | カテゴリ「#{t("enums.raw_material.category.#{params[:category]}")}」
+        | の検索結果: #{@raw_materials.total_entries}件
+    - else
+      small.text-muted 全 #{@raw_materials.total_entries} 件
+    = will_paginate @raw_materials, renderer: WillPaginate::ActionView::BootstrapLinkRenderer
