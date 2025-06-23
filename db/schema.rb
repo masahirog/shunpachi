@@ -194,6 +194,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_17_011813) do
     t.integer "daily_menu_products_count", default: 0, null: false
     t.integer "product_menus_count", default: 0, null: false
     t.string "jancode"
+    t.integer "label_call_number"
     t.index ["container_id"], name: "index_products_on_container_id"
     t.index ["name"], name: "index_products_on_name", unique: true
   end

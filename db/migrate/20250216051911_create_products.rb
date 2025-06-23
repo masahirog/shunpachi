@@ -25,6 +25,7 @@ class CreateProducts < ActiveRecord::Migration[7.1]
       t.integer :daily_menu_products_count, default: 0, null: false
       t.integer :product_menus_count, default: 0, null: false
       t.string :jancode
+      t.integer :label_call_number
     end
     add_index :products, :name, unique: true
   end
