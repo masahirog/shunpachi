@@ -1,20 +1,17 @@
 class ProductsController < ApplicationController
-  before_action :set_product, only: %i[edit update destroy]
+  before_action :set_product, only: %i[edit update destroy show]
 
   def index
     @products = Product.all
     
-    # 検索機能
     if params[:query].present?
       @products = @products.where("name LIKE ? OR food_label_name LIKE ?", "%#{params[:query]}%", "%#{params[:query]}%")
     end
     
-    # カテゴリフィルター
     if params[:category].present?
       @products = @products.where(category: params[:category])
     end
     
-    # 新しいものを上に表示
     @products = @products.order(id: :desc).paginate(page: params[:page], per_page: 30)
   end
 
@@ -38,7 +35,6 @@ class ProductsController < ApplicationController
   end
 
   def update
-    # 画像削除パラメータの処理
     if params[:product][:remove_image] == '1' && @product.image.attached?
       @product.image.purge
     end
@@ -60,23 +56,17 @@ class ProductsController < ApplicationController
       Rails.logger.debug("原材料表示生成 - パラメータ: #{params.inspect}")
       
       if params[:id].present?
-        # 既存の商品の場合
         @product = Product.find(params[:id])
-        # メニュー情報も更新
         if params[:product] && params[:product][:product_menus_attributes]
-          # 既存のメニューデータで一時的に更新
           @product.assign_attributes(product_params.slice(:product_menus_attributes))
         end
       else
-        # 新規作成の場合
         @product = Product.new(product_params)
       end
       
-      # 食品原材料と添加物原材料を計算
       food_contents = calculate_raw_materials_display(@product, 'food')
       additive_contents = calculate_raw_materials_display(@product, 'additive')
       
-      # アレルギー情報を計算
       allergens = calculate_allergens(@product)
       
       render json: {
@@ -96,18 +86,14 @@ class ProductsController < ApplicationController
   def generate_raw_materials_display
     begin
       if params[:id].present?
-        # 既存の商品の場合（memberアクション）
         @product = Product.find(params[:id])
       else
-        # 新規作成の場合
         @product = Product.new(product_params)
       end
       
-      # 食品原材料と添加物原材料を計算
       food_contents = calculate_raw_materials_display(@product, 'food')
       additive_contents = calculate_raw_materials_display(@product, 'additive')
       
-      # アレルギー情報を計算
       allergens = calculate_allergens(@product)
       
       render json: {
@@ -123,7 +109,97 @@ class ProductsController < ApplicationController
     end
   end
 
+  def show
+    @product = Product.includes(
+      :container,
+      product_menus: { menu: { menu_materials: :material } }
+    ).find(params[:id])
+    
+    respond_to do |format|
+      format.html
+      format.csv do
+        # ファイル名に日本語を使わない（文字化け防止）
+        filename = "product_#{@product.id}_#{Date.today.strftime('%Y%m%d')}.csv"
+        
+        # BOM付きUTF-8で送信（最新のExcelは対応）
+        send_data product_to_csv(@product), 
+                  filename: filename,
+                  type: 'text/csv; charset=UTF-8'
+      end
+    end
+  end
+
   private
+
+  def product_to_csv(product)
+    require 'csv'
+    
+    # BOM（Byte Order Mark）を付与
+    bom = "\uFEFF"
+    
+    csv_string = CSV.generate(bom, encoding: 'UTF-8', row_sep: "\r\n", force_quotes: true) do |csv|
+      # ヘッダー行
+      csv << [
+        "呼出しNo.",
+        "呼出し名",
+        "検索用呼出し名",
+        "レイアウト指定",
+        "品名",
+        "日時1",
+        "消費期限時間",
+        "バーコード1",
+        "税抜価格",
+        "原材料",
+        "保存方法内容",
+        "内容量",
+        "原産地",
+        "製造所",
+        "製造所住所",
+        "熱量",
+        "たんぱく質",
+        "脂質",
+        "炭水化物",
+        "食塩相当量"
+      ]
+      
+      # データ行
+      raw_materials_parts = []
+      raw_materials_parts << product.raw_materials_food_contents if product.raw_materials_food_contents.present?
+      raw_materials_parts << product.raw_materials_additive_contents if product.raw_materials_additive_contents.present?
+      raw_materials_combined = raw_materials_parts.join("/")
+      
+      csv << [
+        product.label_call_number || "",
+        product.name || "",
+        "", # 検索用呼出し名
+        "", # レイアウト指定
+        product.food_label_name || "",
+        "1", # 日時1
+        "18時", # 消費期限時間
+        product.jancode || "",
+        product.sell_price || "",
+        raw_materials_combined,
+        product.how_to_save || "",
+        product.sales_unit_amount || "",
+        "", # 原産地
+        "", # 製造所
+        "", # 製造所住所
+        "#{product.calorie} kcal",
+        "#{product.protein} g",
+        "#{product.lipid} g",
+        "#{product.carbohydrate} g",
+        "#{product.salt} g"
+      ]
+    end
+    
+    csv_string
+  end
+
+  # 数値フォーマット用のヘルパーメソッド（既にApplicationHelperにある場合は不要）
+  def format_number(number)
+    return "" if number.nil?
+    number.to_f == number.to_i ? number.to_i.to_s : number.to_s
+  end
 
   def set_product
     @product = Product.find(params[:id])
@@ -137,11 +213,9 @@ class ProductsController < ApplicationController
     product_menus_attributes: [:id, :menu_id, :product_id, :row_order, :_destroy])
   end
   
-  # calculate_allergens メソッドを修正して、未保存のメニューも処理できるようにする
   def calculate_allergens(product)
     all_allergens = []
     
-    # 永続化されたメニュー
     if product.persisted?
       product.product_menus.includes(:menu).each do |product_menu|
         next unless product_menu.menu
@@ -149,7 +223,6 @@ class ProductsController < ApplicationController
       end
     end
     
-    # 新規追加されたメニュー（未保存）
     if params[:product] && params[:product][:product_menus_attributes]
       params[:product][:product_menus_attributes].each do |_key, menu_attrs|
         next if menu_attrs[:_destroy] == "1" || menu_attrs[:menu_id].blank?
@@ -161,13 +234,11 @@ class ProductsController < ApplicationController
       end
     end
     
-    # 重複を除去して、アレルギー情報をI18n化
     all_allergens.uniq.map do |allergen| 
       [allergen, MaterialAllergy.allergens_i18n[allergen]] 
     end
   end
 
-  # メニューからアレルギー情報を収集するヘルパーメソッド
   def collect_allergens_from_menu(menu, allergens_array)
     menu.menu_materials.includes(:material).each do |menu_material|
       material = menu_material.material
@@ -178,26 +249,19 @@ class ProductsController < ApplicationController
     end
   end
 
-  # calculate_raw_materials_display メソッドも同様に修正
   def calculate_raw_materials_display(product, category_type)
-    # カテゴリタイプに応じてraw_materialのカテゴリを設定
     category = case category_type
                 when 'food'
-                  RawMaterial.categories[:food] # カテゴリ1: 食品
                 when 'additive'
-                  RawMaterial.categories[:additive] # カテゴリ2: 添加物
                 else
-                  RawMaterial.categories[:other] # カテゴリ3: その他
                 end
     
     raw_materials_usage = {}
     
-    # 1. 永続化されたメニューを処理
     if product.persisted? && product.product_menus.any?
       collect_raw_materials(product.product_menus, raw_materials_usage, category_type)
     end
     
-    # 2. 新規追加されたメニュー（未保存）を処理
     if params[:product] && params[:product][:product_menus_attributes]
       temp_product_menus = []
       
@@ -213,14 +277,11 @@ class ProductsController < ApplicationController
       collect_raw_materials(temp_product_menus, raw_materials_usage, category_type)
     end
     
-    # 使用量の多い順にソート
     sorted_raw_materials = raw_materials_usage.values.sort_by { |rm| -rm[:usage] }
     
-    # 原材料名だけを取り出し、カンマで結合
     sorted_raw_materials.map { |rm| rm[:name] }.join('、')
   end
 
-  # 原材料の収集を行うヘルパーメソッド
   def collect_raw_materials(product_menus, raw_materials_usage, category_type)
     product_menus.each do |product_menu|
       menu = product_menu.is_a?(ProductMenu) ? product_menu.menu : product_menu.menu
@@ -234,7 +295,6 @@ class ProductsController < ApplicationController
           raw_material = mrm.raw_material
           next unless raw_material && raw_material.category.present?
           
-          # カテゴリの比較
           is_match = false
           if category_type == 'food' && raw_material.category.to_s == 'food'
             is_match = true
@@ -244,10 +304,8 @@ class ProductsController < ApplicationController
           
           next unless is_match
           
-          # 使用量を計算
           usage = menu_material.amount_used.to_f
           
-          # 既存の値に加算
           if raw_materials_usage[raw_material.id]
             raw_materials_usage[raw_material.id][:usage] += usage
           else

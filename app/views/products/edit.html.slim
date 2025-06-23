@@ -1,15 +1,4 @@
 h3 商品編集
-.d-flex.justify-content-between.mb-3
-  div
-  .d-flex.align-items-center
-    = form_with url: product_recipe_pdfs_path(format: :pdf), method: :get, local: true, html: { target: "_blank", class: "d-flex align-items-center" } do |f|
-
-      = f.hidden_field :product_id, value: @product.id
-      .input-group.me-2
-        = f.number_field :serving_size, class: "form-control", value: 1, min: 1, style: "width: 80px"
-        span.input-group-text 人前
-      = f.submit "レシピPDF出力", class: "btn btn-primary"
-      
 = render "form", product: @product
 .clearfix
-	= link_to "戻る", products_path, class: "btn btn-outline-secondary float-end"
+  = link_to "戻る", products_path, class: "btn btn-outline-secondary float-end"
