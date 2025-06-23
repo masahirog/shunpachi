@@ -1,0 +1,233 @@
+.container-fluid.py-2.px-3
+  .d-flex.justify-content-between.align-items-center.mb-4
+    h3.mb-0
+      i.bi.bi-box-seam.me-2
+      = @product.name
+      = link_to edit_product_path(@product), class: "btn btn-outline-primary ms-2" do
+        i.bi.bi-pencil-square.me-1
+        | 編集
+    .d-flex
+      = form_with url: product_recipe_pdfs_path(format: :pdf), method: :get, local: true, html: { target: "_blank", class: "d-flex align-items-center me-2" } do |f|
+        = f.hidden_field :product_id, value: @product.id
+        .input-group
+          = f.number_field :serving_size, class: "form-control", value: 1, min: 1, style: "width: 80px"
+          span.input-group-text 人前
+          = f.submit "レシピPDF", class: "btn btn-primary"
+      = link_to product_path(@product, format: :csv), class: "btn btn-success me-2" do
+        i.bi.bi-file-earmark-spreadsheet.me-1
+        | CSV出力
+      = link_to products_path, class: "btn btn-outline-secondary" do
+        i.bi.bi-arrow-left.me-1
+        | 一覧へ戻る
+
+  .row
+    .col-md-8
+      / 基本情報カード
+      .card.shadow-sm.mb-4
+        .card-header.bg-light
+          h5.mb-0
+            i.bi.bi-info-circle.me-2
+            | 基本情報
+        .card-body
+          .row
+            .col-md-6
+              table.table.table-borderless.mb-0
+                tbody
+                  tr
+                    th.text-muted style="width: 40%;" カテゴリ
+                    td
+                      span.badge.rounded-pill.bg-info.text-dark = @product.category_i18n
+                  tr
+                    th.text-muted 容器
+                    td = @product.container&.name || "—"
+                  tr
+                    th.text-muted JANコード
+                    td = @product.jancode || "—"
+                  tr
+                    th.text-muted ラベルNo.
+                    td = @product.label_call_number || "—"
+            .col-md-6
+              table.table.table-borderless.mb-0
+                tbody
+                  tr
+                    th.text-muted style="width: 40%;" 売価
+                    td.fw-bold = number_to_currency(@product.sell_price, unit: "¥")
+                  tr
+                    th.text-muted 原価
+                    td.fw-bold = number_to_currency(@product.cost_price, unit: "¥")
+                  tr
+                    th.text-muted 原価率
+                    - cost_ratio = @product.sell_price > 0 ? ((@product.cost_price / @product.sell_price) * 100).round(1) : 0
+                    td
+                      span.fw-bold class="#{cost_ratio <= 30 ? 'text-success' : cost_ratio <= 40 ? 'text-warning' : 'text-danger'}"
+                        = "#{cost_ratio}%"
+                  tr
+                    th.text-muted ステータス
+                    td
+                      - if @product.unused_flag?
+                        span.badge.bg-secondary 停止中
+                      - else
+                        span.badge.bg-success 使用中
+          
+          - if @product.introduction.present?
+            hr.my-3
+            h6.text-muted.mb-2 商品紹介
+            p.mb-0 = @product.introduction
+
+      / 食品表示情報カード
+      .card.shadow-sm.mb-4
+        .card-header.bg-light
+          h5.mb-0
+            i.bi.bi-card-text.me-2
+            | 食品表示情報
+        .card-body
+          .mb-3
+            h6.text-muted.mb-1 名称
+            p.mb-0 = @product.food_label_name
+          
+          - if @product.sales_unit_amount.present?
+            .mb-3
+              h6.text-muted.mb-1 内容量
+              p.mb-0 = @product.sales_unit_amount
+          
+          - if @product.raw_materials_food_contents.present?
+            .mb-3
+              h6.text-muted.mb-1 原材料名（食品）
+              p.mb-0 = @product.raw_materials_food_contents
+          
+          - if @product.raw_materials_additive_contents.present?
+            .mb-3
+              h6.text-muted.mb-1 原材料名（添加物）
+              p.mb-0 = @product.raw_materials_additive_contents
+          
+          - if @product.how_to_save.present?
+            .mb-3
+              h6.text-muted.mb-1 保存方法
+              p.mb-0 = @product.how_to_save
+
+      / 栄養成分カード
+      .card.shadow-sm.mb-4
+        .card-header.bg-light
+          h5.mb-0
+            i.bi.bi-clipboard2-data.me-2
+            | 栄養成分表示
+        .card-body
+          table.table.table-bordered.mb-0
+            thead.table-light
+              tr
+                th.text-center カロリー
+                th.text-center たんぱく質
+                th.text-center 脂質
+                th.text-center 炭水化物
+                th.text-center 食塩相当量
+            tbody
+              tr
+                td.text-center = "#{format_number(@product.calorie)} kcal"
+                td.text-center = "#{format_number(@product.protein)} g"
+                td.text-center = "#{format_number(@product.lipid)} g"
+                td.text-center = "#{format_number(@product.carbohydrate)} g"
+                td.text-center = "#{format_number(@product.salt)} g"
+
+    .col-md-4
+      / 商品画像カード
+      - if @product.image.attached?
+        .card.shadow-sm.mb-4
+          .card-header.bg-light
+            h5.mb-0
+              i.bi.bi-image.me-2
+              | 商品画像
+          .card-body.text-center
+            = image_tag @product.image.variant(resize_to_limit: [300, 300]), 
+              class: "img-thumbnail product-image-thumbnail", 
+              style: "cursor: pointer; max-width: 100%;",
+              data: { bs_toggle: "modal", bs_target: "#productImageModal" }
+            p.text-muted.small.mt-2 クリックで拡大
+
+      / アレルギー情報カード
+      - if @product.product_menus.any?
+        - allergens = []
+        - @product.product_menus.includes(menu: { menu_materials: { material: :material_allergies } }).each do |pm|
+          - next unless pm.menu
+          - pm.menu.menu_materials.each do |mm|
+            - next unless mm.material
+            - mm.material.material_allergies.each do |ma|
+              - allergens << ma.allergen if ma.allergen.present?
+        - if allergens.uniq.any?
+          .card.shadow-sm.mb-4
+            .card-header.bg-light
+              h5.mb-0
+                i.bi.bi-exclamation-triangle.me-2
+                | アレルギー情報
+            .card-body
+              .d-flex.flex-wrap
+                - allergens.uniq.each do |allergen|
+                  span.badge.bg-warning.text-dark.me-2.mb-2 = MaterialAllergy.allergens_i18n[allergen]
+
+  / レシピ情報セクション
+  - if @product.product_menus.any?
+    .card.shadow-sm.mb-4
+      .card-header.bg-light
+        h5.mb-0
+          i.bi.bi-journal-text.me-2
+          | レシピ構成
+      .card-body.p-0
+        .accordion#recipesAccordion
+          - @product.product_menus.includes(menu: { menu_materials: :material }).each_with_index do |product_menu, index|
+            - menu = product_menu.menu
+            .accordion-item
+              h2.accordion-header id="heading#{index}"
+                button.accordion-button class="#{'collapsed' unless index == 0}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse#{index}" aria-expanded="#{index == 0 ? 'true' : 'false'}"
+                  .d-flex.w-100.justify-content-between.align-items-center
+                    .d-flex.align-items-center
+                      span.fw-bold.me-3 = menu.name
+                      span.badge.bg-info.text-dark.me-2 = menu.category
+                      span.text-muted 原価: #{number_to_currency(menu.cost_price, unit: "¥")}
+              .accordion-collapse.collapse id="collapse#{index}" class="#{'show' if index == 0}" data-bs-parent="#recipesAccordion"
+                .accordion-body
+                  - if menu.menu_materials.any?
+                    h6.mb-3 使用材料
+                    .table-responsive
+                      table.table.table-sm.table-hover.mb-3
+                        thead.table-light
+                          tr
+                            th 材料名
+                            th.text-center 数量
+                            th 下処理
+                            th.text-end 原価
+                        tbody
+                          - menu.menu_materials.order(:row_order).each do |menu_material|
+                            - if menu_material.material.present?
+                              tr
+                                td = menu_material.material.name
+                                td.text-center = "#{format_number(menu_material.amount_used)} #{menu_material.material.recipe_unit_i18n}"
+                                td = menu_material.preparation || "—"
+                                td.text-end = number_to_currency(menu_material.cost_price, unit: "¥")
+                  
+                  - if menu.cook_before.present? || menu.cook_on_the_day.present?
+                    h6.mb-3 調理工程
+                    .row
+                      - if menu.cook_before.present?
+                        .col-md-6
+                          .card.bg-light
+                            .card-header.py-2
+                              strong 前日工程
+                            .card-body.py-2
+                              = simple_format(menu.cook_before, class: "mb-0 small")
+                      - if menu.cook_on_the_day.present?
+                        .col-md-6
+                          .card.bg-light
+                            .card-header.py-2
+                              strong 当日工程
+                            .card-body.py-2
+                              = simple_format(menu.cook_on_the_day, class: "mb-0 small")
+
+/ 画像拡大モーダル
+- if @product.image.attached?
+  #productImageModal.modal.fade tabindex="-1"
+    .modal-dialog.modal-xl.modal-dialog-centered
+      .modal-content
+        .modal-header
+          h5.modal-title = @product.name
+          button.btn-close type="button" data-bs-dismiss="modal"
+        .modal-body.text-center.p-0
+          = image_tag @product.image, class: "img-fluid", style: "max-height: 80vh;"
