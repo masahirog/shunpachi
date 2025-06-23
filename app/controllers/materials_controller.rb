@@ -34,7 +34,7 @@ class MaterialsController < ApplicationController
   end
 
   def index
-    @materials = @materials.order(id: :desc).paginate(page: params[:page], per_page: 30)
+    @materials = Material.includes(:food_ingredient,:vendor).order(id: :desc).paginate(page: params[:page], per_page: 30)
 
     # 検索機能
     if params[:query].present?
