@@ -34,7 +34,7 @@ class MaterialsController < ApplicationController
   end
 
   def index
-    @materials = Material.includes(:food_ingredient,:vendor).order(id: :desc).paginate(page: params[:page], per_page: 30)
+    @materials = Material.includes(:food_ingredient, :vendor)
 
     # 検索機能
     if params[:query].present?
@@ -46,15 +46,20 @@ class MaterialsController < ApplicationController
       @materials = @materials.where(category: params[:category])
     end
     
-    @materials = @materials.paginate(page: params[:page], per_page: 30)
+    @materials = @materials.order(id: :desc).paginate(page: params[:page], per_page: 30)
   end
 
   def new
     @material = Material.new
+    @vendors = Vendor.all
+    @food_ingredients = FoodIngredient.all
   end
 
 
-  def edit; end
+  def edit
+    @vendors = Vendor.all
+    @food_ingredients = FoodIngredient.all
+  end
 
 
   def create
@@ -63,6 +68,8 @@ class MaterialsController < ApplicationController
       save_allergens(@material)
       redirect_to materials_path, notice: '材料を作成しました。'
     else
+      @vendors = Vendor.all
+      @food_ingredients = FoodIngredient.all
       render :new
     end
   end
@@ -81,6 +88,8 @@ class MaterialsController < ApplicationController
       # デバッグ用：エラーを確認
       Rails.logger.debug "Update failed: #{@material.errors.full_messages}"
       
+      @vendors = Vendor.all
+      @food_ingredients = FoodIngredient.all
       render :edit
     end
   end
@@ -93,7 +102,7 @@ class MaterialsController < ApplicationController
   private
 
   def set_material
-    @material = Material.find(params[:id])
+    @material = Material.includes(:material_allergies, :material_raw_materials).find(params[:id])
   end
 
   def material_params

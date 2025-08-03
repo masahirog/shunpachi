@@ -1,4 +1,15 @@
 function onLoad() {
+  // Menu編集フォーム用のSortable初期化
+  if ($('#menu_materials-add-point').length > 0) {
+    // jQuery UIが利用可能かチェック
+    if (typeof $.fn.sortable !== 'undefined') {
+      initMenuMaterialsSortable();
+    } else {
+      // jQueryUIが読み込まれたら初期化を実行
+      document.addEventListener('jquery-ui-loaded', initMenuMaterialsSortable);
+    }
+  }
+
   // メニュー選択時のイベント処理
   $("#product_menus-container").on('change', '.menu-select', function() {
     var menuId = $(this).val();
@@ -248,6 +259,48 @@ function onLoad() {
   // 売価が変更されたときに原価率を更新
   $(".price").on('change keyup', '.product_sell_price', function() {
     updateCostRatio();
+  });
+}
+
+// Menu材料のSortable初期化関数
+function initMenuMaterialsSortable() {
+  if ($.fn.sortable && $('#menu_materials-add-point').length > 0) {
+    try {
+      $("#menu_materials-add-point").sortable({
+        items: "tr.nested-fields",
+        handle: ".handle",
+        axis: "y",
+        cursor: "move",
+        opacity: 0.7,
+        placeholder: "ui-state-highlight",
+        forcePlaceholderSize: true,
+        start: function(e, ui) {
+          // select2が開いていたら閉じる
+          $('.select2-container--open').select2('close');
+        },
+        helper: function(e, tr) {
+          var $originals = tr.children();
+          var $helper = tr.clone();
+          $helper.children().each(function(index) {
+            // 幅を固定
+            $(this).width($originals.eq(index).outerWidth());
+          });
+          return $helper;
+        },
+        update: function(e, ui) {
+          updateMenuMaterialPositions();
+        }
+      });
+    } catch (e) {
+      console.error('Sortable initialization error:', e);
+    }
+  }
+}
+
+// 行の位置を更新する関数
+function updateMenuMaterialPositions() {
+  $('#menu_materials-add-point tr.nested-fields').each(function(index) {
+    $(this).find('input[name*="[row_order]"]').val(index + 1);
   });
 }
 

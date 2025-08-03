@@ -8,24 +8,28 @@
           .mb-3
             = f.label :name, "名称", class: "form-label"
             = f.text_field :name, class: "form-control"
-        .col-md-6
+        .col-md-3
           .mb-3
             = f.label :category, "カテゴリー", class: "form-label"
             = f.select :category, Menu.categories.keys.map { |c| [c, c] }, {}, class: "form-select"
-      .mb-3
-        = f.label :cost_price, "原価", class: "form-label"
-        = f.number_field :cost_price, class: "form-control menu_cost_price", readonly: true
+        .col-md-3
+          .mb-3
+            = f.label :cost_price, "原価", class: "form-label"
+            = f.number_field :cost_price, class: "form-control menu_cost_price", readonly: true
 
   .card.mb-4
     .card-header.bg-light
       h5.mb-0 調理工程
     .card-body
-      .mb-3
-        = f.label :cook_before, "前日工程", class: "form-label"
-        = f.text_area :cook_before, class: "form-control"
-      .mb-3
-        = f.label :cook_on_the_day, "当日工程", class: "form-label"
-        = f.text_area :cook_on_the_day, class: "form-control"
+      .row
+        .col-md-6
+          .mb-3
+            = f.label :cook_before, "前日工程", class: "form-label"
+            = f.text_area :cook_before, class: "form-control auto-resize", rows: 5
+        .col-md-6
+          .mb-3
+            = f.label :cook_on_the_day, "当日工程", class: "form-label"
+            = f.text_area :cook_on_the_day, class: "form-control auto-resize", rows: 5
 
   .card.mb-4
     .card-header.bg-light
@@ -54,6 +58,7 @@
       table.table.table-bordered
         thead.table-light
           tr
+            th style='width:30px;'
             th style='width:300px;' 食材名
             th style='width:180px;' 分量
             th style='width:130px;' 価格
@@ -68,3 +73,23 @@
 
   .mt-4.text-center
     = f.submit "保存する", class: "btn btn-success px-4 py-2"
+
+javascript:
+  document.addEventListener('DOMContentLoaded', function() {
+    // テキストエリアの自動高さ調整
+    function autoResize(textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    }
+    
+    // 初期化と入力時の処理
+    document.querySelectorAll('.auto-resize').forEach(function(textarea) {
+      // 初期高さの設定
+      autoResize(textarea);
+      
+      // 入力時に高さを自動調整
+      textarea.addEventListener('input', function() {
+        autoResize(this);
+      });
+    });
+  });

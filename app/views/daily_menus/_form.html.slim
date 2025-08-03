@@ -136,7 +136,7 @@
                   th.text-end 売価
                   th
               tbody
-                - Product.where(unused_flag: false).each do |product|
+                - @products.each do |product|
                   - is_added = daily_menu.daily_menu_products.any? { |dmp| dmp.product_id == product.id }
                   tr.js-product-row class="#{'text-muted bg-light' if is_added}" data-id=product.id data-name=product.name data-category=product.category_i18n data-sell-price=product.sell_price data-cost-price=product.cost_price
                     td= product.name

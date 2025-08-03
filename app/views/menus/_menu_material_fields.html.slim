@@ -1,11 +1,13 @@
 tr.nested-fields
   = f.hidden_field :row_order
+  td.handle style="cursor: move; width: 30px; text-align: center;" 
+    i.bi.bi-grip-vertical
   td
     = f.collection_select :material_id, @materials, :id, :name, {include_blank: true}, class: "form-select material_select2"
     .food_ingredient.mt-1.ps-2
       .food_ingredient_a
         - if f.object.material_id.present? && f.object.material.food_ingredient.present?
-            = link_to f.object.material.food_ingredient.name,"/food_ingredients/#{f.object.material.food_ingredient.id}/edit"
+            = link_to f.object.material.food_ingredient.name.truncate(20),"/food_ingredients/#{f.object.material.food_ingredient.id}/edit"
       .food_ingredient_info.d-none
         - if f.object.material_id.present? && f.object.material.food_ingredient.present?
             input.food_ingredient_info_input.unit_calorie value = "#{f.object.material.food_ingredient.calorie}"
@@ -69,4 +71,28 @@ css:
     border: 1px solid #ccc;
     border-radius: 3px;
     background-color: #f8f9fa;
+  }
+  
+  .food_ingredient_a {
+    font-size: 0.85rem;
+  }
+  
+  .food_ingredient_a a {
+    font-size: 0.85rem;
+    text-decoration: none;
+  }
+  
+  .ui-state-highlight {
+    height: 60px;
+    background-color: #f8f9fa;
+    border: 2px dashed #dee2e6;
+  }
+  
+  .ui-sortable-helper {
+    opacity: 0.8;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  }
+  
+  .handle:hover {
+    color: #0d6efd;
   }

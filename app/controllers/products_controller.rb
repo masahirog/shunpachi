@@ -2,7 +2,7 @@ class ProductsController < ApplicationController
   before_action :set_product, only: %i[edit update destroy show]
 
   def index
-    @products = Product.all
+    @products = Product.includes(:container).all
     
     if params[:query].present?
       @products = @products.where("name LIKE ? OR food_label_name LIKE ?", "%#{params[:query]}%", "%#{params[:query]}%")

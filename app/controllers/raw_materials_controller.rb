@@ -2,7 +2,7 @@ class RawMaterialsController < ApplicationController
   before_action :set_raw_material, only: %i[edit update destroy show]
 
   def index
-    @raw_materials = RawMaterial.all
+    @raw_materials = RawMaterial.includes(:materials).all
     
     # 検索機能
     if params[:query].present?

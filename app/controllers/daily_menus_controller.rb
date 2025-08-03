@@ -26,6 +26,7 @@ class DailyMenusController < ApplicationController
       @daily_menu = DailyMenu.new(date: date)
       # デフォルトの製造数
       @daily_menu.manufacturing_number = 30
+      @products = Product.where(unused_flag: false)
     end
   end
 
@@ -35,12 +36,13 @@ class DailyMenusController < ApplicationController
     if @daily_menu.save
       redirect_to edit_daily_menu_path(@daily_menu), notice: '献立を作成しました'
     else
+      @products = Product.where(unused_flag: false)
       render :new
     end
   end
 
   def edit
-
+    @products = Product.where(unused_flag: false)
   end
 
   def update
@@ -49,6 +51,7 @@ class DailyMenusController < ApplicationController
       update_totals(@daily_menu)
       redirect_to daily_menus_path, notice: '献立を更新しました'
     else
+      @products = Product.where(unused_flag: false)
       render :edit
     end
   end

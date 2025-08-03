@@ -53,7 +53,7 @@
                           
                           - if product_count <= 3
                             ul.menu-list.list-unstyled.mt-1.mb-0.ps-0
-                              - daily_menu.daily_menu_products.includes(:product).order(:row_order).limit(3).each do |dmp|
+                              - daily_menu.daily_menu_products.order(:row_order).limit(3).each do |dmp|
                                 li.text-truncate.small.py-1
                                   i.bi.bi-dot
                                   = dmp.product.name

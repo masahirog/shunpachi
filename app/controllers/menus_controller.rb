@@ -49,7 +49,7 @@ class MenusController < ApplicationController
 
 
   def index
-    @menus = Menu.all
+    @menus = Menu.includes(:menu_materials).all
     
     # 検索機能
     if params[:query].present?
