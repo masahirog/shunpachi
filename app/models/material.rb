@@ -11,6 +11,7 @@ class Material < ApplicationRecord
   accepts_nested_attributes_for :material_raw_materials, allow_destroy: true
 
   validates :name, presence: true, uniqueness: { scope: :vendor_id }
+  validates :recipe_unit_gram_quantity, presence: true, numericality: { greater_than: 0 }
 
   enum recipe_unit: {gram:1,ml:2,pack:3,hon:4,ko:5,mai:6}
   enum category: {food:1,packed:2,other:3}

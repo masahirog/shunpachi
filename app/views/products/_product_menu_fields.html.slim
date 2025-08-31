@@ -2,7 +2,7 @@
   .row.g-0
     .col-md-4.border-end
       .p-3
-        = f.collection_select :menu_id, Menu.all, :id, :name, 
+        = f.collection_select :menu_id, @menus || Menu.for_company(current_company), :id, :name, 
             { include_blank: "メニューを選択" }, 
             { class: "form-control menu-select" }
         / アレルギー情報を左側に移動

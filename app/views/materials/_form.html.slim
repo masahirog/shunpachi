@@ -44,7 +44,7 @@
         .col-md-6
           .mb-3
             = f.label :recipe_unit_gram_quantity,'1単位あたりのグラム数', class: "form-label required"
-            = f.number_field :recipe_unit_gram_quantity, class: "form-control", step: "0.01", min: "0"
+            = f.number_field :recipe_unit_gram_quantity, class: "form-control", step: "0.01", min: "0", required: true
         .col-md-6
           .mb-3
             - if f.object.recipe_unit.present?
