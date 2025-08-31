@@ -38,7 +38,7 @@ class MaterialsController < ApplicationController
 
     # 検索機能
     if params[:query].present?
-      @materials = @materials.where("name LIKE ?", "%#{params[:query]}%")
+      @materials = @materials.where("materials.name LIKE ?", "%#{params[:query]}%")
     end
     
     # カテゴリフィルター
