@@ -19,11 +19,13 @@ Rails.application.routes.draw do
   resources :menus do
     member do
       get :details
+      get :copy
     end
   end
   resources :products do
     member do
       post :generate_raw_materials # 既存の商品用
+      get :copy
     end
     
     collection do

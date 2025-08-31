@@ -85,6 +85,42 @@ class MenusController < ApplicationController
     @materials = Material.includes(:food_ingredient).joins(:vendor).where(id: material_ids, vendors: { company: current_company })
   end
 
+  def copy
+    original_menu = Menu.includes(menu_materials: :material).for_company(current_company).find(params[:id])
+    
+    @menu = original_menu.dup
+    @menu.name = "#{original_menu.name}のコピー"
+    
+    # 関連するmenu_materialsも複製
+    original_menu.menu_materials.each do |mm|
+      @menu.menu_materials.build(
+        material_id: mm.material_id,
+        amount_used: mm.amount_used,
+        preparation: mm.preparation,
+        row_order: mm.row_order,
+        gram_quantity: mm.gram_quantity,
+        calorie: mm.calorie,
+        protein: mm.protein,
+        lipid: mm.lipid,
+        carbohydrate: mm.carbohydrate,
+        salt: mm.salt,
+        source_group: mm.source_group,
+        cost_price: mm.cost_price
+      )
+    end
+    
+    # コピー時は複製された材料を含めて表示
+    material_ids = @menu.menu_materials.map(&:material_id).compact
+    @materials = Material.includes(:food_ingredient).joins(:vendor).where(vendors: { company: current_company })
+    @materials = @materials.where(id: material_ids) if material_ids.any?
+    
+    render :new
+  end
+
+  def show
+    @menu = Menu.includes(menu_materials: { material: :material_allergies }).for_company(current_company).find(params[:id])
+  end
+
   def update
     if @menu.update(menu_params)
       redirect_to menus_path, notice: 'メニューを更新しました。'

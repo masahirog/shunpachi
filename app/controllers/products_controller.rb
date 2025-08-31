@@ -25,6 +25,22 @@ class ProductsController < ApplicationController
     @menus = Menu.select(:id, :name, :category, :cost_price).for_company(current_company).order(:name)
   end
 
+  def copy
+    original_product = Product.includes(product_menus: :menu).for_company(current_company).find(params[:id])
+    
+    @product = original_product.dup
+    @product.name = "#{original_product.name}のコピー"
+    @product.food_label_name = "#{original_product.food_label_name}のコピー" if original_product.food_label_name.present?
+    
+    # 関連するproduct_menusも複製
+    original_product.product_menus.each do |pm|
+      @product.product_menus.build(menu_id: pm.menu_id, row_order: pm.row_order)
+    end
+    
+    @menus = Menu.select(:id, :name, :category, :cost_price).for_company(current_company).order(:name)
+    render :new
+  end
+
   def create
     @product = Product.new(product_params)
     @product.company = current_company
@@ -116,92 +132,10 @@ class ProductsController < ApplicationController
       :container,
       product_menus: { menu: { menu_materials: :material } }
     ).for_company(current_company).find(params[:id])
-    
-    respond_to do |format|
-      format.html
-      format.csv do
-        # ファイル名に日本語を使わない（文字化け防止）
-        filename = "product_#{@product.id}_#{Date.today.strftime('%Y%m%d')}.csv"
-        
-        # BOM付きUTF-8で送信（最新のExcelは対応）
-        send_data product_to_csv(@product), 
-                  filename: filename,
-                  type: 'text/csv; charset=UTF-8'
-      end
-    end
   end
 
   private
 
-  def product_to_csv(product)
-    require 'csv'
-    
-    # BOM（Byte Order Mark）を付与
-    bom = "\uFEFF"
-    
-    csv_string = CSV.generate(bom, encoding: 'UTF-8', row_sep: "\r\n", force_quotes: true) do |csv|
-      # ヘッダー行
-      csv << [
-        "呼出しNo.",
-        "呼出し名",
-        "検索用呼出し名",
-        "レイアウト指定",
-        "品名",
-        "日時1",
-        "消費期限時間",
-        "バーコード1",
-        "税抜価格",
-        "原材料",
-        "保存方法内容",
-        "内容量",
-        "原産地",
-        "製造所",
-        "製造所住所",
-        "熱量",
-        "たんぱく質",
-        "脂質",
-        "炭水化物",
-        "食塩相当量"
-      ]
-      
-      # データ行
-      raw_materials_parts = []
-      raw_materials_parts << product.raw_materials_food_contents if product.raw_materials_food_contents.present?
-      raw_materials_parts << product.raw_materials_additive_contents if product.raw_materials_additive_contents.present?
-      raw_materials_combined = raw_materials_parts.join("/")
-      
-      csv << [
-        product.label_call_number || "",
-        product.name || "",
-        "", # 検索用呼出し名
-        "", # レイアウト指定
-        product.food_label_name || "",
-        "1", # 日時1
-        "18時", # 消費期限時間
-        product.jancode || "",
-        product.sell_price || "",
-        raw_materials_combined,
-        product.how_to_save || "",
-        product.sales_unit_amount || "",
-        "", # 原産地
-        "", # 製造所
-        "", # 製造所住所
-        "#{product.calorie} kcal",
-        "#{product.protein} g",
-        "#{product.lipid} g",
-        "#{product.carbohydrate} g",
-        "#{product.salt} g"
-      ]
-    end
-    
-    csv_string
-  end
-
-  # 数値フォーマット用のヘルパーメソッド（既にApplicationHelperにある場合は不要）
-  def format_number(number)
-    return "" if number.nil?
-    number.to_f == number.to_i ? number.to_i.to_s : number.to_s
-  end
 
   def set_product
     @product = Product.for_company(current_company).find(params[:id])

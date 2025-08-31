@@ -36,8 +36,8 @@
         - @menus.each do |menu|
           tr.js-menu-item
             td.text-center
-              = link_to edit_menu_path(menu), class: "btn btn-sm btn-outline-primary" do
-                i.bi.bi-pencil-square
+              = link_to menu_path(menu), class: "btn btn-sm btn-outline-primary" do
+                i.bi.bi-eye
             td
               .fw-bold = menu.name
               - if menu.menu_materials.exists?

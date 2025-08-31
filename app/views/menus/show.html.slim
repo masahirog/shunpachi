@@ -1,0 +1,138 @@
+.container-fluid.py-2.px-3
+  .d-flex.justify-content-between.align-items-center.mb-4
+    h3.mb-0
+      i.bi.bi-journal-text.me-2
+      = @menu.name
+      = link_to edit_menu_path(@menu), class: "btn btn-outline-primary ms-2" do
+        i.bi.bi-pencil-square.me-1
+        | 編集
+      = link_to copy_menu_path(@menu), class: "btn btn-outline-success ms-2" do
+        i.bi.bi-copy.me-1
+        | コピー
+    .d-flex
+      = link_to menus_path, class: "btn btn-outline-secondary" do
+        i.bi.bi-arrow-left.me-1
+        | 一覧へ戻る
+
+  .row
+    .col-md-8
+      / 基本情報カード
+      .card.shadow-sm.mb-4
+        .card-header.bg-light
+          h5.mb-0
+            i.bi.bi-info-circle.me-2
+            | 基本情報
+        .card-body
+          .row
+            .col-md-6
+              table.table.table-borderless.mb-0
+                tbody
+                  tr
+                    th.text-muted style="width: 40%;" カテゴリ
+                    td
+                      span.badge.rounded-pill.bg-info.text-dark = @menu.category
+                  tr
+                    th.text-muted 原価
+                    td.fw-bold = number_to_currency(@menu.cost_price, unit: "円")
+            .col-md-6
+              table.table.table-borderless.mb-0
+                tbody
+                  tr
+                    th.text-muted style="width: 40%;" 前日工程
+                    td = @menu.cook_before.present? ? "あり" : "なし"
+                  tr
+                    th.text-muted 当日工程
+                    td = @menu.cook_on_the_day.present? ? "あり" : "なし"
+
+      / 栄養成分カード
+      .card.shadow-sm.mb-4
+        .card-header.bg-light
+          h5.mb-0
+            i.bi.bi-clipboard2-data.me-2
+            | 栄養成分表示
+        .card-body
+          table.table.table-bordered.mb-0
+            thead.table-light
+              tr
+                th.text-center カロリー
+                th.text-center たんぱく質
+                th.text-center 脂質
+                th.text-center 炭水化物
+                th.text-center 食塩相当量
+            tbody
+              tr
+                td.text-center = "#{format_number(@menu.calorie)} kcal"
+                td.text-center = "#{format_number(@menu.protein)} g"
+                td.text-center = "#{format_number(@menu.lipid)} g"
+                td.text-center = "#{format_number(@menu.carbohydrate)} g"
+                td.text-center = "#{format_number(@menu.salt)} g"
+
+    .col-md-4
+      / アレルギー情報カード
+      - if @menu.menu_materials.any?
+        - allergens = []
+        - @menu.menu_materials.each do |mm|
+          - next unless mm.material
+          - mm.material.material_allergies.each do |ma|
+            - allergens << ma.allergen if ma.allergen.present?
+        - if allergens.uniq.any?
+          .card.shadow-sm.mb-4
+            .card-header.bg-light
+              h5.mb-0
+                i.bi.bi-exclamation-triangle.me-2
+                | アレルギー情報
+            .card-body
+              .d-flex.flex-wrap
+                - allergens.uniq.each do |allergen|
+                  span.badge.bg-warning.text-dark.me-2.mb-2 = MaterialAllergy.allergens_i18n[allergen]
+
+  / 使用材料セクション
+  - if @menu.menu_materials.any?
+    .card.shadow-sm.mb-4
+      .card-header.bg-light
+        h5.mb-0
+          i.bi.bi-list-check.me-2
+          | 使用材料
+      .card-body.p-0
+        .table-responsive
+          table.table.table-hover.mb-0
+            thead.table-light
+              tr
+                th style="width: 30%;" 材料名
+                th.text-center style="width: 15%;" 数量
+                th style="width: 25%;" 下処理
+                th.text-end style="width: 15%;" 原価
+                th style="width: 15%;" 仕入先
+            tbody
+              - @menu.menu_materials.order(:row_order).each do |menu_material|
+                - if menu_material.material.present?
+                  tr
+                    td = menu_material.material.name
+                    td.text-center = "#{format_number(menu_material.amount_used)} #{menu_material.material.recipe_unit_i18n}"
+                    td = menu_material.preparation || "—"
+                    td.text-end = number_to_currency(menu_material.cost_price, unit: "円")
+                    td = menu_material.material.vendor.name
+
+  / 調理工程セクション
+  - if @menu.cook_before.present? || @menu.cook_on_the_day.present?
+    .card.shadow-sm.mb-4
+      .card-header.bg-light
+        h5.mb-0
+          i.bi.bi-clock.me-2
+          | 調理工程
+      .card-body
+        .row
+          - if @menu.cook_before.present?
+            .col-md-6
+              .card.bg-light
+                .card-header.py-2
+                  strong 前日工程
+                .card-body.py-2
+                  = simple_format(@menu.cook_before, class: "mb-0")
+          - if @menu.cook_on_the_day.present?
+            .col-md-6
+              .card.bg-light
+                .card-header.py-2
+                  strong 当日工程
+                .card-body.py-2
+                  = simple_format(@menu.cook_on_the_day, class: "mb-0")

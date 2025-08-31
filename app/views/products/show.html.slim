@@ -6,6 +6,9 @@
       = link_to edit_product_path(@product), class: "btn btn-outline-primary ms-2" do
         i.bi.bi-pencil-square.me-1
         | 編集
+      = link_to copy_product_path(@product), class: "btn btn-outline-success ms-2" do
+        i.bi.bi-copy.me-1
+        | コピー
     .d-flex
       = form_with url: product_recipe_pdfs_path(format: :pdf), method: :get, local: true, html: { target: "_blank", class: "d-flex align-items-center me-2" } do |f|
         = f.hidden_field :product_id, value: @product.id
@@ -13,12 +16,6 @@
           = f.number_field :serving_size, class: "form-control", value: 1, min: 1, style: "width: 80px"
           span.input-group-text 人前
           = f.submit "レシピPDF", class: "btn btn-primary"
-      = link_to product_path(@product, format: :csv), class: "btn btn-success me-2" do
-        i.bi.bi-file-earmark-spreadsheet.me-1
-        | CSV出力
-      = link_to products_path, class: "btn btn-outline-secondary" do
-        i.bi.bi-arrow-left.me-1
-        | 一覧へ戻る
 
   .row
     .col-md-8
