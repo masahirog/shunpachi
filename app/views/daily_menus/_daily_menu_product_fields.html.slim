@@ -11,9 +11,9 @@ tr.nested-fields.js-daily-menu-product-row data-product-id=f.object.product_id d
     - if f.object.product
       span.badge.rounded-pill.bg-info.text-dark = f.object.product.category_i18n
   td.text-end.js-product-sell-price
-    = number_to_currency(f.object.sell_price, unit: "¥")
+    = number_to_currency(f.object.sell_price, unit: "円")
   td.text-end.js-product-total-cost-price
-    = number_to_currency(f.object.total_cost_price, unit: "¥")
+    = number_to_currency(f.object.total_cost_price, unit: "円")
   - stores = Store.where(unused_flag: false)
   - store_products_map = f.object.store_daily_menu_products.index_by(&:store_id)
   - stores.each do |store|

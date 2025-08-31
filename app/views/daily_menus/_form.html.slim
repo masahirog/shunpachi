@@ -82,7 +82,7 @@
                         - else
                           span.badge.bg-secondary 未設定
                       td.text-end.store-total-count= store_count
-                      td.text-end.store-total-price= number_to_currency(store_price, unit: "¥")
+                      td.text-end.store-total-price= number_to_currency(store_price, unit: "円")
 
     .card.shadow-sm.mb-4
       .card-header.bg-light.d-flex.justify-content-between.align-items-center
@@ -142,7 +142,7 @@
                     td= product.name
                     td.text-center
                       span.badge.rounded-pill.bg-info.text-dark= product.category_i18n
-                    td.text-end= number_to_currency(product.sell_price, unit: "¥")
+                    td.text-end= number_to_currency(product.sell_price, unit: "円")
                     td.text-center
                       - if is_added
                         button.btn.btn-sm.btn-secondary.js-add-product-btn type="button" disabled=true

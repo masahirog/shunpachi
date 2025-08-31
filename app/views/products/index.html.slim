@@ -59,8 +59,8 @@
                 span.badge.rounded-pill.bg-info.text-dark = product.container.name
               - else
                 span.text-muted --
-            td.text-end = number_to_currency(product.sell_price, unit: "¥")
-            td.text-end = number_to_currency(product.cost_price, unit: "¥")
+            td.text-end = number_to_currency(product.sell_price, unit: "円")
+            td.text-end = number_to_currency(product.cost_price, unit: "円")
             td.text-end
               span class="#{cost_ratio <= 30 ? 'text-success' : cost_ratio <= 40 ? 'text-warning' : 'text-danger'}"
                 = "#{cost_ratio}%"

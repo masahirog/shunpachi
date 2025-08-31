@@ -49,7 +49,7 @@
                               span.badge.bg-light.text-dark.border
                                 = "#{product_count}品"
                               span.text-success.fw-bold
-                                = number_to_currency(daily_menu.total_selling_price, unit: "¥")
+                                = number_to_currency(daily_menu.total_selling_price, unit: "円")
                           
                           - if product_count <= 3
                             ul.menu-list.list-unstyled.mt-1.mb-0.ps-0

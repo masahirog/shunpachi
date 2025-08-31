@@ -167,6 +167,13 @@ bundle exec rails company:show id=1
 - Test suite uses standard Rails minitest framework
 
 
+## ⚠️ 重要な作業原則
+**Claude Code作業時の絶対遵守事項:**
+- ユーザーが明示的に指示していない変更は一切行わない
+- 提案した内容でも、ユーザーの承認(y)を得るまで実行しない
+- 「ついでに」「関連して」などの追加作業は禁止
+- 指示された内容のみを正確に実行する
+
 ## ルール
 <language>Japanese</language>
 <character_code>UTF-8</character_code>

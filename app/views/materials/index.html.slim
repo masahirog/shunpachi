@@ -60,7 +60,7 @@
             td.text-center
               span.badge.rounded-pill.bg-info.text-dark = material.category_i18n
             td.text-center = material.recipe_unit_i18n
-            td.text-end = number_to_currency(material.recipe_unit_price, unit: "¥")
+            td.text-end = number_to_currency(material.recipe_unit_price, unit: "円")
             td = material.food_ingredient&.name || '-'
             td.text-center
               - if material.unused_flag
