@@ -15,11 +15,13 @@
               span.input-group-text.py-1
                 i.bi.bi-search
               = f.text_field :query, value: params[:query], class: "form-control", placeholder: "原材料名で検索...", autocomplete: "off"
-          .col-md-4
+          .col-md-3
             = f.select :category, options_for_select([["すべてのカテゴリ", ""]] + RawMaterial.categories.keys.map { |c| [t("enums.raw_material.category.#{c}"), c] }, params[:category]), {}, class: "form-select"
+          .col-md-3
+            = f.select :scope, options_for_select([["全て", ""], ["共通", "common"], ["自社専用", "company_only"]], params[:scope]), {}, class: "form-select"
           .col-md-2.text-end
             = f.submit "検索", class: "btn btn-primary btn-sm me-2"
-            - if params[:query].present? || params[:category].present?
+            - if params[:query].present? || params[:category].present? || params[:scope].present?
               = link_to "クリア", raw_materials_path, class: "btn btn-outline-secondary btn-sm"
 
   .table-responsive
@@ -29,6 +31,7 @@
           th.text-center
           th 名称
           th.text-center カテゴリ
+          th.text-center 区分
           th 説明
           th.text-center 使用材料数
       tbody
@@ -43,6 +46,13 @@
                 span.badge.rounded-pill.bg-info.text-dark = t("enums.raw_material.category.#{raw_material.category}")
               - else
                 span.text-muted --
+            td.text-center
+              - if raw_material.shared?
+                span.badge.bg-primary.text-white
+                  | 共通
+              - else
+                span.badge.bg-success.text-white
+                  | 自社専用
             td = truncate(raw_material.description, length: 50)
             td.text-center
               span.badge.bg-secondary = raw_material.materials.count

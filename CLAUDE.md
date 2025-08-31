@@ -29,6 +29,21 @@ bundle exec rails db:seed
 bundle exec rails test
 ```
 
+### Multi-Tenant Management
+```bash
+# 新しい企業と管理者ユーザーを作成
+bundle exec rails company:create name="企業名" subdomain="サブドメイン" email="admin@example.com"
+
+# オプション付きで企業作成
+bundle exec rails company:create name="株式会社サンプル" subdomain="sample" email="admin@sample.com" password="password123" user_name="管理者"
+
+# 企業一覧を表示
+bundle exec rails company:list
+
+# 企業の詳細情報を表示
+bundle exec rails company:show id=1
+```
+
 ### Frontend Asset Build
 ```bash
 # Build CSS once
@@ -99,6 +114,50 @@ This is a food manufacturing management system (shunpachi) that handles:
 
 ### PDF Generation
 - wicked_pdf with wkhtmltopdf for manufacturing and distribution documents
+
+## Multi-Tenant Architecture
+
+This application supports multi-tenant architecture where multiple companies can use the same system with complete data separation.
+
+### Tenant Separation Levels
+
+#### Level 1: Direct Tenant Scoped (company_id required)
+- **Company** - Main tenant management
+- **User** - User authentication and management  
+- **Vendor** - Supplier management
+- **Store** - Store/location management
+- **DailyMenu** - Daily production schedules (core business)
+- **Container** - Packaging management
+
+#### Level 2: Inherited Tenant Scoped (separated via relationships)
+- **Material** - Separated via `vendor.company_id`
+- **Menu** - Separated via materials relationship
+- **Product** - Separated via menus relationship
+- **DailyMenuProduct** - Separated via `daily_menu.company_id`
+- **StoreDailyMenuProduct** - Separated via `store.company_id`
+
+#### Level 3: Shared Models (Global)
+- **RawMaterial** - Shared ingredient database
+- **FoodIngredient** - Shared nutritional component database
+
+### Multi-Tenant Management Commands
+
+```bash
+# Create new company with admin user
+bundle exec rails company:create name="Company Name" subdomain="subdomain" email="admin@company.com"
+
+# List all companies
+bundle exec rails company:list
+
+# Show company details
+bundle exec rails company:show id=1
+```
+
+### Implementation Details
+- Uses `TenantScoped` concern for common tenant functionality
+- ApplicationController automatically sets current company scope
+- Data isolation enforced at model and controller levels
+- Supports company-specific uniqueness constraints
 
 ## Development Notes
 - Uses Slim templates instead of ERB

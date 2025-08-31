@@ -2,7 +2,7 @@ class UsersController < ApplicationController
   before_action :set_user, only: [:show]
 
   def index
-    @users = User.all
+    @users = company_scope(User.all)
   end
 
   def show
@@ -11,6 +11,6 @@ class UsersController < ApplicationController
   private
 
   def set_user
-    @user = User.find(params[:id])
+    @user = company_scope(User).find(params[:id])
   end
 end

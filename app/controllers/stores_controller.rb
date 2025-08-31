@@ -2,7 +2,7 @@ class StoresController < ApplicationController
   before_action :set_store, only: %i[edit update destroy]
 
   def index
-    @stores = Store.all
+    @stores = company_scope(Store.all)
   end
 
   def new
@@ -11,6 +11,7 @@ class StoresController < ApplicationController
 
   def create
     @store = Store.new(store_params)
+    @store.company = current_company
     if @store.save
       redirect_to stores_path, notice: '店舗を作成しました。'
     else
@@ -36,7 +37,7 @@ class StoresController < ApplicationController
   private
 
   def set_store
-    @store = Store.find(params[:id])
+    @store = company_scope(Store).find(params[:id])
   end
 
   def store_params

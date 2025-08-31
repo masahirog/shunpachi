@@ -2,7 +2,7 @@ class VendorsController < ApplicationController
   before_action :set_vendor, only: %i[edit update destroy]
 
   def index
-    @vendors = Vendor.all
+    @vendors = company_scope(Vendor.all)
   end
 
   def new
@@ -11,6 +11,7 @@ class VendorsController < ApplicationController
 
   def create
     @vendor = Vendor.new(vendor_params)
+    @vendor.company = current_company
     if @vendor.save
       redirect_to vendors_path, notice: '仕入れ業者を作成しました。'
     else
@@ -36,7 +37,7 @@ class VendorsController < ApplicationController
   private
 
   def set_vendor
-    @vendor = Vendor.find(params[:id])
+    @vendor = company_scope(Vendor).find(params[:id])
   end
 
   def vendor_params

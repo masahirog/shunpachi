@@ -2,7 +2,17 @@ class RawMaterialsController < ApplicationController
   before_action :set_raw_material, only: %i[edit update destroy show]
 
   def index
-    @raw_materials = RawMaterial.includes(:materials).all
+    @raw_materials = RawMaterial.includes(:materials)
+    
+    # スコープフィルター
+    case params[:scope]
+    when 'common'
+      @raw_materials = @raw_materials.common
+    when 'company_only'
+      @raw_materials = @raw_materials.company_only(current_company)
+    else
+      @raw_materials = @raw_materials.for_company(current_company)
+    end
     
     # 検索機能
     if params[:query].present?
@@ -41,6 +51,7 @@ class RawMaterialsController < ApplicationController
   
   def create
     @raw_material = RawMaterial.new(raw_material_params)
+    @raw_material.company = current_company  # 自社専用として作成
     
     respond_to do |format|
       if @raw_material.save
@@ -71,7 +82,7 @@ class RawMaterialsController < ApplicationController
   private
 
   def set_raw_material
-    @raw_material = RawMaterial.find(params[:id])
+    @raw_material = RawMaterial.for_company(current_company).find(params[:id])
   end
 
   def raw_material_params

@@ -27,6 +27,7 @@ html
                 a.nav-link.dropdown-toggle href="#" id="menuMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false"
                   | レシピ管理
                 ul.dropdown-menu aria-labelledby="menuMenu"
+                  li = link_to "食材・材料", materials_path, class: "dropdown-item"
                   li = link_to "メニュー", menus_path, class: "dropdown-item"
                   li = link_to "商品", products_path, class: "dropdown-item"
               li.nav-item.dropdown
@@ -34,15 +35,16 @@ html
                   | マスター管理
                 ul.dropdown-menu aria-labelledby="masterMenu"
                   li = link_to "店舗管理", stores_path, class: "dropdown-item"
-                  li = link_to "仕入れ業者", vendors_path, class: "dropdown-item"                  
-                  li = link_to "材料", materials_path, class: "dropdown-item"
-                  li = link_to " └ 食品成分", food_ingredients_path, class: "dropdown-item"
-                  li = link_to " └ 原材料管理", raw_materials_path, class: "dropdown-item"
+                  li = link_to "仕入れ業者", vendors_path, class: "dropdown-item"
+                  li = link_to "食品成分マスター", food_ingredients_path, class: "dropdown-item"
+                  li = link_to "原材料マスター", raw_materials_path, class: "dropdown-item"
                   li = link_to "容器管理", containers_path, class: "dropdown-item"
             ul.navbar-nav.ms-auto
               - if user_signed_in?
-                li.nav-item
-                  = link_to "ログアウト", destroy_user_session_path, method: :delete, class: "nav-link"
+                - if current_company
+                  li.nav-item
+                    = link_to profile_path, class: "nav-link fw-bold" do
+                      = current_company.name
               - else
                 li.nav-item
                   = link_to "ログイン", new_user_session_path, class: "nav-link"

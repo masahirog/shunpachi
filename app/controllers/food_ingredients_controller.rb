@@ -4,7 +4,7 @@ class FoodIngredientsController < ApplicationController
   def search
     query = params[:q]
     food_ingredients = if query.present?
-                         FoodIngredient.where("name LIKE ?", "%#{query}%")
+                         FoodIngredient.for_company(current_company).where("name LIKE ?", "%#{query}%")
                        else
                          FoodIngredient.none
                        end
@@ -15,11 +15,21 @@ class FoodIngredientsController < ApplicationController
   def index
     # 検索クエリがある場合は検索結果を表示、なければ全件表示
     @query = params[:query]
-    @food_ingredients = if @query.present?
-                        FoodIngredient.where("name LIKE ?", "%#{@query}%")
-                      else
-                        FoodIngredient.all
-                      end
+    
+    # スコープフィルター
+    @food_ingredients = case params[:scope]
+                        when 'common'
+                          FoodIngredient.common
+                        when 'company_only'
+                          FoodIngredient.company_only(current_company)
+                        else
+                          FoodIngredient.for_company(current_company)
+                        end
+    
+    # 検索機能
+    if @query.present?
+      @food_ingredients = @food_ingredients.where("name LIKE ?", "%#{@query}%")
+    end
     
     # ページネーション
     @food_ingredients = @food_ingredients.paginate(page: params[:page], per_page: 30)
@@ -31,6 +41,7 @@ class FoodIngredientsController < ApplicationController
 
   def create
     @food_ingredient = FoodIngredient.new(food_ingredient_params)
+    @food_ingredient.company = current_company  # 自社専用として作成
     if @food_ingredient.save
       redirect_to food_ingredients_path, notice: '食品成分を作成しました。'
     else
@@ -56,7 +67,7 @@ class FoodIngredientsController < ApplicationController
   private
 
   def set_food_ingredient
-    @food_ingredient = FoodIngredient.find(params[:id])
+    @food_ingredient = FoodIngredient.for_company(current_company).find(params[:id])
   end
 
   def food_ingredient_params

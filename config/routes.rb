@@ -1,6 +1,10 @@
 Rails.application.routes.draw do
   root "daily_menus#index" # トップページを日別メニュー一覧に設定
   devise_for :users
+  
+  # 企業情報・アカウント管理
+  get 'profile', to: 'profiles#show'
+  patch 'profile', to: 'profiles#update'
 
   resources :containers
   resources :vendors

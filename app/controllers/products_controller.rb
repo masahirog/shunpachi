@@ -2,7 +2,7 @@ class ProductsController < ApplicationController
   before_action :set_product, only: %i[edit update destroy show]
 
   def index
-    @products = Product.includes(:container).all
+    @products = Product.includes(:container).for_company(current_company)
     
     if params[:query].present?
       @products = @products.where("name LIKE ? OR food_label_name LIKE ?", "%#{params[:query]}%", "%#{params[:query]}%")
@@ -17,19 +17,21 @@ class ProductsController < ApplicationController
 
   def new
     @product = Product.new
-    @menus = Menu.select(:id, :name, :category, :cost_price).order(:name)
+    @menus = Menu.select(:id, :name, :category, :cost_price).for_company(current_company).order(:name)
   end
 
   def edit
-    @product = Product.includes(product_menus: :menu).find(params[:id])
-    @menus = Menu.select(:id, :name, :category, :cost_price).order(:name)
+    @product = Product.includes(product_menus: :menu).for_company(current_company).find(params[:id])
+    @menus = Menu.select(:id, :name, :category, :cost_price).for_company(current_company).order(:name)
   end
 
   def create
     @product = Product.new(product_params)
+    @product.company = current_company
     if @product.save
       redirect_to products_path, notice: '商品を作成しました。'
     else
+      @menus = Menu.for_company(current_company).order(:name)
       render :new
     end
   end
@@ -56,7 +58,7 @@ class ProductsController < ApplicationController
       Rails.logger.debug("原材料表示生成 - パラメータ: #{params.inspect}")
       
       if params[:id].present?
-        @product = Product.find(params[:id])
+        @product = Product.for_company(current_company).find(params[:id])
         if params[:product] && params[:product][:product_menus_attributes]
           @product.assign_attributes(product_params.slice(:product_menus_attributes))
         end
@@ -86,7 +88,7 @@ class ProductsController < ApplicationController
   def generate_raw_materials_display
     begin
       if params[:id].present?
-        @product = Product.find(params[:id])
+        @product = Product.for_company(current_company).find(params[:id])
       else
         @product = Product.new(product_params)
       end
@@ -113,7 +115,7 @@ class ProductsController < ApplicationController
     @product = Product.includes(
       :container,
       product_menus: { menu: { menu_materials: :material } }
-    ).find(params[:id])
+    ).for_company(current_company).find(params[:id])
     
     respond_to do |format|
       format.html
@@ -202,7 +204,7 @@ class ProductsController < ApplicationController
   end
 
   def set_product
-    @product = Product.find(params[:id])
+    @product = Product.for_company(current_company).find(params[:id])
   end
 
   def product_params

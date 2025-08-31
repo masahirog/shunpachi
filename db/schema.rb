@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_17_011813) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_31_023821) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -39,11 +39,20 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_17_011813) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "companies", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "subdomain", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "containers", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.integer "products_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "company_id"
+    t.index ["company_id"], name: "index_containers_on_company_id"
     t.index ["name"], name: "index_containers_on_name", unique: true
   end
 
@@ -71,6 +80,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_17_011813) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "daily_menu_products_count", default: 0, null: false
+    t.bigint "company_id"
+    t.index ["company_id"], name: "index_daily_menus_on_company_id"
     t.index ["date"], name: "index_daily_menus_on_date", unique: true
   end
 
@@ -84,6 +95,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_17_011813) do
     t.text "memo"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "company_id"
+    t.index ["company_id", "name"], name: "index_food_ingredients_on_company_and_name"
+    t.index ["company_id"], name: "index_food_ingredients_on_company_id"
   end
 
   create_table "material_allergies", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -157,6 +171,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_17_011813) do
     t.datetime "updated_at", null: false
     t.integer "product_menus_count", default: 0, null: false
     t.integer "menu_materials_count", default: 0, null: false
+    t.bigint "company_id", null: false
+    t.index ["company_id"], name: "index_menus_on_company_id"
   end
 
   create_table "product_menus", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -195,6 +211,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_17_011813) do
     t.integer "product_menus_count", default: 0, null: false
     t.string "jancode"
     t.integer "label_call_number"
+    t.bigint "company_id", null: false
+    t.index ["company_id"], name: "index_products_on_company_id"
     t.index ["container_id"], name: "index_products_on_container_id"
     t.index ["name"], name: "index_products_on_name", unique: true
   end
@@ -205,6 +223,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_17_011813) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "company_id"
+    t.index ["company_id", "name"], name: "index_raw_materials_on_company_and_name"
+    t.index ["company_id"], name: "index_raw_materials_on_company_id"
     t.index ["name"], name: "index_raw_materials_on_name", unique: true
   end
 
@@ -227,6 +248,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_17_011813) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "store_daily_menu_products_count", default: 0, null: false
+    t.bigint "company_id"
+    t.index ["company_id"], name: "index_stores_on_company_id"
     t.index ["name"], name: "index_stores_on_name", unique: true
   end
 
@@ -239,6 +262,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_17_011813) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "company_id"
+    t.index ["company_id"], name: "index_users_on_company_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -256,10 +281,21 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_17_011813) do
     t.boolean "unused_flag", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "company_id"
+    t.index ["company_id"], name: "index_vendors_on_company_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "containers", "companies"
+  add_foreign_key "daily_menus", "companies"
+  add_foreign_key "food_ingredients", "companies"
   add_foreign_key "material_raw_materials", "materials"
   add_foreign_key "material_raw_materials", "raw_materials"
+  add_foreign_key "menus", "companies"
+  add_foreign_key "products", "companies"
+  add_foreign_key "raw_materials", "companies"
+  add_foreign_key "stores", "companies"
+  add_foreign_key "users", "companies"
+  add_foreign_key "vendors", "companies"
 end

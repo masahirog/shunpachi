@@ -3,7 +3,7 @@ class MenusController < ApplicationController
 
 
   def details
-    @menu = Menu.includes(menu_materials: { material: :material_allergies }).find(params[:id])
+    @menu = Menu.includes(menu_materials: { material: :material_allergies }).for_company(current_company).find(params[:id])
     
     # 材料情報を取得
     menu_materials_data = @menu.menu_materials.map do |mm|
@@ -49,7 +49,7 @@ class MenusController < ApplicationController
 
 
   def index
-    @menus = Menu.includes(:menu_materials).all
+    @menus = Menu.includes(:menu_materials).for_company(current_company)
     
     # 検索機能
     if params[:query].present?
@@ -65,22 +65,24 @@ class MenusController < ApplicationController
     @menus = @menus.order(id: :desc).paginate(page: params[:page], per_page: 30)
   end
   def new
-    @materials = Material.first(10)
+    @materials = Material.joins(:vendor).where(vendors: { company: current_company }).limit(10)
     @menu = Menu.new
   end
 
   def create
     @menu = Menu.new(menu_params)
+    @menu.company = current_company
     if @menu.save
       redirect_to menus_path, notice: 'メニューを作成しました。'
     else
+      @materials = Material.joins(:vendor).where(vendors: { company: current_company }).limit(10)
       render :new
     end
   end
 
   def edit
     material_ids = @menu.menu_materials.map(&:material_id)
-    @materials = Material.includes(:food_ingredient).where(id: material_ids)
+    @materials = Material.includes(:food_ingredient).joins(:vendor).where(id: material_ids, vendors: { company: current_company })
   end
 
   def update
@@ -99,7 +101,7 @@ class MenusController < ApplicationController
   private
 
   def set_menu
-    @menu = Menu.includes(menu_materials: :material).find(params[:id])
+    @menu = Menu.includes(menu_materials: :material).for_company(current_company).find(params[:id])
   end
 
   def menu_params

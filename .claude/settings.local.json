@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bundle exec rails generate model:*)",
+      "Bash(bundle exec rails generate migration:*)",
+      "Bash(bundle exec rails:*)",
+      "Bash(cat:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

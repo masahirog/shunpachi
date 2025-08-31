@@ -2,7 +2,7 @@ class ContainersController < ApplicationController
   before_action :set_container, only: %i[edit update destroy]
 
   def index
-    @containers = Container.includes(:products).all
+    @containers = company_scope(Container).includes(:products)
   end
 
   def new
@@ -11,6 +11,7 @@ class ContainersController < ApplicationController
 
   def create
     @container = Container.new(container_params)
+    @container.company = current_company
     if @container.save
       redirect_to containers_path, notice: '容器を作成しました。'
     else
@@ -40,7 +41,7 @@ class ContainersController < ApplicationController
   private
 
   def set_container
-    @container = Container.find(params[:id])
+    @container = company_scope(Container).find(params[:id])
   end
 
   def container_params

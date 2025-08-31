@@ -11,15 +11,17 @@
     .card-body.py-2.px-3
       = form_with url: food_ingredients_path, method: :get, local: true, data: { turbo_frame: "food_ingredients_list" } do |f|
         .row.g-2
-          .col-md-9
+          .col-md-6
             .input-group
               span.input-group-text.py-1
                 i.bi.bi-search
               = f.text_field :query, value: @query, class: "form-control", placeholder: "食品成分名で検索...", autocomplete: "off"
           .col-md-3
+            = f.select :scope, options_for_select([["全て", ""], ["共通", "common"], ["自社専用", "company_only"]], params[:scope]), {}, class: "form-select"
+          .col-md-3
             .d-flex
               = f.submit "検索", class: "btn btn-primary me-2"
-              - if @query.present?
+              - if @query.present? || params[:scope].present?
                 = link_to "クリア", food_ingredients_path, class: "btn btn-outline-secondary"
 
   #food_ingredients_list
@@ -30,12 +32,13 @@
             thead.table-light
               tr
                 th.text-center style="width: 5%"
-                th style="width: 20%" 名称
-                th.text-center style="width: 15%" カロリー
-                th.text-center style="width: 15%" タンパク質
-                th.text-center style="width: 15%" 脂質
-                th.text-center style="width: 15%" 炭水化物
-                th.text-center style="width: 15%" 塩分
+                th style="width: 18%" 名称
+                th.text-center style="width: 12%" 区分
+                th.text-center style="width: 13%" カロリー
+                th.text-center style="width: 13%" タンパク質
+                th.text-center style="width: 13%" 脂質
+                th.text-center style="width: 13%" 炭水化物
+                th.text-center style="width: 13%" 塩分
             tbody
               - @food_ingredients.each do |food_ingredient|
                 tr
@@ -43,6 +46,13 @@
                     = link_to edit_food_ingredient_path(food_ingredient), class: "btn btn-sm btn-outline-primary" do
                       i.bi.bi-pencil-square
                   td = food_ingredient.name
+                  td.text-center
+                    - if food_ingredient.shared?
+                      span.badge.bg-primary.text-white
+                        | 共通
+                    - else
+                      span.badge.bg-success.text-white
+                        | 自社専用
                   td.text-end = "#{format_number(food_ingredient.calorie)} kcal"
                   td.text-end = "#{format_number(food_ingredient.protein)} g"
                   td.text-end = "#{format_number(food_ingredient.lipid)} g"

@@ -18,7 +18,7 @@ class DailyMenusController < ApplicationController
   def new
     date = params[:date].present? ? Date.parse(params[:date]) : Date.today
     # 既に同じ日付の献立があるか確認
-    existing_menu = DailyMenu.find_by(date: date)
+    existing_menu = company_scope(DailyMenu).find_by(date: date)
     
     if existing_menu
       redirect_to edit_daily_menu_path(existing_menu), notice: '既に献立が作成されています'
@@ -26,23 +26,24 @@ class DailyMenusController < ApplicationController
       @daily_menu = DailyMenu.new(date: date)
       # デフォルトの製造数
       @daily_menu.manufacturing_number = 30
-      @products = Product.where(unused_flag: false)
+      @products = Product.for_company(current_company).where(unused_flag: false)
     end
   end
 
   def create
     @daily_menu = DailyMenu.new(daily_menu_params)
+    @daily_menu.company = current_company
     
     if @daily_menu.save
       redirect_to edit_daily_menu_path(@daily_menu), notice: '献立を作成しました'
     else
-      @products = Product.where(unused_flag: false)
+      @products = Product.for_company(current_company).where(unused_flag: false)
       render :new
     end
   end
 
   def edit
-    @products = Product.where(unused_flag: false)
+    @products = Product.for_company(current_company).where(unused_flag: false)
   end
 
   def update
@@ -51,7 +52,7 @@ class DailyMenusController < ApplicationController
       update_totals(@daily_menu)
       redirect_to daily_menus_path, notice: '献立を更新しました'
     else
-      @products = Product.where(unused_flag: false)
+      @products = Product.for_company(current_company).where(unused_flag: false)
       render :edit
     end
   end
@@ -64,7 +65,7 @@ class DailyMenusController < ApplicationController
   private
   
   def set_daily_menu
-    @daily_menu = DailyMenu.includes(
+    @daily_menu = company_scope(DailyMenu).includes(
       { daily_menu_products: [:product, :store_daily_menu_products] }
     ).find(params[:id])
 
@@ -116,7 +117,7 @@ class DailyMenusController < ApplicationController
     
     # その期間の献立データを取得（1回のクエリで効率的に）
     # N+1問題回避のためにincludes使用
-    daily_menus = DailyMenu.includes(daily_menu_products: :product)
+    daily_menus = company_scope(DailyMenu).includes(daily_menu_products: :product)
                            .where(date: start_date..end_date)
                            .index_by(&:date)
     

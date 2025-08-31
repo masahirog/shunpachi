@@ -1,0 +1,50 @@
+h2 企業情報・アカウント管理
+
+.row
+  .col-md-6
+    .card
+      .card-header
+        h5.card-title 企業情報
+      .card-body
+        = form_with model: @company, url: profile_path, method: :patch, local: true, class: "form" do |form|
+          .mb-3
+            = form.label :name, "企業名", class: "form-label"
+            = form.text_field :name, class: "form-control"
+          
+          .mb-3
+            = form.submit "企業情報を更新", class: "btn btn-primary btn-sm"
+        
+        .mt-3
+          dl.row
+            dt.col-sm-4 登録日
+            dd.col-sm-8= @company.created_at.strftime('%Y/%m/%d')
+
+  .col-md-6
+    .card
+      .card-header
+        h5.card-title アカウント情報
+      .card-body
+        = form_with model: @user, url: profile_path, method: :patch, local: true, class: "form" do |form|
+          .mb-3
+            = form.label :name, "名前", class: "form-label"
+            = form.text_field :name, class: "form-control"
+          
+          .mb-3
+            = form.label :email, "メールアドレス", class: "form-label"
+            = form.email_field :email, class: "form-control"
+          
+          .mb-3
+            = form.label :password, "新しいパスワード（変更する場合のみ）", class: "form-label"
+            = form.password_field :password, class: "form-control", placeholder: "変更しない場合は空白"
+          
+          .mb-3
+            = form.label :password_confirmation, "パスワード確認", class: "form-label"
+            = form.password_field :password_confirmation, class: "form-control"
+          
+          .mb-3
+            = form.submit "アカウント情報を更新", class: "btn btn-primary btn-sm"
+        
+        .mt-4.text-end
+          = link_to "ログアウト", destroy_user_session_path, 
+                    class: "btn btn-outline-danger",
+                    data: { "turbo-method": :delete, confirm: "ログアウトしますか？" }

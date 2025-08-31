@@ -1,7 +1,7 @@
 class MaterialsController < ApplicationController
   before_action :set_material, only: %i[edit update destroy]
   def get_details
-    material = Material.find(params[:id])
+    material = Material.joins(:vendor).where(vendors: { company: current_company }).find(params[:id])
     food_ingredient = material.food_ingredient
     response_data = { 
       unit: material.recipe_unit_i18n,
@@ -25,7 +25,7 @@ class MaterialsController < ApplicationController
   def search
     query = params[:q]
     materials = if query.present?
-                         Material.where("name LIKE ?", "%#{query}%")
+                         Material.joins(:vendor).where(vendors: { company: current_company }).where("materials.name LIKE ?", "%#{query}%")
                        else
                          Material.none
                        end
@@ -34,7 +34,7 @@ class MaterialsController < ApplicationController
   end
 
   def index
-    @materials = Material.includes(:food_ingredient, :vendor)
+    @materials = Material.includes(:food_ingredient, :vendor).joins(:vendor).where(vendors: { company: current_company })
 
     # 検索機能
     if params[:query].present?
@@ -51,25 +51,30 @@ class MaterialsController < ApplicationController
 
   def new
     @material = Material.new
-    @vendors = Vendor.all
-    @food_ingredients = FoodIngredient.all
+    @vendors = Vendor.for_company(current_company)
+    @food_ingredients = FoodIngredient.for_company(current_company)
   end
 
 
   def edit
-    @vendors = Vendor.all
-    @food_ingredients = FoodIngredient.all
+    @vendors = Vendor.for_company(current_company)
+    @food_ingredients = FoodIngredient.for_company(current_company)
   end
 
 
   def create
     @material = Material.new(material_params)
+    # vendorの企業チェック
+    if @material.vendor && @material.vendor.company != current_company
+      redirect_to materials_path, alert: 'アクセス権限がありません。'
+      return
+    end
     if @material.save
       save_allergens(@material)
       redirect_to materials_path, notice: '材料を作成しました。'
     else
-      @vendors = Vendor.all
-      @food_ingredients = FoodIngredient.all
+      @vendors = Vendor.for_company(current_company)
+      @food_ingredients = FoodIngredient.for_company(current_company)
       render :new
     end
   end
@@ -88,8 +93,8 @@ class MaterialsController < ApplicationController
       # デバッグ用：エラーを確認
       Rails.logger.debug "Update failed: #{@material.errors.full_messages}"
       
-      @vendors = Vendor.all
-      @food_ingredients = FoodIngredient.all
+      @vendors = Vendor.for_company(current_company)
+      @food_ingredients = FoodIngredient.for_company(current_company)
       render :edit
     end
   end
@@ -102,7 +107,7 @@ class MaterialsController < ApplicationController
   private
 
   def set_material
-    @material = Material.includes(:material_allergies, :material_raw_materials).find(params[:id])
+    @material = Material.includes(:material_allergies, :material_raw_materials).joins(:vendor).where(vendors: { company: current_company }).find(params[:id])
   end
 
   def material_params
