@@ -10,9 +10,12 @@
         i.bi.bi-copy.me-1
         | コピー
     .d-flex
-      = link_to menus_path, class: "btn btn-outline-secondary" do
-        i.bi.bi-arrow-left.me-1
-        | 一覧へ戻る
+      = form_with url: menu_recipe_pdfs_path(format: :pdf), method: :get, local: true, html: { target: "_blank", class: "d-flex align-items-center" } do |f|
+        = f.hidden_field :menu_id, value: @menu.id
+        .input-group
+          = f.number_field :serving_size, class: "form-control", value: 1, min: 1, style: "width: 80px"
+          span.input-group-text 人前
+          = f.submit "レシピPDF", class: "btn btn-primary"
 
   .row
     .col-md-8

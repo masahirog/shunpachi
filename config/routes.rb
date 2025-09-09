@@ -51,6 +51,7 @@ Rails.application.routes.draw do
       get :manufacturing_instruction
       get :distribution_instruction
       get :product_recipe
+      get :menu_recipe
     end
   end
 end
