@@ -16,6 +16,9 @@
           = f.number_field :serving_size, class: "form-control", value: 1, min: 1, style: "width: 80px"
           span.input-group-text 人前
           = f.submit "レシピPDF", class: "btn btn-primary"
+      = link_to product_path(@product, format: :csv), class: "btn btn-success me-2" do
+        i.bi.bi-file-earmark-spreadsheet.me-1
+        | CSV出力
 
   .row
     .col-md-8
