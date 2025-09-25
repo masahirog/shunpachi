@@ -22,7 +22,7 @@
       
       .mb-3
         = f.label :description, '説明', class: "form-label"
-        = f.text_area :description, class: "form-control", rows: 4
+        = f.text_area :description, class: "form-control auto-resize", rows: 4
 
   .mt-4.d-flex.justify-content-center
     = f.submit "保存する", class: "btn btn-success px-4 py-2"

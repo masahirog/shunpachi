@@ -5,6 +5,7 @@ class RawMaterial < ApplicationRecord
   has_many :materials, through: :material_raw_materials
 
   validates :name, presence: true, uniqueness: { scope: :company_id }
+  validates :category, presence: true
   
   enum category: { food: 1, additive: 2, other: 3 }
   

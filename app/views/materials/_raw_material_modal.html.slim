@@ -10,15 +10,15 @@
           input#new_raw_material_name.form-control type="text" required="required"
         
         .mb-3
-          label.form-label for="new_raw_material_category" カテゴリー
-          select#new_raw_material_category.form-select
+          label.form-label.required for="new_raw_material_category" カテゴリー
+          select#new_raw_material_category.form-select required="required"
             option value="" 選択してください
             - RawMaterial.categories.keys.each do |category|
               option value=category = t("enums.raw_material.category.#{category}")
         
         .mb-3
           label.form-label for="new_raw_material_description" 説明
-          textarea#new_raw_material_description.form-control rows="3"
+          textarea#new_raw_material_description.form-control.auto-resize rows="3"
         
         #rawMaterialFormError.alert.alert-danger.d-none role="alert"
       

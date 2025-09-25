@@ -27,35 +27,35 @@
           .mb-3
             = f.label :calorie, "カロリー", class: "form-label"
             .input-group
-              = f.number_field :calorie, class: "form-control", step: "0.001", min: "0", placeholder: "0.0"
+              = f.number_field :calorie, class: "form-control", step: "any", min: "0", placeholder: "0.0"
               span.input-group-text kcal
         .col-md-6
           .mb-3
             = f.label :protein, "タンパク質", class: "form-label"
             .input-group
-              = f.number_field :protein, class: "form-control", step: "0.001", min: "0", placeholder: "0.0"
+              = f.number_field :protein, class: "form-control", step: "any", min: "0", placeholder: "0.0"
               span.input-group-text g
-      
+
       .row
         .col-md-6
           .mb-3
             = f.label :lipid, "脂質", class: "form-label"
             .input-group
-              = f.number_field :lipid, class: "form-control", step: "0.001", min: "0", placeholder: "0.0"
+              = f.number_field :lipid, class: "form-control", step: "any", min: "0", placeholder: "0.0"
               span.input-group-text g
         .col-md-6
           .mb-3
             = f.label :carbohydrate, "炭水化物", class: "form-label"
             .input-group
-              = f.number_field :carbohydrate, class: "form-control", step: "0.001", min: "0", placeholder: "0.0"
+              = f.number_field :carbohydrate, class: "form-control", step: "any", min: "0", placeholder: "0.0"
               span.input-group-text g
-      
+
       .row
         .col-md-6
           .mb-3
             = f.label :salt, "食塩相当量", class: "form-label"
             .input-group
-              = f.number_field :salt, class: "form-control", step: "0.001", min: "0", placeholder: "0.0"
+              = f.number_field :salt, class: "form-control", step: "any", min: "0", placeholder: "0.0"
               span.input-group-text g
         .col-md-6.d-flex.align-items-end.mb-3
           .alert.alert-info.mb-0.w-100
@@ -71,7 +71,7 @@
     .card-body
       .mb-3
         = f.label :memo, "メモ", class: "form-label"
-        = f.text_area :memo, class: "form-control", rows: 3, placeholder: "メモや補足情報があれば入力してください"
+        = f.text_area :memo, class: "form-control auto-resize", rows: 3, placeholder: "メモや補足情報があれば入力してください"
 
   .d-flex.justify-content-between.mt-4
     = link_to food_ingredients_path, class: "btn btn-outline-secondary" do

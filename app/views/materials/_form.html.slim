@@ -34,7 +34,11 @@
         .col-md-6
           .mb-3
             = f.label :food_ingredient_id,'食品成分表 一致', class: "form-label"
-            = f.collection_select :food_ingredient_id, @food_ingredients, :id, :name, { include_blank: true }, class: "form-control select2"
+            .d-flex.align-items-center
+              = f.collection_select :food_ingredient_id, @food_ingredients, :id, :display_name,
+                { include_blank: true }, class: "form-control select2 food-ingredient-select2", style: "width: calc(100% - 50px);"
+              button.btn.btn-outline-success.btn-sm.ms-2.new-food-ingredient-btn type="button" data-bs-toggle="modal" data-bs-target="#newFoodIngredientModal" title="新規食品成分作成"
+                i.bi.bi-plus-circle
         .col-md-6
           .mb-3
             = f.label :recipe_unit,'レシピ上の単位', class: "form-label required"
@@ -70,9 +74,10 @@
     .card-header.bg-light.d-flex.justify-content-between.align-items-center
       h5.mb-0 原材料構成
       .d-flex
-        = link_to_add_association '原材料追加', f, :material_raw_materials, 
+        = link_to_add_association '原材料追加', f, :material_raw_materials,
           data: { association_insertion_node: '#material-raw-materials', association_insertion_method: 'append' },
-          class: 'btn btn-outline-primary btn-sm'
+          class: 'btn btn-outline-primary btn-sm',
+          partial_locals: { raw_materials: @raw_materials }
     
     .card-body
       table.table.table-bordered.mb-0#raw-materials-table
@@ -83,7 +88,7 @@
             th.col-3.text-center 操作
         tbody#material-raw-materials
           = f.fields_for :material_raw_materials do |mrm|
-            = render 'material_raw_material_fields', f: mrm
+            = render 'material_raw_material_fields', f: mrm, raw_materials: @raw_materials
 
   .card.mb-4
     .card-header.bg-light
@@ -98,3 +103,6 @@
 
 / 原材料新規作成用モーダル
 = render 'raw_material_modal'
+
+/ 食品成分新規作成用モーダル
+= render 'food_ingredient_modal'

@@ -436,6 +436,11 @@ function initRawMaterialCreation() {
       $('#rawMaterialFormError').removeClass('d-none').text('原材料名は必須です');
       return;
     }
+
+    if (!category) {
+      $('#rawMaterialFormError').removeClass('d-none').text('カテゴリーは必須です');
+      return;
+    }
     
     // エラーメッセージをクリア
     $('#rawMaterialFormError').addClass('d-none');
@@ -463,22 +468,43 @@ function initRawMaterialCreation() {
         format: 'json'
       },
       success: function(data) {
+        // 作成した原材料の表示名を使用（サーバーから取得）
+        const displayName = data.display_name || data.name;
+
         // 全てのraw-material-select2を更新
         $('.raw-material-select2').each(function() {
-          // 現在の値を保持
-          const currentValue = $(this).val();
-          
-          // 新しいオプションを追加
-          const newOption = new Option(data.name, data.id, false, false);
-          $(this).append(newOption);
-          
-          // モーダルを開いたセレクトボックスがあれば、そこに新しい値を設定
-          const $currentSelect = $('.currently-adding-raw-material');
-          if ($currentSelect.length) {
-            $currentSelect.val(data.id).trigger('change');
-            $currentSelect.removeClass('currently-adding-raw-material');
+          const $select = $(this);
+
+          // select2が初期化されているかチェック
+          if ($select.hasClass('select2-hidden-accessible')) {
+            // select2が初期化済みの場合
+            // 新しいオプションを追加
+            const newOption = new Option(displayName, data.id, false, false);
+            $select.append(newOption);
+
+            // select2のデータを更新
+            $select.trigger('change.select2');
+          } else {
+            // select2が未初期化の場合（動的に追加されたばかりの要素）
+            // 通常のoptionとして追加
+            const newOption = $('<option></option>')
+              .attr('value', data.id)
+              .text(displayName);
+            $select.append(newOption);
           }
         });
+
+        // モーダルを開いたセレクトボックスがあれば、そこに新しい値を設定
+        const $currentSelect = $('.currently-adding-raw-material');
+        if ($currentSelect.length) {
+          // select2が初期化されているかチェック
+          if ($currentSelect.hasClass('select2-hidden-accessible')) {
+            $currentSelect.val(data.id).trigger('change');
+          } else {
+            $currentSelect.val(data.id);
+          }
+          $currentSelect.removeClass('currently-adding-raw-material');
+        }
         
         // モーダルをリセットして閉じる
         $('#new_raw_material_name').val('');
@@ -533,12 +559,150 @@ $(document).on("turbo:before-cache", function() {
 });
 
 
+// 食品成分作成のための関数
+function initFoodIngredientCreation() {
+  // 保存ボタンのクリックイベント
+  $('#saveFoodIngredient').on('click', function() {
+    const name = $('#new_food_ingredient_name').val();
+    const calorie = $('#new_food_ingredient_calorie').val();
+    const protein = $('#new_food_ingredient_protein').val();
+    const lipid = $('#new_food_ingredient_lipid').val();
+    const carbohydrate = $('#new_food_ingredient_carbohydrate').val();
+    const salt = $('#new_food_ingredient_salt').val();
+    const memo = $('#new_food_ingredient_memo').val();
+
+    // 入力チェック
+    if (!name) {
+      $('#foodIngredientFormError').removeClass('d-none').text('食品成分名は必須です');
+      return;
+    }
+
+    // 数値フィールドの必須チェック
+    if (!calorie || !protein || !lipid || !carbohydrate || !salt) {
+      $('#foodIngredientFormError').removeClass('d-none').text('カロリー、タンパク質、脂質、炭水化物、食塩相当量は必須です');
+      return;
+    }
+
+    // エラーメッセージをクリア
+    $('#foodIngredientFormError').addClass('d-none');
+
+    // 保存中の表示
+    const originalBtnText = $(this).text();
+    $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 保存中...').prop('disabled', true);
+
+    // CSRFトークン取得
+    const csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+    // 非同期で食品成分を作成
+    $.ajax({
+      url: '/food_ingredients',
+      type: 'POST',
+      headers: {
+        'X-CSRF-Token': csrfToken
+      },
+      data: {
+        food_ingredient: {
+          name: name,
+          calorie: calorie,
+          protein: protein,
+          lipid: lipid,
+          carbohydrate: carbohydrate,
+          salt: salt,
+          memo: memo || null
+        },
+        format: 'json'
+      },
+      success: function(data) {
+        // 作成した食品成分の表示名を使用（サーバーから取得）
+        const displayName = data.display_name || data.name;
+
+        // 全てのfood-ingredient-select2を更新
+        $('.food-ingredient-select2').each(function() {
+          const $select = $(this);
+
+          // select2が初期化されているかチェック
+          if ($select.hasClass('select2-hidden-accessible')) {
+            // select2が初期化済みの場合
+            // 新しいオプションを追加
+            const newOption = new Option(displayName, data.id, false, false);
+            $select.append(newOption);
+
+            // select2のデータを更新
+            $select.trigger('change.select2');
+          } else {
+            // select2が未初期化の場合
+            // 通常のoptionとして追加
+            const newOption = $('<option></option>')
+              .attr('value', data.id)
+              .text(displayName);
+            $select.append(newOption);
+          }
+        });
+
+        // モーダルを開いたセレクトボックスがあれば、そこに新しい値を設定
+        const $currentSelect = $('.currently-adding-food-ingredient');
+        if ($currentSelect.length) {
+          // select2が初期化されているかチェック
+          if ($currentSelect.hasClass('select2-hidden-accessible')) {
+            $currentSelect.val(data.id).trigger('change');
+          } else {
+            $currentSelect.val(data.id);
+          }
+          $currentSelect.removeClass('currently-adding-food-ingredient');
+        }
+
+        // モーダルをリセットして閉じる
+        $('#new_food_ingredient_name').val('');
+        $('#new_food_ingredient_calorie').val('');
+        $('#new_food_ingredient_protein').val('');
+        $('#new_food_ingredient_lipid').val('');
+        $('#new_food_ingredient_carbohydrate').val('');
+        $('#new_food_ingredient_salt').val('');
+        $('#new_food_ingredient_memo').val('');
+        $('#newFoodIngredientModal').modal('hide');
+
+        // 保存ボタンを元に戻す
+        $('#saveFoodIngredient').html(originalBtnText).prop('disabled', false);
+
+        // 成功メッセージ
+        toastr.success('食品成分を作成しました');
+      },
+      error: function(xhr) {
+        let errorMessage = '食品成分の作成に失敗しました';
+        if (xhr.responseJSON && xhr.responseJSON.errors) {
+          errorMessage = xhr.responseJSON.errors.join('<br>');
+        }
+        $('#foodIngredientFormError').removeClass('d-none').html(errorMessage);
+
+        // 保存ボタンを元に戻す
+        $('#saveFoodIngredient').html(originalBtnText).prop('disabled', false);
+      }
+    });
+  });
+
+  // 新規作成ボタンのクリックイベント
+  $(document).on('click', '.new-food-ingredient-btn', function() {
+    // クリックされたボタンに関連するセレクトボックスをマーク
+    $(this).closest('.d-flex').find('.food-ingredient-select2').addClass('currently-adding-food-ingredient');
+  });
+
+  // モーダルが閉じられたとき
+  $('#newFoodIngredientModal').on('hidden.bs.modal', function() {
+    // エラーメッセージをクリア
+    $('#foodIngredientFormError').addClass('d-none');
+    // 現在追加中のマークをクリア
+    $('.currently-adding-food-ingredient').removeClass('currently-adding-food-ingredient');
+  });
+}
+
 // ページロード時の初期化
 document.addEventListener("DOMContentLoaded", function() {
   onLoad();
   initRawMaterialCreation();
+  initFoodIngredientCreation();
 });
 document.addEventListener("turbo:load", function() {
   onLoad();
   initRawMaterialCreation();
+  initFoodIngredientCreation();
 });

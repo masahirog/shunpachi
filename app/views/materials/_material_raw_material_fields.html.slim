@@ -4,7 +4,8 @@ tr.nested-fields
       span.handle.me-2 style="cursor: move; padding: 5px; color: #6c757d; font-size: 1.2em;"
         i.bi.bi-grip-vertical
       .d-flex.flex-grow-1.align-items-center
-        = f.collection_select :raw_material_id, RawMaterial.all, :id, :display_name, 
+        - raw_materials = local_assigns[:raw_materials] || @raw_materials || RawMaterial.for_company(@current_company)
+        = f.collection_select :raw_material_id, raw_materials, :id, :display_name,
           { include_blank: "選択してください" }, { class: "form-select raw-material-select2", style: "width: 75%;" }
         button.btn.btn-outline-success.btn-sm.ms-2.new-raw-material-btn type="button" data-bs-toggle="modal" data-bs-target="#newRawMaterialModal" title="新規原材料作成"
           i.bi.bi-plus-circle

@@ -1,0 +1,40 @@
+#newFoodIngredientModal.modal.fade tabindex="-1" aria-labelledby="newFoodIngredientModalLabel" aria-hidden="true"
+  .modal-dialog
+    .modal-content
+      .modal-header
+        h5#newFoodIngredientModalLabel.modal-title 新規食品成分登録
+        button.btn-close type="button" data-bs-dismiss="modal" aria-label="閉じる"
+      .modal-body
+        .mb-3
+          label.form-label.required for="new_food_ingredient_name" 食品成分名
+          input#new_food_ingredient_name.form-control type="text" required="required"
+
+        .mb-3
+          label.form-label.required for="new_food_ingredient_calorie" カロリー (kcal/100g)
+          input#new_food_ingredient_calorie.form-control type="number" step="any" min="0" required="required"
+
+        .mb-3
+          label.form-label.required for="new_food_ingredient_protein" タンパク質 (g/100g)
+          input#new_food_ingredient_protein.form-control type="number" step="any" min="0" required="required"
+
+        .mb-3
+          label.form-label.required for="new_food_ingredient_lipid" 脂質 (g/100g)
+          input#new_food_ingredient_lipid.form-control type="number" step="any" min="0" required="required"
+
+        .mb-3
+          label.form-label.required for="new_food_ingredient_carbohydrate" 炭水化物 (g/100g)
+          input#new_food_ingredient_carbohydrate.form-control type="number" step="any" min="0" required="required"
+
+        .mb-3
+          label.form-label.required for="new_food_ingredient_salt" 食塩相当量 (g/100g)
+          input#new_food_ingredient_salt.form-control type="number" step="any" min="0" required="required"
+
+        .mb-3
+          label.form-label for="new_food_ingredient_memo" メモ
+          textarea#new_food_ingredient_memo.form-control.auto-resize rows="3"
+
+        #foodIngredientFormError.alert.alert-danger.d-none role="alert"
+
+      .modal-footer
+        button.btn.btn-secondary type="button" data-bs-dismiss="modal" キャンセル
+        button#saveFoodIngredient.btn.btn-success type="button" 保存する

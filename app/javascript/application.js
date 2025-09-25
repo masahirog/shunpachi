@@ -7,6 +7,7 @@ import "materials"
 import "menus"
 import "daily_menus"
 import "products"
+import "./auto_resize_textarea"
 
 // グローバル変数の設定
 window.$ = window.jQuery = jQuery;

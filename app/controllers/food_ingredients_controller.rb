@@ -31,6 +31,9 @@ class FoodIngredientsController < ApplicationController
       @food_ingredients = @food_ingredients.where("name LIKE ?", "%#{@query}%")
     end
     
+    # idの降順で並び替え（新しいものを上に）
+    @food_ingredients = @food_ingredients.order(id: :desc)
+
     # ページネーション
     @food_ingredients = @food_ingredients.paginate(page: params[:page], per_page: 30)
   end
@@ -42,10 +45,19 @@ class FoodIngredientsController < ApplicationController
   def create
     @food_ingredient = FoodIngredient.new(food_ingredient_params)
     @food_ingredient.company = current_company  # 自社専用として作成
-    if @food_ingredient.save
-      redirect_to food_ingredients_path, notice: '食品成分を作成しました。'
-    else
-      render :new
+
+    respond_to do |format|
+      if @food_ingredient.save
+        format.html { redirect_to food_ingredients_path, notice: '食品成分を作成しました。' }
+        format.json {
+          render json: @food_ingredient.as_json.merge(
+            display_name: @food_ingredient.display_name
+          ), status: :created
+        }
+      else
+        format.html { render :new }
+        format.json { render json: { errors: @food_ingredient.errors.full_messages }, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -71,6 +83,6 @@ class FoodIngredientsController < ApplicationController
   end
 
   def food_ingredient_params
-    params.require(:food_ingredient).permit(:name, :calorie, :protein, :lipid, :carbohydrate, :salt)
+    params.require(:food_ingredient).permit(:name, :calorie, :protein, :lipid, :carbohydrate, :salt, :memo)
   end
 end

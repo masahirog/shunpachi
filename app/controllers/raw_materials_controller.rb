@@ -56,7 +56,11 @@ class RawMaterialsController < ApplicationController
     respond_to do |format|
       if @raw_material.save
         format.html { redirect_to raw_materials_path, notice: '原材料を作成しました。' }
-        format.json { render json: @raw_material, status: :created }
+        format.json {
+          render json: @raw_material.as_json.merge(
+            display_name: @raw_material.display_name
+          ), status: :created
+        }
       else
         format.html { render :new }
         format.json { render json: { errors: @raw_material.errors.full_messages }, status: :unprocessable_entity }

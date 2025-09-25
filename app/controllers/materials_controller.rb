@@ -53,12 +53,14 @@ class MaterialsController < ApplicationController
     @material = Material.new
     @vendors = Vendor.for_company(current_company)
     @food_ingredients = FoodIngredient.for_company(current_company)
+    @raw_materials = RawMaterial.for_company(current_company)
   end
 
 
   def edit
     @vendors = Vendor.for_company(current_company)
     @food_ingredients = FoodIngredient.for_company(current_company)
+    @raw_materials = RawMaterial.for_company(current_company)
   end
 
 
@@ -75,6 +77,7 @@ class MaterialsController < ApplicationController
     else
       @vendors = Vendor.for_company(current_company)
       @food_ingredients = FoodIngredient.for_company(current_company)
+      @raw_materials = RawMaterial.for_company(current_company)
       render :new
     end
   end
@@ -92,9 +95,10 @@ class MaterialsController < ApplicationController
     else
       # デバッグ用：エラーを確認
       Rails.logger.debug "Update failed: #{@material.errors.full_messages}"
-      
+
       @vendors = Vendor.for_company(current_company)
       @food_ingredients = FoodIngredient.for_company(current_company)
+      @raw_materials = RawMaterial.for_company(current_company)
       render :edit
     end
   end
