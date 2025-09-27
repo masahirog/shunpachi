@@ -9,24 +9,38 @@ class Product < ApplicationRecord
 
 
   enum category: { souzai: 0, bento: 1, hankanhin: 2 }
-  
+
   validates :name, presence: true, uniqueness: { scope: :company_id }
   validates :food_label_name, presence: true
   validates :sell_price, :cost_price, numericality: { greater_than_or_equal_to: 0 }
+
+  # public_idの自動生成
+  before_create :generate_public_id
   
   # 画像のバリデーション
   validate :acceptable_image
   
+  # 既存レコードにpublic_idを生成するクラスメソッド
+  def self.generate_missing_public_ids
+    where(public_id: nil).find_each do |product|
+      product.update_column(:public_id, SecureRandom.alphanumeric(8))
+    end
+  end
+
   private
-  
+
+  def generate_public_id
+    self.public_id = SecureRandom.alphanumeric(8) if public_id.blank?
+  end
+
   def acceptable_image
     return unless image.attached?
-    
+
     # 画像サイズのバリデーション
     unless image.blob.byte_size <= 5.megabyte
       errors.add(:image, 'は5MB以下にしてください')
     end
-    
+
     # 画像フォーマットのバリデーション
     acceptable_types = ['image/jpeg', 'image/png', 'image/gif']
     unless acceptable_types.include?(image.blob.content_type)

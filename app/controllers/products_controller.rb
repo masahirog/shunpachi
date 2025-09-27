@@ -68,6 +68,17 @@ class ProductsController < ApplicationController
     redirect_to products_path, notice: '商品を削除しました。'
   end
 
+  def regenerate_public_id
+    @product = Product.for_company(current_company).find(params[:id])
+    new_public_id = SecureRandom.alphanumeric(8)
+
+    if @product.update(public_id: new_public_id)
+      redirect_to product_path(@product), notice: "公開IDを再生成しました。新しいID: #{new_public_id}"
+    else
+      redirect_to product_path(@product), alert: '公開IDの再生成に失敗しました。'
+    end
+  end
+
 
   def generate_raw_materials
     begin

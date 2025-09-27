@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_24_230213) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_27_043430) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -212,9 +212,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_24_230213) do
     t.string "jancode"
     t.integer "label_call_number"
     t.bigint "company_id", null: false
+    t.string "public_id"
     t.index ["company_id"], name: "index_products_on_company_id"
     t.index ["container_id"], name: "index_products_on_container_id"
     t.index ["name"], name: "index_products_on_name", unique: true
+    t.index ["public_id"], name: "index_products_on_public_id", unique: true
   end
 
   create_table "raw_materials", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|

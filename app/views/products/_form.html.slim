@@ -51,7 +51,7 @@
               span.input-group-text %
       .mb-3
         = f.label :introduction, "商品紹介", class: "form-label"
-        = f.text_area :introduction, class: "form-control"
+        = f.text_area :introduction, class: "form-control auto-resize", rows: 3
   .card.mb-4
     .card-header.bg-light
       h5.mb-0 商品画像
@@ -89,10 +89,10 @@
       
       .mb-3
         = f.label :raw_materials_food_contents,"原材料表示（食品）", class: "form-label"
-        = f.text_area :raw_materials_food_contents, class: "form-control", rows: 3
+        = f.text_area :raw_materials_food_contents, class: "form-control auto-resize", rows: 3
       .mb-3
         = f.label :raw_materials_additive_contents,"原材料表示（添加物）", class: "form-label"
-        = f.text_area :raw_materials_additive_contents, class: "form-control", rows: 3
+        = f.text_area :raw_materials_additive_contents, class: "form-control auto-resize", rows: 3
       
  
       .mb-3#allergens-container class="#{product.persisted? && product.product_menus.any? ? '' : 'd-none'}"

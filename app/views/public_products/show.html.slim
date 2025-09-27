@@ -1,0 +1,147 @@
+.container-fluid.py-2.px-3
+  .row
+    .col-md-8
+      / 基本情報カード
+      .card.shadow-sm.mb-4
+        .card-header.bg-light
+          h5.mb-0 基本情報
+        .card-body
+          .row
+            .col-md-12
+              table.table.table-borderless.mb-0
+                tbody
+                  tr
+                    th.text-muted style="width: 20%;" 商品名
+                    td.fw-bold = @product.name
+                  tr
+                    th.text-muted カテゴリ
+                    td
+                      span.badge.rounded-pill.bg-info.text-dark = @product.category_i18n
+                  tr
+                    th.text-muted 容器
+                    td = @product.container&.name || "—"
+                  tr
+                    th.text-muted JANコード
+                    td = @product.jancode
+                  tr
+                    th.text-muted 内容量
+                    td = @product.sales_unit_amount
+
+          - if @product.introduction.present?
+            hr.my-3
+            h6.text-muted.mb-2 商品紹介
+            = simple_format(@product.introduction, class: "mb-0")
+
+      / 食品表示情報カード
+      .card.shadow-sm.mb-4
+        .card-header.bg-light
+          h5.mb-0 食品表示情報
+        .card-body
+          .mb-3
+            h6.text-muted.mb-1 名称
+            p.mb-0 = @product.food_label_name
+
+          - if @product.raw_materials_food_contents.present?
+            .mb-3
+              h6.text-muted.mb-1 原材料名（食品）
+              = simple_format(@product.raw_materials_food_contents, class: "mb-0")
+
+          - if @product.raw_materials_additive_contents.present?
+            .mb-3
+              h6.text-muted.mb-1 原材料名（添加物）
+              = simple_format(@product.raw_materials_additive_contents, class: "mb-0")
+
+          - if @product.how_to_save.present?
+            .mb-3
+              h6.text-muted.mb-1 保存方法
+              = simple_format(@product.how_to_save, class: "mb-0")
+
+      / 栄養成分カード
+      .card.shadow-sm.mb-4
+        .card-header.bg-light
+          h5.mb-0 栄養成分表示
+        .card-body
+          table.table.table-bordered.mb-0
+            thead.table-light
+              tr
+                th.text-center カロリー
+                th.text-center たんぱく質
+                th.text-center 脂質
+                th.text-center 炭水化物
+                th.text-center 食塩相当量
+            tbody
+              tr
+                td.text-center = "#{@product.calorie&.round(1) || 0} kcal"
+                td.text-center = "#{@product.protein&.round(1) || 0} g"
+                td.text-center = "#{@product.lipid&.round(1) || 0} g"
+                td.text-center = "#{@product.carbohydrate&.round(1) || 0} g"
+                td.text-center = "#{@product.salt&.round(1) || 0} g"
+
+    .col-md-4
+      / 商品画像カード
+      - if @product.image.attached?
+        .card.shadow-sm.mb-4
+          .card-header.bg-light
+            h5.mb-0 商品画像
+          .card-body.text-center
+            = image_tag @product.image.variant(resize_to_limit: [300, 300]),
+              class: "img-thumbnail product-image-thumbnail",
+              style: "cursor: pointer; max-width: 100%;",
+              data: { bs_toggle: "modal", bs_target: "#productImageModal" }
+            p.text-muted.small.mt-2 クリックで拡大
+
+      / アレルギー情報カード
+      - if @allergens.any?
+        .card.shadow-sm.mb-4
+          .card-header.bg-light
+            h5.mb-0 アレルギー情報
+          .card-body
+            .d-flex.flex-wrap
+              - @allergens.each do |allergen|
+                span.badge.bg-warning.text-dark.me-2.mb-2 = MaterialAllergy.allergens_i18n[allergen]
+
+  / レシピ情報セクション
+  - if @product_menus.any?
+    .card.shadow-sm.mb-4
+      .card-header.bg-light
+        h5.mb-0 レシピ構成
+      .card-body.p-0
+        .table-responsive
+          table.table.table-hover.mb-0
+            thead.table-light
+              tr
+                th style="width: 25%;" メニュー名
+                th.text-center style="width: 12%;" カテゴリ
+                th style="width: 35%;" 材料名
+                th style="width: 28%;" 下処理
+            tbody
+              - @product_menus.each do |product_menu|
+                - menu = product_menu.menu
+                - if menu
+                  - materials = menu.menu_materials.includes(:material).order(:row_order).select { |mm| mm.material.present? }
+                  - if materials.any?
+                    - materials.each_with_index do |menu_material, material_index|
+                      tr
+                        - if material_index == 0
+                          td.fw-bold rowspan="#{materials.count}" = menu.name
+                          td.text-center rowspan="#{materials.count}"
+                            span.badge.bg-info.text-dark = menu.category
+                        td = menu_material.material.name
+                        td = menu_material.preparation || "—"
+                  - else
+                    tr
+                      td.fw-bold = menu.name
+                      td.text-center
+                        span.badge.bg-info.text-dark = menu.category
+                      td.text-muted colspan="2" 材料が設定されていません
+
+/ 画像拡大モーダル
+- if @product.image.attached?
+  #productImageModal.modal.fade tabindex="-1"
+    .modal-dialog.modal-xl.modal-dialog-centered
+      .modal-content
+        .modal-header
+          h5.modal-title = @product.name
+          button.btn-close type="button" data-bs-dismiss="modal"
+        .modal-body.text-center.p-0
+          = image_tag @product.image, class: "img-fluid", style: "max-height: 80vh;"
