@@ -199,7 +199,7 @@
                           span.text-muted.small 原価: #{number_to_currency(menu.cost_price, unit: "円")}
                         td.text-center rowspan="#{materials.count}"
                           span.badge.bg-info.text-dark = menu.category
-                      td = menu_material.material.name
+                      td = link_to menu_material.material.name, edit_material_path(menu_material.material), class: "text-decoration-none", target: "_blank"
                       td.text-center = "#{format_number(menu_material.amount_used)} #{menu_material.material.recipe_unit_i18n}"
                       td = menu_material.preparation || "—"
                       td.text-end = number_to_currency(menu_material.cost_price, unit: "円")

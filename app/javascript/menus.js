@@ -74,26 +74,22 @@ function onLoad() {
         if (data.menu_materials && data.menu_materials.length > 0) {
           var materialsHtml = '<div class="table-responsive"><table class="table table-sm table-hover mb-0">' +
                               '<thead class="table-light"><tr>' +
-                              '<th class="small" style="width: 35%;">材料名</th>' +
-                              '<th class="small" style="width: 20%;">数量</th>' +
+                              '<th class="small" style="width: 40%;">材料名</th>' +
+                              '<th class="small" style="width: 25%;">数量</th>' +
                               '<th class="small" style="width: 35%;">下処理</th>' +
-                              '<th class="small" style="width: 10%;">操作</th>' +
                               '</tr></thead><tbody>';
-          
+
           data.menu_materials.forEach(function(material) {
+            var materialName = material.name;
+            if (material.material_id) {
+              materialName = '<a href="/materials/' + material.material_id + '/edit" class="text-decoration-none" target="_blank">' + material.name + '</a>';
+            }
+
             materialsHtml += '<tr>' +
-                             '<td class="small">' + material.name + '</td>' +
+                             '<td class="small">' + materialName + '</td>' +
                              '<td class="small">' + material.amount_used + ' ' + material.unit + '</td>' +
                              '<td class="small">' + (material.preparation || '—') + '</td>' +
-                             '<td class="small">';
-            
-            // 材料編集リンクを追加
-            if (material.material_id) {
-              materialsHtml += '<a href="/materials/' + material.material_id + '/edit" class="btn btn-outline-info btn-sm" title="材料を編集" target="_blank">' +
-                               '<i class="bi bi-pencil-square"></i></a>';
-            }
-            
-            materialsHtml += '</td></tr>';
+                             '</tr>';
           });
           
           materialsHtml += '</tbody></table></div>';

@@ -38,8 +38,11 @@
           - cost_ratio = product.sell_price.to_f > 0 ? ((product.cost_price / product.sell_price) * 100).round(1) : 0
           tr.js-product-item
             td.text-center
-              = link_to product_path(product), class: "btn btn-sm btn-outline-primary" do
-                i.bi.bi-eye
+              .btn-group role="group"
+                = link_to product_path(product), class: "btn btn-sm btn-outline-primary", title: "詳細" do
+                  i.bi.bi-eye
+                = link_to edit_product_path(product), class: "btn btn-sm btn-outline-secondary", title: "編集" do
+                  i.bi.bi-pencil
             td.text-center
               - if product.image.attached?
                 = image_tag product.image.variant(resize_to_limit: [40, 40]), class: "product-thumbnail", style: "cursor: pointer;", data: { bs_toggle: "modal", bs_target: "#imageModal", image_url: url_for(product.image), product_name: product.name }
