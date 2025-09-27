@@ -5,7 +5,7 @@
   .header-container
     .header
       span.title 製造指示書 #{l @daily_menu.date, format: :long}
-      span.print-time 印刷: #{Time.now.strftime('%Y/%m/%d %H:%M')}
+      span.print-time 印刷: #{Time.current.strftime('%Y/%m/%d %H:%M')}
   
   .product-header
     h2.product-name = daily_menu_product.product.name

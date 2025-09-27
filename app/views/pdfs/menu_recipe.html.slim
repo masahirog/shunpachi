@@ -1,6 +1,6 @@
 .header-container
   .header
-    span.print-time 印刷: #{Time.now.strftime('%Y/%m/%d %H:%M')}
+    span.print-time 印刷: #{Time.current.strftime('%Y/%m/%d %H:%M')}
 
 .menu-header
   h2.menu-name = @menu.name

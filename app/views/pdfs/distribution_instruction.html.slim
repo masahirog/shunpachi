@@ -4,7 +4,7 @@
   .header
     span.title 積載仕分け指示書 #{l @daily_menu.date, format: :long}
   .header-info
-    span.print-time 印刷: #{Time.now.strftime('%Y/%m/%d %H:%M')}
+    span.print-time 印刷: #{Time.current.strftime('%Y/%m/%d %H:%M')}
 
 
 .distribution-table
