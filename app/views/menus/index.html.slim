@@ -39,9 +39,6 @@
             td.text-center
               - if menu.image.attached?
                 = image_tag menu.image, class: "img-thumbnail", style: "max-height: 60px; max-width: 60px;"
-              - else
-                span.text-muted
-                  i.bi.bi-image style="font-size: 2rem;"
             td.text-center
               = link_to menu_path(menu), class: "btn btn-sm btn-outline-primary" do
                 i.bi.bi-eye
