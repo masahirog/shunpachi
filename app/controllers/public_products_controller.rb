@@ -5,6 +5,11 @@ class PublicProductsController < ApplicationController
   def show
     @product = Product.find_by!(public_id: params[:public_id])
 
+    # OGP用の画像URL設定
+    if @product.image.attached?
+      @og_image_url = url_for(@product.image)
+    end
+
     # 画像をActiveStorageから読み込む
     @product_menus = @product.product_menus.includes(
       menu: {
