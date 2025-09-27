@@ -127,7 +127,6 @@ namespace :company do
       puts "ベンダー数: #{company.vendors.count}"
       puts "店舗数: #{company.stores.count}"
       puts "日次献立数: #{company.daily_menus.count}"
-      puts "容器数: #{company.containers.count}"
       
       if company.users.any?
         puts ""

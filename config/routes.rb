@@ -9,7 +9,6 @@ Rails.application.routes.draw do
   get 'profile', to: 'profiles#show'
   patch 'profile', to: 'profiles#update'
 
-  resources :containers
   resources :vendors
   resources :materials do
     collection do

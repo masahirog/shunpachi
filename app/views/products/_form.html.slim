@@ -13,14 +13,10 @@
       h5.mb-0 基本情報
     .card-body        
       .row
-        .col-md-6
+        .col-md-12
           .mb-3
             = f.label :name, "名称", class: "form-label required"
             = f.text_field :name, class: "form-control required"
-        .col-md-6
-          .mb-3
-            = f.label :container_id, "容器", class: "form-label"
-            = f.collection_select :container_id, Container.all, :id, :name, { include_blank: "容器を選択" }, { class: "form-select" }
         .col-md-4
           .mb-3
             = f.label :category, "カテゴリー", class: "form-label required"

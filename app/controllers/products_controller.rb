@@ -2,7 +2,7 @@ class ProductsController < ApplicationController
   before_action :set_product, only: %i[edit update destroy show]
 
   def index
-    @products = Product.includes(:container).for_company(current_company)
+    @products = Product.for_company(current_company)
     
     if params[:query].present?
       @products = @products.where("name LIKE ? OR food_label_name LIKE ?", "%#{params[:query]}%", "%#{params[:query]}%")
@@ -140,7 +140,6 @@ class ProductsController < ApplicationController
 
   def show
     @product = Product.includes(
-      :container,
       product_menus: { menu: { menu_materials: :material } }
     ).for_company(current_company).find(params[:id])
 
@@ -238,9 +237,9 @@ class ProductsController < ApplicationController
   end
 
   def product_params
-    params.require(:product).permit(:name, :food_label_name, :sell_price, :cost_price, :category, :container_id, 
-    :introduction, :memo, :image, :serving_infomation, :raw_materials_food_contents, 
-    :raw_materials_additive_contents, :calorie, :protein, :lipid, :carbohydrate, :salt, 
+    params.require(:product).permit(:name, :food_label_name, :sell_price, :cost_price, :category,
+    :introduction, :memo, :image, :serving_infomation, :raw_materials_food_contents,
+    :raw_materials_additive_contents, :calorie, :protein, :lipid, :carbohydrate, :salt,
     :how_to_save, :sales_unit_amount, :unused_flag,:jancode,:label_call_number,
     product_menus_attributes: [:id, :menu_id, :product_id, :row_order, :_destroy])
   end

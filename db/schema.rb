@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_27_043430) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_27_054828) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -44,16 +44,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_27_043430) do
     t.string "subdomain", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "containers", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "name", null: false
-    t.integer "products_count", default: 0, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "company_id"
-    t.index ["company_id"], name: "index_containers_on_company_id"
-    t.index ["name"], name: "index_containers_on_name", unique: true
   end
 
   create_table "daily_menu_products", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -186,7 +176,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_27_043430) do
   end
 
   create_table "products", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "container_id"
     t.string "name", null: false
     t.string "food_label_name", null: false
     t.integer "sell_price", default: 0, null: false
@@ -214,7 +203,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_27_043430) do
     t.bigint "company_id", null: false
     t.string "public_id"
     t.index ["company_id"], name: "index_products_on_company_id"
-    t.index ["container_id"], name: "index_products_on_container_id"
     t.index ["name"], name: "index_products_on_name", unique: true
     t.index ["public_id"], name: "index_products_on_public_id", unique: true
   end
@@ -289,7 +277,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_27_043430) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "containers", "companies"
   add_foreign_key "daily_menus", "companies"
   add_foreign_key "food_ingredients", "companies"
   add_foreign_key "material_raw_materials", "materials"

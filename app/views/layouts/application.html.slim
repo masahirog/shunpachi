@@ -38,7 +38,6 @@ html
                   li = link_to "仕入れ業者", vendors_path, class: "dropdown-item"
                   li = link_to "食品成分マスター", food_ingredients_path, class: "dropdown-item"
                   li = link_to "原材料マスター", raw_materials_path, class: "dropdown-item"
-                  li = link_to "容器管理", containers_path, class: "dropdown-item"
             ul.navbar-nav.ms-auto
               - if user_signed_in?
                 - if current_company

@@ -79,7 +79,6 @@ This is a food manufacturing management system (shunpachi) that handles:
 - **Daily Menus** - Daily production schedules
 - **Stores** - Distribution locations
 - **Food Ingredients** - Nutritional components
-- **Containers** - Packaging information
 
 ### Key Relationships
 - Materials have many Raw Materials (through material_raw_materials)
@@ -127,7 +126,6 @@ This application supports multi-tenant architecture where multiple companies can
 - **Vendor** - Supplier management
 - **Store** - Store/location management
 - **DailyMenu** - Daily production schedules (core business)
-- **Container** - Packaging management
 
 #### Level 2: Inherited Tenant Scoped (separated via relationships)
 - **Material** - Separated via `vendor.company_id`
