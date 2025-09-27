@@ -1,6 +1,5 @@
 .header-container
   .header
-    span.title #{@menu.name} レシピ（#{@serving_size}人前）
     span.print-time 印刷: #{Time.now.strftime('%Y/%m/%d %H:%M')}
 
 .menu-header
@@ -13,11 +12,7 @@
       span.info-label 1人前原価:
       span.info-value = "#{@menu.cost_price}円"
 
-hr.section-divider
-
 .menu-section
-  h3.menu-title = @menu.name
-  
   - if @menu.menu_materials.any?
     table.materials-table
       colgroup

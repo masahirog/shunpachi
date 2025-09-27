@@ -176,7 +176,7 @@ function onLoad() {
     // select2を適用
     $('.menu-select').select2({
       placeholder: 'メニューを選択',
-      allowClear: true,
+      allowClear: false,
       width: '100%'
     });
 
@@ -195,7 +195,7 @@ function onLoad() {
     if (newSelect.length) {
       newSelect.select2({
         placeholder: 'メニューを選択',
-        allowClear: true,
+        allowClear: false,
         width: '100%'
       });
       

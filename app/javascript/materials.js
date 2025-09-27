@@ -32,7 +32,7 @@ function onLoad() {
     $(insertedItem).find('.raw-material-select2').select2({
       width: "100%",
       placeholder: "原材料を検索",
-      allowClear: true,
+      allowClear: false,
       language: "ja"
     }).on('select2:select', function(e) {
       // 原材料が選択されたときのイベント処理
@@ -183,7 +183,7 @@ function onLoad() {
     $(".material_select2").select2({
       width: "100%",
       placeholder: "食材を検索",
-      allowClear: true,
+      allowClear: false,
       ajax: {
         url: "/materials/search",
         dataType: "json",
@@ -337,7 +337,7 @@ function initSelect2() {
   // 基本的な初期化
   $('.select2').select2({
     placeholder: '選択してください',
-    allowClear: true,
+    allowClear: false,
     width: '100%',
     language: {
       noResults: function() {
@@ -349,7 +349,7 @@ function initSelect2() {
   // FoodIngredient用の特別な設定
   $('select[name="material[food_ingredient_id]"]').select2({
     placeholder: '食品成分を検索...',
-    allowClear: true,
+    allowClear: false,
     width: '100%',
     minimumInputLength: 1,
     language: {
@@ -386,7 +386,7 @@ function initRawMaterialSelect2() {
   $('.raw-material-select2').select2({
     width: "100%",
     placeholder: "原材料を検索",
-    allowClear: true,
+    allowClear: false,
     language: "ja"
   }).on('select2:select', function(e) {
     // 原材料が選択されたとき

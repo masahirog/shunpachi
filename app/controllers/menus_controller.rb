@@ -142,7 +142,7 @@ class MenusController < ApplicationController
 
   def menu_params
     params.require(:menu).permit(:name, :category, :cook_before, :cook_on_the_day, :cost_price,
-      :calorie,:protein,:lipid,:carbohydrate,:salt,
+      :calorie,:protein,:lipid,:carbohydrate,:salt, :image,
     menu_materials_attributes: [:id,:menu_id,:material_id,:amount_used,:preparation,:row_order,
       :gram_quantity,:calorie,:protein,:lipid,:carbohydrate,:salt,:source_group,:cost_price,:_destroy])
 

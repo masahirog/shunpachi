@@ -8,6 +8,9 @@ function onLoad() {
       // jQueryUIが読み込まれたら初期化を実行
       document.addEventListener('jquery-ui-loaded', initMenuMaterialsSortable);
     }
+
+    // gram_quantity編集トグル機能
+    initGramQuantityToggle();
   }
 
   // メニュー選択時のイベント処理
@@ -301,6 +304,46 @@ function initMenuMaterialsSortable() {
 function updateMenuMaterialPositions() {
   $('#menu_materials-add-point tr.nested-fields').each(function(index) {
     $(this).find('input[name*="[row_order]"]').val(index + 1);
+  });
+}
+
+// gram_quantity編集トグル機能
+function initGramQuantityToggle() {
+  // 既存の編集ボタンにイベントを設定
+  $(document).on('click', '.gram-quantity-edit-toggle', function(e) {
+    e.preventDefault();
+    const $button = $(this);
+    const $row = $button.closest('tr.nested-fields');
+    const $gramQuantityField = $row.find('.gram_quantity');
+
+    // readonly属性をトグル
+    if ($gramQuantityField.prop('readonly')) {
+      $gramQuantityField.prop('readonly', false);
+      $gramQuantityField.css('background-color', '#fff');
+      $button.find('i').removeClass('bi-pencil').addClass('bi-check-circle');
+      $button.find('i').css('color', '#28a745');
+      // フィールドにフォーカスを設定して全選択
+      $gramQuantityField.focus().select();
+    } else {
+      $gramQuantityField.prop('readonly', true);
+      $gramQuantityField.css('background-color', '');
+      $button.find('i').removeClass('bi-check-circle').addClass('bi-pencil');
+      $button.find('i').css('color', 'green');
+    }
+  });
+
+  // number_fieldのフォーカス/クリック時に全選択
+  $(document).on('focus click', 'input[type="number"]', function() {
+    // readonlyでない場合のみ全選択
+    if (!$(this).prop('readonly')) {
+      $(this).select();
+    }
+  });
+
+  // 新しく追加された行にも対応
+  $('#menu_materials-add-point').on('cocoon:after-insert', function(e, insertedItem) {
+    // 新しく追加された行のgram_quantityフィールドもreadonlyに設定
+    $(insertedItem).find('.gram_quantity').prop('readonly', true);
   });
 }
 

@@ -7,7 +7,7 @@ tr.nested-fields
     .food_ingredient.mt-1.ps-2
       .food_ingredient_a
         - if f.object.material_id.present? && f.object.material.food_ingredient.present?
-            = link_to f.object.material.food_ingredient.name.truncate(20),"/food_ingredients/#{f.object.material.food_ingredient.id}/edit"
+            span.text-muted = f.object.material.food_ingredient.name.truncate(20)
       .food_ingredient_info.d-none
         - if f.object.material_id.present? && f.object.material.food_ingredient.present?
             input.food_ingredient_info_input.unit_calorie value = "#{f.object.material.food_ingredient.calorie}"
@@ -28,12 +28,14 @@ tr.nested-fields
       span.float-start.material_unit.ms-2.mt-2 = f.object.material.recipe_unit_i18n if f.object.material_id.present?
 
     .clearfix.mt-1
-      = f.number_field :gram_quantity, style:'float:left;width:100px;border: 1px solid #ccc;border-radius: 3px;padding:0 10px;',class:'gram_quantity', step: "0.01"
+      = f.number_field :gram_quantity, style:'float:left;width:100px;border: 1px solid #ccc;border-radius: 3px;padding:0 10px;',class:'gram_quantity', step: "0.01", readonly: true
       - if f.object.material_id.present?
         input.recipe_unit_gram_quantity.d-none value="#{f.object.material.recipe_unit_gram_quantity}"
       - else
         input.recipe_unit_gram_quantity.d-none
       span.float-start.ms-2.mt-1 style='color:#555555;' g
+      button.btn.btn-link.btn-sm.float-start.p-0.ms-1.gram-quantity-edit-toggle type="button" style="line-height: 1;margin-top:0.5rem;"
+        i.bi.bi-pencil style="font-size: 0.75rem; color: green;"
   td
     .clearfix
       = f.number_field :cost_price,class:'form-control cost_price',readonly:true,style:'float:left;width:90px;'
