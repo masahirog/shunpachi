@@ -43,8 +43,12 @@
               - @food_ingredients.each do |food_ingredient|
                 tr
                   td.text-center
-                    = link_to edit_food_ingredient_path(food_ingredient), class: "btn btn-sm btn-outline-primary" do
-                      i.bi.bi-pencil-square
+                    - if food_ingredient.shared?
+                      button.btn.btn-sm.btn-outline-secondary.disabled type="button" title="共通データは編集できません"
+                        i.bi.bi-lock
+                    - else
+                      = link_to edit_food_ingredient_path(food_ingredient), class: "btn btn-sm btn-outline-primary" do
+                        i.bi.bi-pencil-square
                   td = food_ingredient.name
                   td.text-center
                     - if food_ingredient.shared?

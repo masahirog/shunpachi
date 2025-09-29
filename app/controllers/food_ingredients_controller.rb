@@ -1,5 +1,6 @@
 class FoodIngredientsController < ApplicationController
   before_action :set_food_ingredient, only: %i[edit update destroy]
+  before_action :check_editable, only: %i[edit update destroy]
 
   def search
     query = params[:q]
@@ -80,6 +81,12 @@ class FoodIngredientsController < ApplicationController
 
   def set_food_ingredient
     @food_ingredient = FoodIngredient.for_company(current_company).find(params[:id])
+  end
+
+  def check_editable
+    if @food_ingredient.shared?
+      redirect_to food_ingredients_path, alert: '共通データは編集・削除できません。'
+    end
   end
 
   def food_ingredient_params

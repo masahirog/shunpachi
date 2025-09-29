@@ -10,16 +10,16 @@
     .card-body.py-2.px-3
       = form_with url: raw_materials_path, method: :get, local: true do |f|
         .row.g-2
-          .col-md-6
+          .col-md-4
             .input-group
               span.input-group-text.py-1
                 i.bi.bi-search
               = f.text_field :query, value: params[:query], class: "form-control", placeholder: "原材料名で検索...", autocomplete: "off"
           .col-md-3
             = f.select :category, options_for_select([["すべてのカテゴリ", ""]] + RawMaterial.categories.keys.map { |c| [t("enums.raw_material.category.#{c}"), c] }, params[:category]), {}, class: "form-select"
-          .col-md-3
+          .col-md-2
             = f.select :scope, options_for_select([["全て", ""], ["共通", "common"], ["自社専用", "company_only"]], params[:scope]), {}, class: "form-select"
-          .col-md-2.text-end
+          .col-md-3.text-end
             = f.submit "検索", class: "btn btn-primary btn-sm me-2"
             - if params[:query].present? || params[:category].present? || params[:scope].present?
               = link_to "クリア", raw_materials_path, class: "btn btn-outline-secondary btn-sm"
@@ -38,8 +38,12 @@
         - @raw_materials.each do |raw_material|
           tr.js-raw-material-item
             td.text-center
-              = link_to edit_raw_material_path(raw_material), class: "btn btn-sm btn-outline-primary" do
-                i.bi.bi-pencil-square
+              - if raw_material.shared?
+                button.btn.btn-sm.btn-outline-secondary.disabled type="button" title="共通データは編集できません"
+                  i.bi.bi-lock
+              - else
+                = link_to edit_raw_material_path(raw_material), class: "btn btn-sm btn-outline-primary" do
+                  i.bi.bi-pencil-square
             td = raw_material.name
             td.text-center
               - if raw_material.category.present?

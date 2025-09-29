@@ -1,5 +1,6 @@
 class RawMaterialsController < ApplicationController
   before_action :set_raw_material, only: %i[edit update destroy show]
+  before_action :check_editable, only: %i[edit update destroy]
 
   def index
     @raw_materials = RawMaterial.includes(:materials)
@@ -87,6 +88,12 @@ class RawMaterialsController < ApplicationController
 
   def set_raw_material
     @raw_material = RawMaterial.for_company(current_company).find(params[:id])
+  end
+
+  def check_editable
+    if @raw_material.shared?
+      redirect_to raw_materials_path, alert: '共通データは編集・削除できません。'
+    end
   end
 
   def raw_material_params

@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root "daily_menus#index" # トップページを日別メニュー一覧に設定
+  root "products#index" # トップページを商品一覧に変更
   devise_for :users
 
   # 公開用製品ページ（認証不要）

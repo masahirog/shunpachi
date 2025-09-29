@@ -6,7 +6,11 @@ class RawMaterial < ApplicationRecord
 
   validates :name, presence: true, uniqueness: { scope: :company_id }
   validates :category, presence: true
-  
+
+  # 共通データの編集を防ぐ
+  before_update :prevent_shared_update
+  before_destroy :prevent_shared_destroy
+
   enum category: { food: 1, additive: 2, other: 3 }
   
   # ハイブリッドスコープ: 共通データ + 自社データ
@@ -27,5 +31,21 @@ class RawMaterial < ApplicationRecord
   
   def shared?
     company_id.nil?
+  end
+
+  private
+
+  def prevent_shared_update
+    if shared? && !company_id_changed?
+      errors.add(:base, '共通データは編集できません')
+      throw(:abort)
+    end
+  end
+
+  def prevent_shared_destroy
+    if shared?
+      errors.add(:base, '共通データは削除できません')
+      throw(:abort)
+    end
   end
 end

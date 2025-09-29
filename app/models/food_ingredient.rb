@@ -5,6 +5,10 @@ class FoodIngredient < ApplicationRecord
 
   validates :name, presence: true, uniqueness: { scope: :company_id }
 
+  # 共通データの編集を防ぐ
+  before_update :prevent_shared_update
+  before_destroy :prevent_shared_destroy
+
   # 栄養成分変更時の連動更新
   after_update :update_related_nutrition, if: :nutrition_changed?
   
@@ -29,6 +33,20 @@ class FoodIngredient < ApplicationRecord
   end
 
   private
+
+  def prevent_shared_update
+    if shared? && !company_id_changed?
+      errors.add(:base, '共通データは編集できません')
+      throw(:abort)
+    end
+  end
+
+  def prevent_shared_destroy
+    if shared?
+      errors.add(:base, '共通データは削除できません')
+      throw(:abort)
+    end
+  end
 
   def nutrition_changed?
     saved_change_to_calorie? || saved_change_to_protein? ||
