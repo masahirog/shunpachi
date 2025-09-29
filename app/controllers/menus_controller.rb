@@ -130,8 +130,11 @@ class MenusController < ApplicationController
   end
 
   def destroy
-    @menu.destroy
-    redirect_to menus_path, notice: 'メニューを削除しました。'
+    if @menu.destroy
+      redirect_to menus_path, notice: 'メニューを削除しました。'
+    else
+      redirect_to menu_path(@menu), alert: @menu.errors.full_messages.first
+    end
   end
 
   private

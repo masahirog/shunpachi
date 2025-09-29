@@ -53,8 +53,11 @@
         - @materials.each do |material|
           tr.js-material-item
             td.text-center
-              = link_to edit_material_path(material), class: "btn btn-sm btn-outline-primary" do
-                i.bi.bi-pencil-square
+              .btn-group role="group"
+                = link_to material_path(material), class: "btn btn-sm btn-outline-primary", title: "詳細" do
+                  i.bi.bi-eye
+                = link_to edit_material_path(material), class: "btn btn-sm btn-outline-secondary", title: "編集" do
+                  i.bi.bi-pencil
             td = material.name
             td = material.vendor&.name
             td.text-center

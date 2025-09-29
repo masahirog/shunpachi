@@ -1,0 +1,124 @@
+.container-fluid.py-2.px-3
+  .d-flex.justify-content-between.align-items-center.mb-4
+    h3.mb-0
+      = @material.name
+      = link_to edit_material_path(@material), class: "btn btn-outline-primary ms-2" do
+        i.bi.bi-pencil-square.me-1
+        | 編集
+      - if @material.in_use?
+        button.btn.btn-outline-danger.disabled.ms-2 type="button"
+          | 削除不可（#{@material.usage_count}件で使用中）
+      - else
+        = link_to material_path(@material), data: { turbo_method: :delete, turbo_confirm: "この材料を削除してよろしいですか？" }, class: "btn btn-danger ms-2" do
+          i.bi.bi-trash.me-1
+          | 削除
+
+  .row
+    .col-md-8
+      / 基本情報カード
+      .card.shadow-sm.mb-4
+        .card-header.bg-light
+          h5.mb-0 基本情報
+        .card-body
+          .row
+            .col-md-6
+              table.table.table-borderless.mb-0
+                tbody
+                  tr
+                    th.text-muted style="width: 40%;" 仕入れ業者
+                    td
+                      = @material.vendor.name
+                  tr
+                    th.text-muted カテゴリ
+                    td
+                      span.badge.rounded-pill.bg-info.text-dark = @material.category_i18n
+                  tr
+                    th.text-muted レシピ単位
+                    td = @material.recipe_unit_i18n
+            .col-md-6
+              table.table.table-borderless.mb-0
+                tbody
+                  tr
+                    th.text-muted style="width: 40%;" レシピ単位価格
+                    td.fw-bold = number_to_currency(@material.recipe_unit_price, unit: "円")
+                  tr
+                    th.text-muted グラム換算
+                    td = "#{@material.recipe_unit_gram_quantity}g"
+                  tr
+                    th.text-muted グラム単価
+                    - gram_price = @material.recipe_unit_price.to_f / @material.recipe_unit_gram_quantity
+                    td = "#{gram_price.round(2)}円/g"
+
+      / 食品成分情報カード
+      - if @material.food_ingredient.present?
+        .card.shadow-sm.mb-4
+          .card-header.bg-light
+            h5.mb-0 栄養成分情報
+          .card-body
+            h6.text-muted.mb-2 = @material.food_ingredient.name
+            table.table.table-bordered.mb-0
+              thead.table-light
+                tr
+                  th.text-center カロリー
+                  th.text-center たんぱく質
+                  th.text-center 脂質
+                  th.text-center 炭水化物
+                  th.text-center 食塩相当量
+              tbody
+                tr
+                  td.text-center = "#{@material.food_ingredient.calorie} kcal"
+                  td.text-center = "#{@material.food_ingredient.protein} g"
+                  td.text-center = "#{@material.food_ingredient.lipid} g"
+                  td.text-center = "#{@material.food_ingredient.carbohydrate} g"
+                  td.text-center = "#{@material.food_ingredient.salt} g"
+
+      / 原材料情報カード
+      - if @material.material_raw_materials.any?
+        .card.shadow-sm.mb-4
+          .card-header.bg-light
+            h5.mb-0 原材料構成
+          .card-body
+            table.table.table-hover.mb-0
+              thead.table-light
+                tr
+                  th 原材料名
+                  th.text-center カテゴリ
+                  th.text-end 配合比率
+              tbody
+                - @material.material_raw_materials.includes(:raw_material).order(:position).each do |mrm|
+                  - if mrm.raw_material.present?
+                    tr
+                      td = mrm.raw_material.name
+                      td.text-center
+                        span.badge.bg-secondary = mrm.raw_material.category_i18n
+                      td.text-end = "#{mrm.quantity_ratio}%"
+
+    .col-md-4
+      / アレルギー情報カード
+      - if @material.material_allergies.any?
+        .card.shadow-sm.mb-4
+          .card-header.bg-light
+            h5.mb-0 アレルギー情報
+          .card-body
+            .d-flex.flex-wrap
+              - @material.material_allergies.each do |ma|
+                span.badge.bg-warning.text-dark.me-2.mb-2 = MaterialAllergy.allergens_i18n[ma.allergen]
+
+      / 使用メニュー一覧カード
+      - if @material.menu_materials.any?
+        .card.shadow-sm.mb-4
+          .card-header.bg-light
+            h5.mb-0
+              | 使用メニュー
+              span.badge.bg-secondary.ms-2 = @material.usage_count
+          .card-body
+            .list-group.list-group-flush
+              - @material.menu_materials.includes(:menu).limit(10).each do |mm|
+                - if mm.menu.present?
+                  = link_to mm.menu, class: "list-group-item list-group-item-action" do
+                    .d-flex.justify-content-between.align-items-center
+                      span = mm.menu.name
+                      span.badge.bg-primary.rounded-pill = "#{mm.amount_used} #{@material.recipe_unit_i18n}"
+              - if @material.usage_count > 10
+                .list-group-item.text-muted.text-center
+                  | 他 #{@material.usage_count - 10} 件

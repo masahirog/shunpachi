@@ -8,6 +8,13 @@
       = link_to copy_product_path(@product), class: "btn btn-outline-success ms-2" do
         i.bi.bi-copy.me-1
         | コピー
+      - if @product.in_use?
+        button.btn.btn-outline-danger.disabled.ms-2 type="button"
+          | 削除不可（#{@product.usage_count}件で使用中）
+      - else
+        = link_to product_path(@product), data: { turbo_method: :delete, turbo_confirm: "この商品を削除してよろしいですか？" }, class: "btn btn-danger ms-2" do
+          i.bi.bi-trash.me-1
+          | 削除
     .d-flex
       = form_with url: product_recipe_pdfs_path(format: :pdf), method: :get, local: true, html: { target: "_blank", class: "d-flex align-items-center me-2" } do |f|
         = f.hidden_field :product_id, value: @product.id

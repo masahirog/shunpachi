@@ -8,6 +8,13 @@
       = link_to copy_menu_path(@menu), class: "btn btn-outline-success ms-2" do
         i.bi.bi-copy.me-1
         | コピー
+      - if @menu.in_use?
+        button.btn.btn-outline-danger.disabled.ms-2 type="button"
+          | 削除不可（#{@menu.usage_count}件で使用中）
+      - else
+        = link_to menu_path(@menu), data: { turbo_method: :delete, turbo_confirm: "このメニューを削除してよろしいですか？" }, class: "btn btn-danger ms-2" do
+          i.bi.bi-trash.me-1
+          | 削除
     .d-flex
       = form_with url: menu_recipe_pdfs_path(format: :pdf), method: :get, local: true, html: { target: "_blank", class: "d-flex align-items-center" } do |f|
         = f.hidden_field :menu_id, value: @menu.id

@@ -40,8 +40,11 @@
               - if menu.image.attached?
                 = image_tag menu.image, class: "img-thumbnail", style: "max-height: 60px; max-width: 60px;"
             td.text-center
-              = link_to menu_path(menu), class: "btn btn-sm btn-outline-primary" do
-                i.bi.bi-eye
+              .btn-group role="group"
+                = link_to menu_path(menu), class: "btn btn-sm btn-outline-primary", title: "詳細" do
+                  i.bi.bi-eye
+                = link_to edit_menu_path(menu), class: "btn btn-sm btn-outline-secondary", title: "編集" do
+                  i.bi.bi-pencil
             td
               .fw-bold = menu.name
               - if menu.menu_materials.exists?

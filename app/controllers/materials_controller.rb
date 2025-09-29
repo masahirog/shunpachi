@@ -1,5 +1,5 @@
 class MaterialsController < ApplicationController
-  before_action :set_material, only: %i[edit update destroy]
+  before_action :set_material, only: %i[show edit update destroy]
   def get_details
     material = Material.joins(:vendor).where(vendors: { company: current_company }).find(params[:id])
     food_ingredient = material.food_ingredient
@@ -56,6 +56,8 @@ class MaterialsController < ApplicationController
     @raw_materials = RawMaterial.for_company(current_company)
   end
 
+  def show
+  end
 
   def edit
     @vendors = Vendor.for_company(current_company)
@@ -104,8 +106,11 @@ class MaterialsController < ApplicationController
   end
 
   def destroy
-    @material.destroy
-    redirect_to materials_path, notice: '材料を削除しました。'
+    if @material.destroy
+      redirect_to materials_path, notice: '材料を削除しました。'
+    else
+      redirect_to material_path(@material), alert: @material.errors.full_messages.first
+    end
   end
 
   private

@@ -64,8 +64,11 @@ class ProductsController < ApplicationController
     end
   end
   def destroy
-    @product.destroy
-    redirect_to products_path, notice: '商品を削除しました。'
+    if @product.destroy
+      redirect_to products_path, notice: '商品を削除しました。'
+    else
+      redirect_to product_path(@product), alert: @product.errors.full_messages.first
+    end
   end
 
   def regenerate_public_id

@@ -15,6 +15,17 @@ class Product < ApplicationRecord
 
   # public_idの自動生成
   before_create :generate_public_id
+
+  # 削除制限
+  before_destroy :check_usage
+
+  def in_use?
+    daily_menu_products.exists?
+  end
+
+  def usage_count
+    daily_menu_products.count
+  end
   
   # 画像のバリデーション
   validate :acceptable_image
@@ -27,6 +38,13 @@ class Product < ApplicationRecord
   end
 
   private
+
+  def check_usage
+    if in_use?
+      errors.add(:base, "この商品は#{usage_count}件の日次献立で使用されているため削除できません")
+      throw(:abort)
+    end
+  end
 
   def generate_public_id
     self.public_id = SecureRandom.alphanumeric(8) if public_id.blank?

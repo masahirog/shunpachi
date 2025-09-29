@@ -12,4 +12,24 @@ class Menu < ApplicationRecord
   enum category: { 容器: 0, 温菜: 1, 冷菜: 2, スイーツ: 3 }
   validates :name, presence: true, uniqueness: { scope: :company_id }
   validates :category, presence: true
+
+  # 削除制限
+  before_destroy :check_usage
+
+  def in_use?
+    product_menus.exists?
+  end
+
+  def usage_count
+    product_menus.count
+  end
+
+  private
+
+  def check_usage
+    if in_use?
+      errors.add(:base, "このメニューは#{usage_count}件の商品で使用されているため削除できません")
+      throw(:abort)
+    end
+  end
 end

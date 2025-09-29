@@ -13,6 +13,26 @@ class Material < ApplicationRecord
   validates :name, presence: true, uniqueness: { scope: :vendor_id }
   validates :recipe_unit_gram_quantity, presence: true, numericality: { greater_than: 0 }
 
+  # 削除制限
+  before_destroy :check_usage
+
+  def in_use?
+    menu_materials.exists?
+  end
+
+  def usage_count
+    menu_materials.count
+  end
+
+  private
+
+  def check_usage
+    if in_use?
+      errors.add(:base, "この材料は#{usage_count}件のメニューで使用されているため削除できません")
+      throw(:abort)
+    end
+  end
+
   enum recipe_unit: {gram:1,ml:2,pack:3,hon:4,ko:5,mai:6}
   enum category: {food:1,packed:2,other:3}
 
