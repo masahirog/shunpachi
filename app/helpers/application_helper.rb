@@ -26,6 +26,36 @@ module ApplicationHelper
   def enum_l(model, attribute)
     I18n.t("enums.#{model.class.name.underscore}.#{attribute}.#{model.send(attribute)}")
   end
+
+  # メニューカテゴリ用のバッジクラスを返す
+  def menu_category_badge_class(category)
+    case category.to_s
+    when '容器'
+      'bg-secondary text-white'
+    when '温菜'
+      'bg-danger text-white'
+    when '冷菜'
+      'bg-primary text-white'
+    when 'スイーツ'
+      'bg-warning text-dark'
+    else
+      'bg-info text-dark'
+    end
+  end
+
+  # 商品カテゴリ用のバッジクラスを返す
+  def product_category_badge_class(category)
+    case category.to_s
+    when '惣菜'
+      'bg-success text-white'
+    when '弁当'
+      'bg-warning text-dark'
+    when '半完品'
+      'bg-info text-white'
+    else
+      'bg-secondary text-white'
+    end
+  end
 end
 
 def format_number(number)

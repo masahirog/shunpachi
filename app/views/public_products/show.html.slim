@@ -27,7 +27,7 @@
                   tr
                     th.text-muted.text-nowrap カテゴリ
                     td
-                      span.badge.rounded-pill.bg-info.text-dark = @product.category_i18n
+                      span.badge.rounded-pill class=product_category_badge_class(@product.category_i18n) = @product.category_i18n
                   - if @product.jancode.present?
                     tr
                       th.text-muted.text-nowrap JANコード
@@ -161,14 +161,14 @@
                         - if material_index == 0
                           td.fw-bold rowspan="#{materials.count}" = menu.name
                           td.text-center rowspan="#{materials.count}"
-                            span.badge.bg-info.text-dark = menu.category
+                            span.badge.rounded-pill class=menu_category_badge_class(menu.category_i18n) = menu.category_i18n
                         td = menu_material.material.name
                         td = menu_material.preparation || "—"
                   - else
                     tr
                       td.fw-bold = menu.name
                       td.text-center
-                        span.badge.bg-info.text-dark = menu.category
+                        span.badge.rounded-pill class=menu_category_badge_class(menu.category_i18n) = menu.category_i18n
                       td.text-muted colspan="2" 材料が設定されていません
 
 / 画像拡大モーダル

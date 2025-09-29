@@ -22,7 +22,7 @@
           .d-flex.justify-content-between.mt-3.edit-buttons-container
             - if f.object.menu_id.present?
               = link_to edit_menu_path(f.object.menu_id), class: "btn btn-outline-info btn-sm edit-menu-link", title: "メニューを編集", target: "_blank" do
-                i.bi.bi-pencil-square
+                i.bi.bi-pencil
                 |  メニュー編集
             = link_to_remove_association '<i class="bi bi-trash"></i> 削除'.html_safe, f, class: "btn btn-outline-danger btn-sm", title: "削除"
     

@@ -3,7 +3,7 @@
     h3.mb-0
       = @menu.name
       = link_to edit_menu_path(@menu), class: "btn btn-outline-primary ms-2" do
-        i.bi.bi-pencil-square.me-1
+        i.bi.bi-pencil.me-1
         | 編集
       = link_to copy_menu_path(@menu), class: "btn btn-outline-success ms-2" do
         i.bi.bi-copy.me-1
@@ -38,7 +38,7 @@
                   tr
                     th.text-muted style="width: 40%;" カテゴリ
                     td
-                      span.badge.rounded-pill.bg-info.text-dark = @menu.category
+                      span.badge.rounded-pill class=menu_category_badge_class(@menu.category_i18n) = @menu.category_i18n
                   tr
                     th.text-muted 原価
                     td.fw-bold = number_to_currency(@menu.cost_price, unit: "円")

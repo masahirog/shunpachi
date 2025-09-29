@@ -3,7 +3,7 @@
     h3.mb-0
       = @material.name
       = link_to edit_material_path(@material), class: "btn btn-outline-primary ms-2" do
-        i.bi.bi-pencil-square.me-1
+        i.bi.bi-pencil.me-1
         | 編集
       - if @material.in_use?
         button.btn.btn-outline-danger.disabled.ms-2 type="button"

@@ -25,8 +25,8 @@
     table.table.table-hover.table-bordered.mb-0
       thead.table-light
         tr
-          th.text-center
-          th.text-center style="width: 60px;" 画像
+          th.text-center style="width: 60px;"
+          th.text-center style="width: 50px;" 画像
           th メニュー名
           th.text-center カテゴリ
           th.text-end 原価
@@ -44,25 +44,23 @@
                   i.bi.bi-pencil
             td.text-center
               - if menu.image.attached?
-                = image_tag menu.image, class: "img-thumbnail", style: "max-height: 40px; max-width: 40px;"
+                = image_tag menu.image.variant(resize_to_limit: [30, 30]), class: "menu-thumbnail", style: "height: 30px; width: 30px; object-fit: cover; cursor: pointer;", data: { bs_toggle: "modal", bs_target: "#menuImageModal", image_url: url_for(menu.image), menu_name: menu.name }
             td
               .fw-bold = menu.name
-              - if menu.menu_materials.exists?
-                small.text-muted = "#{menu.menu_materials_count}種類の材料"
             td.text-center
-              span.badge.rounded-pill.bg-info.text-dark = menu.category_i18n
+              span.badge.rounded-pill class=menu_category_badge_class(menu.category_i18n) = menu.category_i18n
             td.text-end
               = number_to_currency(menu.cost_price, unit: "円")
             td.text-center
               span.badge.bg-secondary = menu.menu_materials_count
             td.text-center
               small
-                span.me-2 
-                  i.bi.bi-fire.text-danger
-                  = "#{menu.calorie}kcal"
-                span 
-                  i.bi.bi-droplet.text-primary
-                  = "#{menu.salt}g"
+                span.me-2
+                  | Ca:
+                  strong = "#{menu.calorie}kcal"
+                span
+                  | Sa:
+                  strong = "#{menu.salt}g"
             td.text-center
               - if menu.cook_before.present? || menu.cook_on_the_day.present?
                 - if menu.cook_before.present?
@@ -75,3 +73,56 @@
   .d-flex.justify-content-between.align-items-center.mt-2
     small.text-muted 全 #{@menus.count} 件
     = will_paginate @menus, renderer: WillPaginate::ActionView::BootstrapLinkRenderer if @menus.respond_to?(:total_pages)
+
+/ 画像拡大表示用モーダル
+#menuImageModal.modal.fade tabindex="-1" aria-labelledby="menuImageModalLabel" aria-hidden="true"
+  .modal-dialog.modal-lg.modal-dialog-centered
+    .modal-content
+      .modal-header
+        h5#menuImageModalLabel.modal-title メニュー画像
+        button.btn-close type="button" data-bs-dismiss="modal" aria-label="閉じる"
+      .modal-body.text-center
+        img#modalMenuImage.img-fluid style="max-height: 600px;"
+
+javascript:
+  // Turbo対応のイベントリスナー設定
+  function setupMenuImageModal() {
+    // サムネイル画像クリック時の処理
+    document.querySelectorAll('.menu-thumbnail').forEach(function(thumbnail) {
+      // 既存のイベントリスナーを削除して重複を防ぐ
+      const newThumbnail = thumbnail.cloneNode(true);
+      thumbnail.parentNode.replaceChild(newThumbnail, thumbnail);
+
+      newThumbnail.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const imageUrl = this.getAttribute('data-image-url');
+        const menuName = this.getAttribute('data-menu-name');
+
+        // モーダル内の画像とタイトルを更新
+        const modalImage = document.getElementById('modalMenuImage');
+        const modalLabel = document.getElementById('menuImageModalLabel');
+
+        if (modalImage && modalLabel) {
+          modalImage.src = imageUrl;
+          modalLabel.textContent = menuName + ' - メニュー画像';
+        }
+      });
+    });
+  }
+
+  // DOMContentLoadedとturbo:loadの両方に対応
+  document.addEventListener('DOMContentLoaded', setupMenuImageModal);
+  document.addEventListener('turbo:load', setupMenuImageModal);
+
+css:
+  .menu-thumbnail {
+    border-radius: 4px;
+    transition: transform 0.2s;
+  }
+
+  .menu-thumbnail:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }

@@ -26,7 +26,6 @@
           th.text-center style="width: 60px;"
           th style="width: 50px;" 画像
           th 商品名
-          th 食品表示名称
           th.text-center カテゴリ
           th.text-end 売価
           th.text-end 原価
@@ -45,17 +44,14 @@
                   i.bi.bi-pencil
             td.text-center
               - if product.image.attached?
-                = image_tag product.image.variant(resize_to_limit: [40, 40]), class: "product-thumbnail", style: "cursor: pointer;", data: { bs_toggle: "modal", bs_target: "#imageModal", image_url: url_for(product.image), product_name: product.name }
+                = image_tag product.image.variant(resize_to_limit: [30, 30]), class: "product-thumbnail", style: "height: 30px; width: 30px; object-fit: cover; cursor: pointer;", data: { bs_toggle: "modal", bs_target: "#imageModal", image_url: url_for(product.image), product_name: product.name }
               - else
                 / span.text-muted
                 /   i.bi.bi-image style="font-size: 1.5rem;"
             td
-              = link_to product_path(product), class: "text-decoration-none text-dark" do
-                .fw-bold = product.name
-              small.text-muted = truncate(product.introduction, length: 40)
-            td = product.food_label_name
+              .fw-bold = product.name
             td.text-center
-              span.badge.rounded-pill.bg-info.text-dark = product.category_i18n
+              span.badge.rounded-pill class=product_category_badge_class(product.category_i18n) = product.category_i18n
             td.text-end = number_to_currency(product.sell_price, unit: "円")
             td.text-end = number_to_currency(product.cost_price, unit: "円")
             td.text-end
@@ -84,19 +80,36 @@
         img#modalImage.img-fluid style="max-height: 600px;"
 
 javascript:
-  document.addEventListener('DOMContentLoaded', function() {
+  // Turbo対応のイベントリスナー設定
+  function setupImageModal() {
     // サムネイル画像クリック時の処理
     document.querySelectorAll('.product-thumbnail').forEach(function(thumbnail) {
-      thumbnail.addEventListener('click', function() {
+      // 既存のイベントリスナーを削除して重複を防ぐ
+      const newThumbnail = thumbnail.cloneNode(true);
+      thumbnail.parentNode.replaceChild(newThumbnail, thumbnail);
+
+      newThumbnail.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
         const imageUrl = this.getAttribute('data-image-url');
         const productName = this.getAttribute('data-product-name');
-        
+
         // モーダル内の画像とタイトルを更新
-        document.getElementById('modalImage').src = imageUrl;
-        document.getElementById('imageModalLabel').textContent = productName + ' - 商品画像';
+        const modalImage = document.getElementById('modalImage');
+        const modalLabel = document.getElementById('imageModalLabel');
+
+        if (modalImage && modalLabel) {
+          modalImage.src = imageUrl;
+          modalLabel.textContent = productName + ' - 商品画像';
+        }
       });
     });
-  });
+  }
+
+  // DOMContentLoadedとturbo:loadの両方に対応
+  document.addEventListener('DOMContentLoaded', setupImageModal);
+  document.addEventListener('turbo:load', setupImageModal);
 
 css:
   .product-thumbnail {

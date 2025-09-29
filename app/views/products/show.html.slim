@@ -3,7 +3,7 @@
     h3.mb-0
       = @product.name
       = link_to edit_product_path(@product), class: "btn btn-outline-primary ms-2" do
-        i.bi.bi-pencil-square.me-1
+        i.bi.bi-pencil.me-1
         | 編集
       = link_to copy_product_path(@product), class: "btn btn-outline-success ms-2" do
         i.bi.bi-copy.me-1
@@ -55,7 +55,7 @@
                   tr
                     th.text-muted style="width: 40%;" カテゴリ
                     td
-                      span.badge.rounded-pill.bg-info.text-dark = @product.category_i18n
+                      span.badge.rounded-pill class=product_category_badge_class(@product.category_i18n) = @product.category_i18n
                   tr
                     th.text-muted JANコード
                     td = @product.jancode || "—"
@@ -205,7 +205,7 @@
                           br
                           span.text-muted.small 原価: #{number_to_currency(menu.cost_price, unit: "円")}
                         td.text-center rowspan="#{materials.count}"
-                          span.badge.bg-info.text-dark = menu.category
+                          span.badge.rounded-pill class=menu_category_badge_class(menu.category_i18n) = menu.category_i18n
                       td = link_to menu_material.material.name, edit_material_path(menu_material.material), class: "text-decoration-none", target: "_blank"
                       td.text-center = "#{format_number(menu_material.amount_used)} #{menu_material.material.recipe_unit_i18n}"
                       td = menu_material.preparation || "—"
