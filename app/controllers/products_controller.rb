@@ -65,9 +65,9 @@ class ProductsController < ApplicationController
   end
   def destroy
     if @product.destroy
-      redirect_to products_path, notice: '商品を削除しました。'
+      redirect_to products_path, notice: '商品を削除しました。', status: :see_other
     else
-      redirect_to product_path(@product), alert: @product.errors.full_messages.first
+      redirect_to product_path(@product), alert: @product.errors.full_messages.first, status: :unprocessable_entity
     end
   end
 

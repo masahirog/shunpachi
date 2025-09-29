@@ -83,7 +83,6 @@
                 tr
                   th 原材料名
                   th.text-center カテゴリ
-                  th.text-end 配合比率
               tbody
                 - @material.material_raw_materials.includes(:raw_material).order(:position).each do |mrm|
                   - if mrm.raw_material.present?
@@ -91,7 +90,6 @@
                       td = mrm.raw_material.name
                       td.text-center
                         span.badge.bg-secondary = mrm.raw_material.category_i18n
-                      td.text-end = "#{mrm.quantity_ratio}%"
 
     .col-md-4
       / アレルギー情報カード

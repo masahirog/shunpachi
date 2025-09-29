@@ -9,14 +9,14 @@
     .card-body.py-2.px-3
       = form_with url: menus_path, method: :get, local: true do |f|
         .row.g-2
-          .col-md-8.col-lg-9
+          .col-md-5
             .input-group
               span.input-group-text.py-1
                 i.bi.bi-search
               = f.text_field :query, value: params[:query], class: "form-control", placeholder: "メニュー名で検索...", autocomplete: "off"
-          .col-md-4.col-lg-3
+          .col-md-3
             = f.select :category, options_for_select([["すべてのカテゴリ", ""]] + Menu.categories.keys.map { |c| [c, c] }, params[:category]), {}, class: "form-select"
-          .col-md-12.text-end.mt-2
+          .col-md-4.text-end
             = f.submit "検索", class: "btn btn-primary btn-sm me-2"
             - if params[:query].present? || params[:category].present?
               = link_to "クリア", menus_path, class: "btn btn-outline-secondary btn-sm"
@@ -25,8 +25,8 @@
     table.table.table-hover.table-bordered.mb-0
       thead.table-light
         tr
-          th.text-center style="width: 80px;" 画像
           th.text-center
+          th.text-center style="width: 60px;" 画像
           th メニュー名
           th.text-center カテゴリ
           th.text-end 原価
@@ -37,14 +37,14 @@
         - @menus.each do |menu|
           tr.js-menu-item
             td.text-center
-              - if menu.image.attached?
-                = image_tag menu.image, class: "img-thumbnail", style: "max-height: 60px; max-width: 60px;"
-            td.text-center
               .btn-group role="group"
                 = link_to menu_path(menu), class: "btn btn-sm btn-outline-primary", title: "詳細" do
                   i.bi.bi-eye
                 = link_to edit_menu_path(menu), class: "btn btn-sm btn-outline-secondary", title: "編集" do
                   i.bi.bi-pencil
+            td.text-center
+              - if menu.image.attached?
+                = image_tag menu.image, class: "img-thumbnail", style: "max-height: 40px; max-width: 40px;"
             td
               .fw-bold = menu.name
               - if menu.menu_materials.exists?

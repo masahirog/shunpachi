@@ -107,9 +107,9 @@ class MaterialsController < ApplicationController
 
   def destroy
     if @material.destroy
-      redirect_to materials_path, notice: '材料を削除しました。'
+      redirect_to materials_path, notice: '材料を削除しました。', status: :see_other
     else
-      redirect_to material_path(@material), alert: @material.errors.full_messages.first
+      redirect_to edit_material_path(@material), alert: @material.errors.full_messages.first, status: :unprocessable_entity
     end
   end
 

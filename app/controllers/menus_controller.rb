@@ -131,9 +131,9 @@ class MenusController < ApplicationController
 
   def destroy
     if @menu.destroy
-      redirect_to menus_path, notice: 'メニューを削除しました。'
+      redirect_to menus_path, notice: 'メニューを削除しました。', status: :see_other
     else
-      redirect_to menu_path(@menu), alert: @menu.errors.full_messages.first
+      redirect_to menu_path(@menu), alert: @menu.errors.full_messages.first, status: :unprocessable_entity
     end
   end
 
