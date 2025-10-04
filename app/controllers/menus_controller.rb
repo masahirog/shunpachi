@@ -73,10 +73,10 @@ class MenusController < ApplicationController
     @menu = Menu.new(menu_params)
     @menu.company = current_company
     if @menu.save
-      redirect_to menus_path, notice: 'メニューを作成しました。'
+      redirect_to menu_path(@menu), notice: 'メニューを作成しました。'
     else
       @materials = Material.joins(:vendor).where(vendors: { company: current_company }).limit(10)
-      render :new
+      render :new, status: :unprocessable_entity
     end
   end
 
@@ -123,9 +123,9 @@ class MenusController < ApplicationController
 
   def update
     if @menu.update(menu_params)
-      redirect_to menus_path, notice: 'メニューを更新しました。'
+      redirect_to menu_path(@menu), notice: 'メニューを更新しました。'
     else
-      render :edit
+      render :edit, status: :unprocessable_entity
     end
   end
 

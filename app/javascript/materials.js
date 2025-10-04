@@ -38,10 +38,10 @@ function onLoad() {
       // 原材料が選択されたときのイベント処理
       const rawMaterialId = e.params.data.id;
       if (!rawMaterialId) return;
-      
+
       const $row = $(this).closest('tr.nested-fields');
       const $badge = $row.find('td:nth-child(2) .category-badge');
-      
+
       // カテゴリ情報を取得
       $.ajax({
         url: `/raw_materials/${rawMaterialId}.json`,
@@ -51,7 +51,7 @@ function onLoad() {
         },
         success: function(data) {
           if (!data) return;
-          
+
           if (data.category) {
             $badge.text(data.category_name).removeClass('d-none');
             $badge.attr('data-raw-material-id', rawMaterialId);
@@ -67,11 +67,14 @@ function onLoad() {
       // 選択解除されたとき
       const $row = $(this).closest('tr.nested-fields');
       const $badge = $row.find('td:nth-child(2) .category-badge');
-      
+
       // バッジを非表示
       $badge.addClass('d-none').attr('data-raw-material-id', '');
     });
-    
+
+    // percentage入力欄のイベントリスナーを追加
+    $(insertedItem).find('.percentage-input').on('input change', updateTotalPercentage);
+
     // 位置番号を更新
     updateRowPositions();
   });
@@ -81,11 +84,20 @@ function onLoad() {
     cal_cost_price();
     cal_food_ingredient();
     updateRowPositions();
-    
+    updateTotalPercentage();
+
     // sortableを再初期化
     setTimeout(function() {
       refreshSortable();
     }, 100);
+  });
+
+  // percentage入力欄の変更イベント
+  $(document).on('input change', '.percentage-input', updateTotalPercentage);
+
+  // percentage入力欄をクリック時に全選択
+  $(document).on('focus click', '.percentage-input', function() {
+    $(this).select();
   });
 
   // 検索機能
@@ -327,8 +339,28 @@ function onLoad() {
     $(".menu_salt").val(menu_salt.toFixed(1));
   }
 
+  // percentage合計を更新する関数
+  function updateTotalPercentage() {
+    let total = 0;
+    $('#material-raw-materials tr.nested-fields:visible').each(function() {
+      const percentage = parseInt($(this).find('.percentage-input').val()) || 0;
+      total += percentage;
+    });
+
+    $('#total-percentage-value').text(total);
+
+    // 100%を超えた場合は警告表示
+    if (total > 100) {
+      $('#total-percentage-value').removeClass('text-dark').addClass('text-danger');
+    } else {
+      $('#total-percentage-value').removeClass('text-danger').addClass('text-dark');
+    }
+  }
+
   // 初期化時に行の位置を設定
   updateRowPositions();
+  // 初期化時にpercentage合計を表示
+  updateTotalPercentage();
 }
 
 

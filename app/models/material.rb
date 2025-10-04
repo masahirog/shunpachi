@@ -12,6 +12,7 @@ class Material < ApplicationRecord
 
   validates :name, presence: true, uniqueness: { scope: :vendor_id }
   validates :recipe_unit_gram_quantity, presence: true, numericality: { greater_than: 0 }
+  validate :total_percentage_within_limit
 
   # 削除制限
   before_destroy :check_usage
@@ -33,6 +34,13 @@ class Material < ApplicationRecord
     if in_use?
       errors.add(:base, "この材料は#{usage_count}件のメニューで使用されているため削除できません")
       throw(:abort)
+    end
+  end
+
+  def total_percentage_within_limit
+    total = material_raw_materials.reject(&:marked_for_destruction?).sum { |mrm| mrm.percentage.to_f }
+    if total > 100
+      errors.add(:base, "原材料の割合の合計が100%を超えています（現在: #{total}%）")
     end
   end
 

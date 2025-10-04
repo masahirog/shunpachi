@@ -45,10 +45,10 @@ class ProductsController < ApplicationController
     @product = Product.new(product_params)
     @product.company = current_company
     if @product.save
-      redirect_to products_path, notice: '商品を作成しました。'
+      redirect_to product_path(@product), notice: '商品を作成しました。'
     else
       @menus = Menu.for_company(current_company).order(:name)
-      render :new
+      render :new, status: :unprocessable_entity
     end
   end
 
@@ -56,11 +56,11 @@ class ProductsController < ApplicationController
     if params[:product][:remove_image] == '1' && @product.image.attached?
       @product.image.purge
     end
-    
+
     if @product.update(product_params)
-      redirect_to products_path, notice: '商品を更新しました。'
+      redirect_to product_path(@product), notice: '商品を更新しました。'
     else
-      render :edit
+      render :edit, status: :unprocessable_entity
     end
   end
   def destroy
@@ -311,8 +311,8 @@ class ProductsController < ApplicationController
       collect_raw_materials(temp_product_menus, raw_materials_usage, category_type)
     end
     
-    sorted_raw_materials = raw_materials_usage.values.sort_by { |rm| -rm[:usage] }
-    
+    sorted_raw_materials = raw_materials_usage.values.sort_by { |rm| -rm[:weight] }
+
     sorted_raw_materials.map { |rm| rm[:name] }.join('、')
   end
 
@@ -320,32 +320,37 @@ class ProductsController < ApplicationController
     product_menus.each do |product_menu|
       menu = product_menu.is_a?(ProductMenu) ? product_menu.menu : product_menu.menu
       next unless menu
-      
-      menu.menu_materials.includes(:material).each do |menu_material|
+
+      menu.menu_materials.includes(material: :material_raw_materials).each do |menu_material|
         material = menu_material.material
         next unless material
-        
+
+        # menu_materialのグラム量を取得
+        material_gram_quantity = menu_material.gram_quantity.to_f
+
         material.material_raw_materials.includes(:raw_material).each do |mrm|
           raw_material = mrm.raw_material
           next unless raw_material && raw_material.category.present?
-          
+
           is_match = false
           if category_type == 'food' && raw_material.category.to_s == 'food'
             is_match = true
           elsif category_type == 'additive' && raw_material.category.to_s == 'additive'
             is_match = true
           end
-          
+
           next unless is_match
-          
-          usage = menu_material.amount_used.to_f
-          
+
+          # 原材料の重量を計算: 材料のグラム量 × (割合 / 100)
+          percentage = mrm.percentage.to_i
+          raw_material_weight = material_gram_quantity * (percentage / 100.0)
+
           if raw_materials_usage[raw_material.id]
-            raw_materials_usage[raw_material.id][:usage] += usage
+            raw_materials_usage[raw_material.id][:weight] += raw_material_weight
           else
             raw_materials_usage[raw_material.id] = {
               name: raw_material.name,
-              usage: usage
+              weight: raw_material_weight
             }
           end
         end

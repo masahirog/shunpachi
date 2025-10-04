@@ -83,6 +83,7 @@
                 tr
                   th 原材料名
                   th.text-center カテゴリ
+                  th.text-center 割合
               tbody
                 - @material.material_raw_materials.includes(:raw_material).order(:position).each do |mrm|
                   - if mrm.raw_material.present?
@@ -90,6 +91,7 @@
                       td = mrm.raw_material.name
                       td.text-center
                         span.badge.bg-secondary = mrm.raw_material.category_i18n
+                      td.text-center = mrm.percentage.present? ? "#{mrm.percentage}%" : "—"
 
     .col-md-4
       / アレルギー情報カード

@@ -119,22 +119,22 @@
                 th style="width: 10%;" 仕入先
                 th style="width: 12%;" 食材成分
                 th.text-center style="width: 7%;" カロリー
-                th.text-center style="width: 7%;" たんぱく質
+                th.text-center style="width: 7%;" たんぱく
                 th.text-center style="width: 7%;" 脂質
-                th.text-center style="width: 7%;" 炭水化物
-                th.text-center style="width: 7%;" 食塩相当量
+                th.text-center style="width: 7%;" 炭水化
+                th.text-center style="width: 7%;" 食塩
             tbody
               - @menu.menu_materials.order(:row_order).each do |menu_material|
                 - if menu_material.material.present?
                   tr
-                    td = link_to menu_material.material.name, material_path(menu_material.material), target: :_blank
+                    td = link_to menu_material.material.name, material_path(menu_material.material), target: :_blank, class: "small text-truncate d-inline-block", style: "max-width: 150px;", title: menu_material.material.name
                     td.text-center = "#{format_number(menu_material.amount_used)} #{menu_material.material.recipe_unit_i18n}"
                     td = menu_material.preparation || "—"
                     td.text-end = number_to_currency(menu_material.cost_price, unit: "円")
                     td = menu_material.material.vendor.name
                     td
                       - if menu_material.material.food_ingredient.present?
-                        = link_to menu_material.material.food_ingredient.name, food_ingredient_path(menu_material.material.food_ingredient), target: :_blank
+                        = link_to menu_material.material.food_ingredient.name, food_ingredient_path(menu_material.material.food_ingredient), target: :_blank, class: "small text-truncate d-inline-block", style: "max-width: 150px;", title: menu_material.material.food_ingredient.name
                       - else
                         | —
                     td.text-center = menu_material.calorie.present? ? "#{format_number(menu_material.calorie)} kcal" : "—"

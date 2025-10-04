@@ -17,5 +17,9 @@ tr.nested-fields
     - else
       span.badge.rounded-pill.bg-info.text-dark.category-badge.d-none data-raw-material-id=""
   td.text-center
+    .input-group.input-group-sm style="width: 100px;"
+      = f.number_field :percentage, class: "form-control percentage-input", min: "0", max: "100", placeholder: "0"
+      span.input-group-text %
+  td.text-center
     = link_to_remove_association f, class: "btn btn-outline-danger btn-sm", title: "削除" do
       i.bi.bi-trash

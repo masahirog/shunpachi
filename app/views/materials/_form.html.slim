@@ -73,18 +73,23 @@
   .card.mb-4
     .card-header.bg-light.d-flex.justify-content-between.align-items-center
       h5.mb-0 原材料構成
-      .d-flex
+      .d-flex.align-items-center
+        #percentage-total.me-3
+          span 合計:
+          span#total-percentage-value.fw-bold.ms-1 0
+          span %
         = link_to_add_association '原材料追加', f, :material_raw_materials,
           data: { association_insertion_node: '#material-raw-materials', association_insertion_method: 'append' },
           class: 'btn btn-outline-primary btn-sm',
           partial_locals: { raw_materials: @raw_materials }
-    
+
     .card-body
       table.table.table-bordered.mb-0#raw-materials-table
         thead.table-light
           tr
-            th.col-6 原材料
-            th.col-3.text-center カテゴリ
+            th.col-5 原材料
+            th.col-2.text-center カテゴリ
+            th.col-2.text-center 割合
             th.col-3.text-center 操作
         tbody#material-raw-materials
           = f.fields_for :material_raw_materials do |mrm|

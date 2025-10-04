@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_27_054828) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_04_042240) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -104,6 +104,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_27_054828) do
     t.integer "position"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "percentage", default: 0
     t.index ["material_id", "raw_material_id"], name: "idx_on_material_id_raw_material_id_6fc0de680e", unique: true
     t.index ["material_id"], name: "index_material_raw_materials_on_material_id"
     t.index ["raw_material_id"], name: "index_material_raw_materials_on_raw_material_id"

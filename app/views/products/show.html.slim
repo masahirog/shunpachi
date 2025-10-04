@@ -186,14 +186,20 @@
           table.table.table-hover.mb-0
             thead.table-light
               tr
-                th style="width: 25%;" メニュー名
-                th.text-center style="width: 12%;" カテゴリ
-                th style="width: 28%;" 材料名
-                th.text-center style="width: 12%;" 数量
-                th style="width: 15%;" 下処理
-                th.text-end style="width: 8%;" 原価
+                th style="width: 15%;" メニュー名
+                th.text-center style="width: 8%;" カテゴリ
+                th style="width: 12%;" 材料名
+                th.text-center style="width: 8%;" 数量
+                th style="width: 10%;" 下処理
+                th.text-end style="width: 6%;" 原価
+                th style="width: 10%;" 食材成分
+                th.text-center style="width: 7%;" カロリー
+                th.text-center style="width: 6%;" たんぱく
+                th.text-center style="width: 6%;" 脂質
+                th.text-center style="width: 6%;" 炭水化
+                th.text-center style="width: 6%;" 食塩
             tbody
-              - @product.product_menus.includes(menu: { menu_materials: :material }).each_with_index do |product_menu, menu_index|
+              - @product.product_menus.includes(menu: { menu_materials: { material: :food_ingredient } }).each_with_index do |product_menu, menu_index|
                 - menu = product_menu.menu
                 - materials = menu.menu_materials.order(:row_order).select { |mm| mm.material.present? }
                 - if materials.any?
@@ -206,10 +212,20 @@
                           span.text-muted.small 原価: #{number_to_currency(menu.cost_price, unit: "円")}
                         td.text-center rowspan="#{materials.count}"
                           span.badge.rounded-pill class=menu_category_badge_class(menu.category_i18n) = menu.category_i18n
-                      td = link_to menu_material.material.name, edit_material_path(menu_material.material), class: "text-decoration-none", target: "_blank"
+                      td = link_to menu_material.material.name, edit_material_path(menu_material.material), class: "small text-truncate d-inline-block", style: "max-width: 120px;", target: "_blank", title: menu_material.material.name
                       td.text-center = "#{format_number(menu_material.amount_used)} #{menu_material.material.recipe_unit_i18n}"
                       td = menu_material.preparation || "—"
                       td.text-end = number_to_currency(menu_material.cost_price, unit: "円")
+                      td
+                        - if menu_material.material.food_ingredient.present?
+                          = link_to menu_material.material.food_ingredient.name, food_ingredient_path(menu_material.material.food_ingredient), target: :_blank, class: "small text-truncate d-inline-block", style: "max-width: 120px;", title: menu_material.material.food_ingredient.name
+                        - else
+                          | —
+                      td.text-center = menu_material.calorie.present? ? "#{format_number(menu_material.calorie)} kcal" : "—"
+                      td.text-center = menu_material.protein.present? ? "#{format_number(menu_material.protein)} g" : "—"
+                      td.text-center = menu_material.lipid.present? ? "#{format_number(menu_material.lipid)} g" : "—"
+                      td.text-center = menu_material.carbohydrate.present? ? "#{format_number(menu_material.carbohydrate)} g" : "—"
+                      td.text-center = menu_material.salt.present? ? "#{format_number(menu_material.salt)} g" : "—"
                 - else
                   tr
                     td.fw-bold

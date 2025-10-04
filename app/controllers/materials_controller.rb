@@ -75,12 +75,12 @@ class MaterialsController < ApplicationController
     end
     if @material.save
       save_allergens(@material)
-      redirect_to materials_path, notice: '材料を作成しました。'
+      redirect_to material_path(@material), notice: '材料を作成しました。'
     else
       @vendors = Vendor.for_company(current_company)
       @food_ingredients = FoodIngredient.for_company(current_company)
       @raw_materials = RawMaterial.for_company(current_company)
-      render :new
+      render :new, status: :unprocessable_entity
     end
   end
 
@@ -91,9 +91,9 @@ class MaterialsController < ApplicationController
     if @material.update(material_params)
       # デバッグ用：更新成功を確認
       Rails.logger.debug "Material updated successfully"
-      
+
       save_allergens(@material)
-      redirect_to materials_path, notice: '材料を更新しました。'
+      redirect_to material_path(@material), notice: '材料を更新しました。'
     else
       # デバッグ用：エラーを確認
       Rails.logger.debug "Update failed: #{@material.errors.full_messages}"
@@ -101,7 +101,7 @@ class MaterialsController < ApplicationController
       @vendors = Vendor.for_company(current_company)
       @food_ingredients = FoodIngredient.for_company(current_company)
       @raw_materials = RawMaterial.for_company(current_company)
-      render :edit
+      render :edit, status: :unprocessable_entity
     end
   end
 
@@ -122,7 +122,7 @@ class MaterialsController < ApplicationController
   def material_params
     params.require(:material).permit(:vendor_id, :food_ingredient_id, :name, :category, :recipe_unit,
      :recipe_unit_price, :memo, :unused_flag, :recipe_unit_gram_quantity,
-    material_raw_materials_attributes: [:id, :raw_material_id, :quantity_ratio, :position, :_destroy])
+    material_raw_materials_attributes: [:id, :raw_material_id, :quantity_ratio, :position, :percentage, :_destroy])
   end
 
   def save_allergens(material)
