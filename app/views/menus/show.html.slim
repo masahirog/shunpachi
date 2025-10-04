@@ -121,7 +121,7 @@
               - @menu.menu_materials.order(:row_order).each do |menu_material|
                 - if menu_material.material.present?
                   tr
-                    td = menu_material.material.name
+                    td = link_to menu_material.material.name, material_path(menu_material.material), target: :_blank
                     td.text-center = "#{format_number(menu_material.amount_used)} #{menu_material.material.recipe_unit_i18n}"
                     td = menu_material.preparation || "—"
                     td.text-end = number_to_currency(menu_material.cost_price, unit: "円")
