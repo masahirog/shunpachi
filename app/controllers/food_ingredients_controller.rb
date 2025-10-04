@@ -1,5 +1,5 @@
 class FoodIngredientsController < ApplicationController
-  before_action :set_food_ingredient, only: %i[edit update destroy]
+  before_action :set_food_ingredient, only: %i[show edit update destroy]
   before_action :check_editable, only: %i[edit update destroy]
 
   def search
@@ -16,7 +16,7 @@ class FoodIngredientsController < ApplicationController
   def index
     # 検索クエリがある場合は検索結果を表示、なければ全件表示
     @query = params[:query]
-    
+
     # スコープフィルター
     @food_ingredients = case params[:scope]
                         when 'common'
@@ -26,17 +26,20 @@ class FoodIngredientsController < ApplicationController
                         else
                           FoodIngredient.for_company(current_company)
                         end
-    
+
     # 検索機能
     if @query.present?
       @food_ingredients = @food_ingredients.where("name LIKE ?", "%#{@query}%")
     end
-    
+
     # idの降順で並び替え（新しいものを上に）
     @food_ingredients = @food_ingredients.order(id: :desc)
 
     # ページネーション
     @food_ingredients = @food_ingredients.paginate(page: params[:page], per_page: 30)
+  end
+
+  def show
   end
 
   def new

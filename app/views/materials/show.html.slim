@@ -55,7 +55,7 @@
           .card-header.bg-light
             h5.mb-0 栄養成分情報
           .card-body
-            h6.text-muted.mb-2 = @material.food_ingredient.name
+            h6.text-muted.mb-2 = link_to @material.food_ingredient.name, food_ingredient_path(@material.food_ingredient), target: :_blank
             table.table.table-bordered.mb-0
               thead.table-light
                 tr

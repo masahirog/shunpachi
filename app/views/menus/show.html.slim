@@ -112,11 +112,17 @@
           table.table.table-hover.mb-0
             thead.table-light
               tr
-                th style="width: 30%;" 材料名
-                th.text-center style="width: 15%;" 数量
-                th style="width: 25%;" 下処理
-                th.text-end style="width: 15%;" 原価
-                th style="width: 15%;" 仕入先
+                th style="width: 15%;" 材料名
+                th.text-center style="width: 8%;" 数量
+                th style="width: 12%;" 下処理
+                th.text-end style="width: 8%;" 原価
+                th style="width: 10%;" 仕入先
+                th style="width: 12%;" 食材成分
+                th.text-center style="width: 7%;" カロリー
+                th.text-center style="width: 7%;" たんぱく質
+                th.text-center style="width: 7%;" 脂質
+                th.text-center style="width: 7%;" 炭水化物
+                th.text-center style="width: 7%;" 食塩相当量
             tbody
               - @menu.menu_materials.order(:row_order).each do |menu_material|
                 - if menu_material.material.present?
@@ -126,6 +132,16 @@
                     td = menu_material.preparation || "—"
                     td.text-end = number_to_currency(menu_material.cost_price, unit: "円")
                     td = menu_material.material.vendor.name
+                    td
+                      - if menu_material.material.food_ingredient.present?
+                        = link_to menu_material.material.food_ingredient.name, food_ingredient_path(menu_material.material.food_ingredient), target: :_blank
+                      - else
+                        | —
+                    td.text-center = menu_material.calorie.present? ? "#{format_number(menu_material.calorie)} kcal" : "—"
+                    td.text-center = menu_material.protein.present? ? "#{format_number(menu_material.protein)} g" : "—"
+                    td.text-center = menu_material.lipid.present? ? "#{format_number(menu_material.lipid)} g" : "—"
+                    td.text-center = menu_material.carbohydrate.present? ? "#{format_number(menu_material.carbohydrate)} g" : "—"
+                    td.text-center = menu_material.salt.present? ? "#{format_number(menu_material.salt)} g" : "—"
 
   / 調理工程セクション
   - if @menu.cook_before.present? || @menu.cook_on_the_day.present?

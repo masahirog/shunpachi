@@ -1,0 +1,65 @@
+.container-fluid.py-2.px-3
+  .d-flex.justify-content-between.align-items-center.mb-4
+    h3.mb-0
+      = @food_ingredient.name
+      - if @food_ingredient.shared?
+        span.badge.bg-secondary.ms-2 共通データ
+      - else
+        span.badge.bg-info.ms-2 自社専用
+      - unless @food_ingredient.shared?
+        = link_to edit_food_ingredient_path(@food_ingredient), class: "btn btn-outline-primary ms-2" do
+          i.bi.bi-pencil.me-1
+          | 編集
+      = link_to food_ingredients_path, class: "btn btn-outline-secondary ms-2" do
+        i.bi.bi-arrow-left.me-1
+        | 一覧に戻る
+
+  .row
+    .col-md-8
+      / 栄養成分カード
+      .card.shadow-sm.mb-4
+        .card-header.bg-light
+          h5.mb-0
+            | 栄養成分表示（1gあたり）
+        .card-body
+          table.table.table-bordered.mb-0
+            thead.table-light
+              tr
+                th.text-center カロリー
+                th.text-center たんぱく質
+                th.text-center 脂質
+                th.text-center 炭水化物
+                th.text-center 食塩相当量
+            tbody
+              tr
+                td.text-center = "#{format_number(@food_ingredient.calorie)} kcal"
+                td.text-center = "#{format_number(@food_ingredient.protein)} g"
+                td.text-center = "#{format_number(@food_ingredient.lipid)} g"
+                td.text-center = "#{format_number(@food_ingredient.carbohydrate)} g"
+                td.text-center = "#{format_number(@food_ingredient.salt)} g"
+
+      / メモカード
+      - if @food_ingredient.memo.present?
+        .card.shadow-sm.mb-4
+          .card-header.bg-light
+            h5.mb-0
+              | メモ・補足情報
+          .card-body
+            = simple_format(@food_ingredient.memo)
+
+    .col-md-4
+      / 使用状況カード
+      - materials_using = @food_ingredient.materials
+      - if materials_using.any?
+        .card.shadow-sm.mb-4
+          .card-header.bg-light
+            h5.mb-0
+              | 使用中の材料（#{materials_using.count}件）
+          .card-body.p-0
+            .list-group.list-group-flush
+              - materials_using.limit(10).each do |material|
+                = link_to material_path(material), class: "list-group-item list-group-item-action", target: :_blank do
+                  = material.name
+              - if materials_using.count > 10
+                .list-group-item.text-muted.text-center
+                  | 他#{materials_using.count - 10}件
