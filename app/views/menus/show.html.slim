@@ -101,6 +101,31 @@
                 - allergens.uniq.each do |allergen|
                   span.badge.bg-warning.text-dark.me-2.mb-2 = MaterialAllergy.allergens_i18n[allergen]
 
+
+  / 調理工程セクション
+  .card.shadow-sm.mb-4
+    .card-header.bg-light
+      h5.mb-0
+        | 調理工程
+    .card-body
+      .row
+        - if @menu.cook_before.present?
+          .col-md-6
+            .card.bg-light
+              .card-header.py-2
+                strong 前日工程
+              .card-body.py-2
+                = simple_format(@menu.cook_before, class: "mb-0")
+        - if @menu.cook_on_the_day.present?
+          .col-md-6
+            .card.bg-light
+              .card-header.py-2
+                strong 当日工程
+              .card-body.py-2
+                = simple_format(@menu.cook_on_the_day, class: "mb-0")
+
+
+
   / 使用材料セクション
   - if @menu.menu_materials.any?
     .card.shadow-sm.mb-4
@@ -112,24 +137,27 @@
           table.table.table-hover.mb-0
             thead.table-light
               tr
-                th style="width: 15%;" 材料名
-                th.text-center style="width: 8%;" 数量
-                th style="width: 12%;" 下処理
-                th.text-end style="width: 8%;" 原価
-                th style="width: 10%;" 仕入先
-                th style="width: 12%;" 食材成分
-                th.text-center style="width: 7%;" カロリー
-                th.text-center style="width: 7%;" たんぱく
-                th.text-center style="width: 7%;" 脂質
-                th.text-center style="width: 7%;" 炭水化
-                th.text-center style="width: 7%;" 食塩
+                th style="width: 220px;" 材料名
+                th.text-center style="width: 100px;" 分量
+                th.text-center style="width: 80px;" 調味料
+                th style="" 下処理
+                th.text-end style="width:80px;" 原価
+                
+                th style="width:120px;" 仕入先
+                th style="width:150px;" 食材成分
+                th.text-center style="width: 80px;" cal
+                th.text-center style="width: 80px;" pro
+                th.text-center style="width: 80px;" lip
+                th.text-center style="width: 80px;" car
+                th.text-center style="width: 80px;" salt
             tbody
               - @menu.menu_materials.order(:row_order).each do |menu_material|
                 - if menu_material.material.present?
                   tr
-                    td = link_to menu_material.material.name, material_path(menu_material.material), target: :_blank, class: "small text-truncate d-inline-block", style: "max-width: 150px;", title: menu_material.material.name
+                    td = link_to menu_material.material.name, material_path(menu_material.material), target: :_blank, class: "small text-truncate d-inline-block", title: menu_material.material.name
                     td.text-center = "#{format_number(menu_material.amount_used)} #{menu_material.material.recipe_unit_i18n}"
-                    td = menu_material.preparation || "—"
+                    td.text-center = menu_material.source_group
+                    td.small = menu_material.preparation || "—"
                     td.text-end = number_to_currency(menu_material.cost_price, unit: "円")
                     td = menu_material.material.vendor.name
                     td
@@ -137,34 +165,12 @@
                         = link_to menu_material.material.food_ingredient.name, food_ingredient_path(menu_material.material.food_ingredient), target: :_blank, class: "small text-truncate d-inline-block", style: "max-width: 150px;", title: menu_material.material.food_ingredient.name
                       - else
                         | —
-                    td.text-center = menu_material.calorie.present? ? "#{format_number(menu_material.calorie)} kcal" : "—"
-                    td.text-center = menu_material.protein.present? ? "#{format_number(menu_material.protein)} g" : "—"
-                    td.text-center = menu_material.lipid.present? ? "#{format_number(menu_material.lipid)} g" : "—"
-                    td.text-center = menu_material.carbohydrate.present? ? "#{format_number(menu_material.carbohydrate)} g" : "—"
-                    td.text-center = menu_material.salt.present? ? "#{format_number(menu_material.salt)} g" : "—"
+                    td.small.text-center = menu_material.calorie.present? ? "#{format_number(menu_material.calorie)} k" : "—"
+                    td.small.text-center = menu_material.protein.present? ? "#{format_number(menu_material.protein)} g" : "—"
+                    td.small.text-center = menu_material.lipid.present? ? "#{format_number(menu_material.lipid)} g" : "—"
+                    td.small.text-center = menu_material.carbohydrate.present? ? "#{format_number(menu_material.carbohydrate)} g" : "—"
+                    td.small.text-center = menu_material.salt.present? ? "#{format_number(menu_material.salt)} g" : "—"
 
-  / 調理工程セクション
-  - if @menu.cook_before.present? || @menu.cook_on_the_day.present?
-    .card.shadow-sm.mb-4
-      .card-header.bg-light
-        h5.mb-0
-          | 調理工程
-      .card-body
-        .row
-          - if @menu.cook_before.present?
-            .col-md-6
-              .card.bg-light
-                .card-header.py-2
-                  strong 前日工程
-                .card-body.py-2
-                  = simple_format(@menu.cook_before, class: "mb-0")
-          - if @menu.cook_on_the_day.present?
-            .col-md-6
-              .card.bg-light
-                .card-header.py-2
-                  strong 当日工程
-                .card-body.py-2
-                  = simple_format(@menu.cook_on_the_day, class: "mb-0")
 
 / 画像拡大モーダル
 - if @menu.image.attached?
