@@ -1,44 +1,47 @@
 .container-fluid.py-2.px-3
-  .d-flex.justify-content-between.align-items-center.mb-4
-    h3.mb-0
-      = @product.name
-      = link_to edit_product_path(@product), class: "btn btn-outline-primary ms-2" do
-        i.bi.bi-pencil.me-1
-        | 編集
-      = link_to copy_product_path(@product), class: "btn btn-outline-success ms-2" do
-        i.bi.bi-copy.me-1
-        | コピー
-      - if @product.in_use?
-        button.btn.btn-outline-danger.disabled.ms-2 type="button"
-          | 削除不可（#{@product.usage_count}件で使用中）
-      - else
-        = link_to product_path(@product), data: { turbo_method: :delete, turbo_confirm: "この商品を削除してよろしいですか？" }, class: "btn btn-danger ms-2" do
-          i.bi.bi-trash.me-1
-          | 削除
-    .d-flex
-      = form_with url: product_recipe_pdfs_path(format: :pdf), method: :get, local: true, html: { target: "_blank", class: "d-flex align-items-center me-2" } do |f|
+  .mb-4
+    h3.mb-3 = @product.name
+    .d-flex.flex-column.flex-md-row.justify-content-between.align-items-start.align-items-md-center.gap-2.gap-md-3
+      .d-flex.flex-wrap.gap-2
+        = link_to edit_product_path(@product), class: "btn btn-outline-primary btn-sm" do
+          i.bi.bi-pencil.me-1
+          | 編集
+        = link_to copy_product_path(@product), class: "btn btn-outline-success btn-sm" do
+          i.bi.bi-copy.me-1
+          | コピー
+        - if @product.in_use?
+          button.btn.btn-outline-danger.disabled.btn-sm type="button"
+            i.bi.bi-trash.me-1
+            | 削除不可
+        - else
+          = link_to product_path(@product), data: { turbo_method: :delete, turbo_confirm: "この商品を削除してよろしいですか？" }, class: "btn btn-danger btn-sm" do
+            i.bi.bi-trash.me-1
+            | 削除
+      .d-flex.flex-column.flex-md-row.gap-2.w-100.w-md-auto
+      = form_with url: product_recipe_pdfs_path(format: :pdf), method: :get, local: true, html: { target: "_blank", class: "d-flex align-items-center" } do |f|
         = f.hidden_field :product_id, value: @product.id
         .input-group
           = f.number_field :serving_size, class: "form-control", value: 1, min: 1, style: "width: 80px"
           span.input-group-text 人前
           = f.submit "レシピPDF", class: "btn btn-primary"
-      = link_to product_path(@product, format: :csv), class: "btn btn-success me-2" do
-        | CSV出力
-      .dropdown
-        button.btn.btn-info.dropdown-toggle type="button" data-bs-toggle="dropdown"
-          i.bi.bi-link-45deg.me-1
-          | 公開URL
-        ul.dropdown-menu
-          li
-            a.dropdown-item href="#" onclick="copyPublicUrl(); return false;"
-              i.bi.bi-clipboard.me-2
-              | URLをコピー
-          li
-            = link_to regenerate_public_id_product_path(@product),
-              data: { turbo_method: :post, turbo_confirm: "公開URLを再生成すると、現在のURLは無効になります。\n新しいURLを生成してもよろしいですか？" },
-              class: "dropdown-item" do
-              i.bi.bi-arrow-clockwise.me-2
-              | URLを再生成
+      .d-flex.gap-2
+        = link_to product_path(@product, format: :csv), class: "btn btn-success" do
+          | CSV出力
+        .dropdown
+          button.btn.btn-info.dropdown-toggle type="button" data-bs-toggle="dropdown"
+            i.bi.bi-link-45deg.me-1
+            | 公開URL
+          ul.dropdown-menu
+            li
+              a.dropdown-item href="#" onclick="copyPublicUrl(); return false;"
+                i.bi.bi-clipboard.me-2
+                | URLをコピー
+            li
+              = link_to regenerate_public_id_product_path(@product),
+                data: { turbo_method: :post, turbo_confirm: "公開URLを再生成すると、現在のURLは無効になります。\n新しいURLを生成してもよろしいですか？" },
+                class: "dropdown-item" do
+                i.bi.bi-arrow-clockwise.me-2
+                | URLを再生成
 
   .row
     .col-md-8
@@ -182,14 +185,15 @@
         h5.mb-0
           | レシピ構成
       .card-body.p-0
-        .table-responsive
+        / デスクトップ用テーブル表示
+        .d-none.d-md-block.table-responsive
           table.table.table-hover.mb-0
             thead.table-light
               tr
                 th style="width:220px;" メニュー名
                 th style="width: 150px;" 材料名
                 th.text-center style="width: 80px;" 分量
-                th style="" 下処理
+                th style="max-width: 250px;" 下処理
                 th.text-end style="width:80px;" 原価
                 th style="width: 120px;" 食材成分
                 th.text-center style="width: 80px;" cal
@@ -216,7 +220,7 @@
                           span.text-muted.small 原価: #{number_to_currency(menu.cost_price, unit: "円")}
                       td = link_to menu_material.material.name, edit_material_path(menu_material.material), class: "small text-truncate d-inline-block", target: "_blank", title: menu_material.material.name
                       td.text-center = "#{format_number(menu_material.amount_used)} #{menu_material.material.recipe_unit_i18n}"
-                      td.small = menu_material.preparation || "—"
+                      td.small style="max-width: 250px; white-space: normal; word-break: break-word;" = menu_material.preparation || "—"
                       td.text-end = number_to_currency(menu_material.cost_price, unit: "円")
                       td
                         - if menu_material.material.food_ingredient.present?
@@ -230,7 +234,7 @@
                       td.small.text-center = menu_material.salt.present? ? "#{format_number(menu_material.salt)} g" : "—"
                   - if has_cook_process
                     tr.bg-light
-                      td colspan="10"
+                      td colspan="11"
                         .row.g-2
                           - if menu.cook_before.present?
                             .col-md-6
@@ -250,7 +254,57 @@
                       span.text-muted.small 原価: #{number_to_currency(menu.cost_price, unit: "円")}
                     td.text-center
                       span.badge.bg-info.text-dark = menu.category
-                    td.text-muted colspan="4" 材料が設定されていません
+                    td.text-muted colspan="9" 材料が設定されていません
+
+        / モバイル用カード表示
+        .d-md-none
+          - @product.product_menus.includes(menu: { menu_materials: { material: :food_ingredient } }).each_with_index do |product_menu, menu_index|
+            - menu = product_menu.menu
+            - materials = menu.menu_materials.order(:row_order).select { |mm| mm.material.present? }
+            - has_cook_process = menu.cook_before.present? || menu.cook_on_the_day.present?
+            .card.mb-3 class="#{menu_index == 0 ? 'mt-3' : ''}"
+              .card-header.bg-light
+                .d-flex.justify-content-between.align-items-start
+                  div
+                    = link_to menu.name, edit_menu_path(menu), class: "text-decoration-none fw-bold", target: "_blank"
+                    div
+                      span.badge.rounded-pill.mt-1 class=menu_category_badge_class(menu.category_i18n) = menu.category_i18n
+                  .text-end
+                    .small.text-muted 原価
+                    .fw-bold = number_to_currency(menu.cost_price, unit: "円")
+              .card-body.p-2
+                - if materials.any?
+                  - materials.each_with_index do |menu_material, material_index|
+                    .border-bottom.py-2 class="#{material_index == materials.size - 1 ? 'border-0' : ''}"
+                      / 1行目：材料名
+                      .fw-bold.small.mb-1
+                        = link_to menu_material.material.name, edit_material_path(menu_material.material), class: "text-decoration-none", target: "_blank"
+                      / 2行目：調味料G 分量 原価
+                      .d-flex.align-items-center.small.mb-1.gap-2
+                        .text-center style="min-width: 40px;"
+                          - if menu_material.source_group.present?
+                            span.badge.bg-secondary = menu_material.source_group
+                        .flex-grow-1
+                          span = "#{format_number(menu_material.amount_used)} #{menu_material.material.recipe_unit_i18n}"
+                        .text-end style="min-width: 80px;"
+                          span = number_to_currency(menu_material.cost_price, unit: "円", precision: 1)
+                      / 3行目：下処理
+                      - if menu_material.preparation.present?
+                        .small.text-muted
+                          = menu_material.preparation
+                - else
+                  .text-muted.small.py-2 材料が設定されていません
+
+                - if has_cook_process
+                  .mt-3.pt-3.border-top
+                    - if menu.cook_before.present?
+                      div.mb-2
+                        strong.text-muted.small 前日工程
+                        .mt-1.small = simple_format(menu.cook_before, class: "mb-0")
+                    - if menu.cook_on_the_day.present?
+                      div class="#{menu.cook_before.present? ? 'mt-2' : ''}"
+                        strong.text-muted.small 当日工程
+                        .mt-1.small = simple_format(menu.cook_on_the_day, class: "mb-0")
 
 / 画像拡大モーダル
 - if @product.image.attached?

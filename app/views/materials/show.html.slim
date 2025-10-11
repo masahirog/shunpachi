@@ -1,15 +1,16 @@
 .container-fluid.py-2.px-3
-  .d-flex.justify-content-between.align-items-center.mb-4
-    h3.mb-0
-      = @material.name
-      = link_to edit_material_path(@material), class: "btn btn-outline-primary ms-2" do
+  .mb-4
+    h3.mb-3 = @material.name
+    .d-flex.flex-wrap.gap-2
+      = link_to edit_material_path(@material), class: "btn btn-outline-primary btn-sm" do
         i.bi.bi-pencil.me-1
         | 編集
       - if @material.in_use?
-        button.btn.btn-outline-danger.disabled.ms-2 type="button"
-          | 削除不可（#{@material.usage_count}件で使用中）
+        button.btn.btn-outline-danger.disabled.btn-sm type="button"
+          i.bi.bi-trash.me-1
+          | 削除不可
       - else
-        = link_to material_path(@material), data: { turbo_method: :delete, turbo_confirm: "この材料を削除してよろしいですか？" }, class: "btn btn-danger ms-2" do
+        = link_to material_path(@material), data: { turbo_method: :delete, turbo_confirm: "この材料を削除してよろしいですか？" }, class: "btn btn-danger btn-sm" do
           i.bi.bi-trash.me-1
           | 削除
 
@@ -56,42 +57,78 @@
             h5.mb-0 栄養成分情報
           .card-body
             h6.text-muted.mb-2 = link_to @material.food_ingredient.name, food_ingredient_path(@material.food_ingredient), target: :_blank
-            table.table.table-bordered.mb-0
-              thead.table-light
-                tr
-                  th.text-center カロリー
-                  th.text-center たんぱく質
-                  th.text-center 脂質
-                  th.text-center 炭水化物
-                  th.text-center 食塩相当量
-              tbody
-                tr
-                  td.text-center = "#{@material.food_ingredient.calorie} kcal"
-                  td.text-center = "#{@material.food_ingredient.protein} g"
-                  td.text-center = "#{@material.food_ingredient.lipid} g"
-                  td.text-center = "#{@material.food_ingredient.carbohydrate} g"
-                  td.text-center = "#{@material.food_ingredient.salt} g"
+            / デスクトップ表示
+            .d-none.d-md-block
+              table.table.table-bordered.mb-0
+                thead.table-light
+                  tr
+                    th.text-center カロリー
+                    th.text-center たんぱく質
+                    th.text-center 脂質
+                    th.text-center 炭水化物
+                    th.text-center 食塩相当量
+                tbody
+                  tr
+                    td.text-center = "#{@material.food_ingredient.calorie} kcal"
+                    td.text-center = "#{@material.food_ingredient.protein} g"
+                    td.text-center = "#{@material.food_ingredient.lipid} g"
+                    td.text-center = "#{@material.food_ingredient.carbohydrate} g"
+                    td.text-center = "#{@material.food_ingredient.salt} g"
+            / モバイル表示
+            .d-md-none
+              table.table.table-bordered.mb-0
+                thead.table-light
+                  tr
+                    th.text-center カロリー
+                    th.text-center たんぱく質
+                    th.text-center 脂質
+                tbody
+                  tr
+                    td.text-center = "#{@material.food_ingredient.calorie} kcal"
+                    td.text-center = "#{@material.food_ingredient.protein} g"
+                    td.text-center = "#{@material.food_ingredient.lipid} g"
+              table.table.table-bordered.mt-2.mb-0
+                thead.table-light
+                  tr
+                    th.text-center 炭水化物
+                    th.text-center 食塩相当量
+                tbody
+                  tr
+                    td.text-center = "#{@material.food_ingredient.carbohydrate} g"
+                    td.text-center = "#{@material.food_ingredient.salt} g"
 
       / 原材料情報カード
       - if @material.material_raw_materials.any?
         .card.shadow-sm.mb-4
           .card-header.bg-light
             h5.mb-0 原材料構成
-          .card-body
-            table.table.table-hover.mb-0
-              thead.table-light
-                tr
-                  th 原材料名
-                  th.text-center カテゴリ
-                  th.text-center 割合
-              tbody
-                - @material.material_raw_materials.includes(:raw_material).order(:position).each do |mrm|
-                  - if mrm.raw_material.present?
-                    tr
-                      td = mrm.raw_material.name
-                      td.text-center
-                        span.badge.bg-secondary = mrm.raw_material.category_i18n
-                      td.text-center = mrm.percentage.present? ? "#{mrm.percentage}%" : "—"
+          .card-body.p-0
+            / デスクトップ用テーブル表示
+            .d-none.d-md-block.table-responsive
+              table.table.table-hover.mb-0
+                thead.table-light
+                  tr
+                    th 原材料名
+                    th.text-center カテゴリ
+                    th.text-center 割合
+                tbody
+                  - @material.material_raw_materials.includes(:raw_material).order(:position).each do |mrm|
+                    - if mrm.raw_material.present?
+                      tr
+                        td = mrm.raw_material.name
+                        td.text-center
+                          span.badge.bg-secondary = mrm.raw_material.category_i18n
+                        td.text-center = mrm.percentage.present? ? "#{mrm.percentage}%" : "—"
+            / モバイル用カード表示
+            .d-md-none.p-3
+              - @material.material_raw_materials.includes(:raw_material).order(:position).each_with_index do |mrm, index|
+                - if mrm.raw_material.present?
+                  .border-bottom.py-2 class="#{index == @material.material_raw_materials.size - 1 ? 'border-0' : ''}"
+                    .d-flex.justify-content-between.align-items-center.mb-1
+                      .fw-bold.small = mrm.raw_material.name
+                      span.badge.bg-secondary = mrm.raw_material.category_i18n
+                    .text-muted.small
+                      | 割合: #{mrm.percentage.present? ? "#{mrm.percentage}%" : "—"}
 
     .col-md-4
       / アレルギー情報カード

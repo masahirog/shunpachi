@@ -84,14 +84,21 @@
           partial_locals: { raw_materials: @raw_materials }
 
     .card-body
-      table.table.table-bordered.mb-0#raw-materials-table
-        thead.table-light
-          tr
-            th.col-5 原材料
-            th.col-2.text-center カテゴリ
-            th.col-2.text-center 割合
-            th.col-3.text-center 操作
-        tbody#material-raw-materials
+      / デスクトップ表示
+      .d-none.d-md-block
+        table.table.table-bordered.mb-0#raw-materials-table
+          thead.table-light
+            tr
+              th.col-5 原材料
+              th.col-2.text-center カテゴリ
+              th.col-2.text-center 割合
+              th.col-3.text-center 操作
+          tbody#material-raw-materials
+            = f.fields_for :material_raw_materials do |mrm|
+              = render 'material_raw_material_fields', f: mrm, raw_materials: @raw_materials
+      / モバイル表示
+      .d-md-none#raw-materials-table
+        #material-raw-materials
           = f.fields_for :material_raw_materials do |mrm|
             = render 'material_raw_material_fields', f: mrm, raw_materials: @raw_materials
 

@@ -1,21 +1,22 @@
 .container-fluid.py-2.px-3
-  .d-flex.justify-content-between.align-items-center.mb-4
-    h3.mb-0
-      = @menu.name
-      = link_to edit_menu_path(@menu), class: "btn btn-outline-primary ms-2" do
-        i.bi.bi-pencil.me-1
-        | 編集
-      = link_to copy_menu_path(@menu), class: "btn btn-outline-success ms-2" do
-        i.bi.bi-copy.me-1
-        | コピー
-      - if @menu.in_use?
-        button.btn.btn-outline-danger.disabled.ms-2 type="button"
-          | 削除不可（#{@menu.usage_count}件で使用中）
-      - else
-        = link_to menu_path(@menu), data: { turbo_method: :delete, turbo_confirm: "このメニューを削除してよろしいですか？" }, class: "btn btn-danger ms-2" do
-          i.bi.bi-trash.me-1
-          | 削除
-    .d-flex
+  .mb-4
+    h3.mb-3 = @menu.name
+    .d-flex.flex-column.flex-md-row.justify-content-between.align-items-start.align-items-md-center.gap-3
+      .d-flex.flex-wrap.gap-2
+        = link_to edit_menu_path(@menu), class: "btn btn-outline-primary btn-sm" do
+          i.bi.bi-pencil.me-1
+          | 編集
+        = link_to copy_menu_path(@menu), class: "btn btn-outline-success btn-sm" do
+          i.bi.bi-copy.me-1
+          | コピー
+        - if @menu.in_use?
+          button.btn.btn-outline-danger.disabled.btn-sm type="button"
+            i.bi.bi-trash.me-1
+            | 削除不可
+        - else
+          = link_to menu_path(@menu), data: { turbo_method: :delete, turbo_confirm: "このメニューを削除してよろしいですか？" }, class: "btn btn-danger btn-sm" do
+            i.bi.bi-trash.me-1
+            | 削除
       = form_with url: menu_recipe_pdfs_path(format: :pdf), method: :get, local: true, html: { target: "_blank", class: "d-flex align-items-center" } do |f|
         = f.hidden_field :menu_id, value: @menu.id
         .input-group
@@ -58,21 +59,45 @@
           h5.mb-0
             | 栄養成分表示
         .card-body
-          table.table.table-bordered.mb-0
-            thead.table-light
-              tr
-                th.text-center カロリー
-                th.text-center たんぱく質
-                th.text-center 脂質
-                th.text-center 炭水化物
-                th.text-center 食塩相当量
-            tbody
-              tr
-                td.text-center = "#{format_number(@menu.calorie)} kcal"
-                td.text-center = "#{format_number(@menu.protein)} g"
-                td.text-center = "#{format_number(@menu.lipid)} g"
-                td.text-center = "#{format_number(@menu.carbohydrate)} g"
-                td.text-center = "#{format_number(@menu.salt)} g"
+          / デスクトップ表示
+          .d-none.d-md-block
+            table.table.table-bordered.mb-0
+              thead.table-light
+                tr
+                  th.text-center カロリー
+                  th.text-center たんぱく質
+                  th.text-center 脂質
+                  th.text-center 炭水化物
+                  th.text-center 食塩相当量
+              tbody
+                tr
+                  td.text-center = "#{format_number(@menu.calorie)} kcal"
+                  td.text-center = "#{format_number(@menu.protein)} g"
+                  td.text-center = "#{format_number(@menu.lipid)} g"
+                  td.text-center = "#{format_number(@menu.carbohydrate)} g"
+                  td.text-center = "#{format_number(@menu.salt)} g"
+          / モバイル表示
+          .d-md-none
+            table.table.table-bordered.mb-0
+              thead.table-light
+                tr
+                  th.text-center カロリー
+                  th.text-center たんぱく質
+                  th.text-center 脂質
+              tbody
+                tr
+                  td.text-center = "#{format_number(@menu.calorie)} kcal"
+                  td.text-center = "#{format_number(@menu.protein)} g"
+                  td.text-center = "#{format_number(@menu.lipid)} g"
+            table.table.table-bordered.mt-2.mb-0
+              thead.table-light
+                tr
+                  th.text-center 炭水化物
+                  th.text-center 食塩相当量
+              tbody
+                tr
+                  td.text-center = "#{format_number(@menu.carbohydrate)} g"
+                  td.text-center = "#{format_number(@menu.salt)} g"
 
     .col-md-4
       / メニュー画像カード
@@ -133,7 +158,8 @@
         h5.mb-0
           |使用材料
       .card-body.p-0
-        .table-responsive
+        / デスクトップ用テーブル表示
+        .d-none.d-md-block.table-responsive
           table.table.table-hover.mb-0
             thead.table-light
               tr
@@ -142,7 +168,7 @@
                 th.text-center style="width: 80px;" 調味料
                 th style="" 下処理
                 th.text-end style="width:80px;" 原価
-                
+
                 th style="width:120px;" 仕入先
                 th style="width:150px;" 食材成分
                 th.text-center style="width: 80px;" cal
@@ -158,7 +184,7 @@
                     td.text-center = "#{format_number(menu_material.amount_used)} #{menu_material.material.recipe_unit_i18n}"
                     td.text-center = menu_material.source_group
                     td.small = menu_material.preparation || "—"
-                    td.text-end = number_to_currency(menu_material.cost_price, unit: "円")
+                    td.text-end = number_to_currency(menu_material.cost_price, unit: "円", precision: 1)
                     td = menu_material.material.vendor.name
                     td
                       - if menu_material.material.food_ingredient.present?
@@ -170,6 +196,28 @@
                     td.small.text-center = menu_material.lipid.present? ? "#{format_number(menu_material.lipid)} g" : "—"
                     td.small.text-center = menu_material.carbohydrate.present? ? "#{format_number(menu_material.carbohydrate)} g" : "—"
                     td.small.text-center = menu_material.salt.present? ? "#{format_number(menu_material.salt)} g" : "—"
+
+        / モバイル用カード表示
+        .d-md-none.p-3
+          - @menu.menu_materials.order(:row_order).each_with_index do |menu_material, index|
+            - if menu_material.material.present?
+              .border-bottom.py-2 class="#{index == @menu.menu_materials.size - 1 ? 'border-0' : ''}"
+                / 1行目：材料名
+                .fw-bold.small.mb-1
+                  = link_to menu_material.material.name, material_path(menu_material.material), class: "text-decoration-none", target: "_blank"
+                / 2行目：調味料G 分量 原価
+                .d-flex.align-items-center.small.mb-1.gap-2
+                  .text-center style="min-width: 40px;"
+                    - if menu_material.source_group.present?
+                      span.badge.bg-secondary = menu_material.source_group
+                  .flex-grow-1
+                    span = "#{format_number(menu_material.amount_used)} #{menu_material.material.recipe_unit_i18n}"
+                  .text-end style="min-width: 80px;"
+                    span = number_to_currency(menu_material.cost_price, unit: "円", precision: 1)
+                / 3行目：下処理
+                - if menu_material.preparation.present?
+                  .small.text-muted
+                    = menu_material.preparation
 
 
 / 画像拡大モーダル

@@ -45,21 +45,45 @@
     .card-header.bg-light
       h5.mb-0 栄養成分
     .card-body
-      table.table.table-bordered
-        thead.table-light
-          tr
-            th カロリー
-            th たんぱく質
-            th 脂質
-            th 炭水化物
-            th 塩分
-        tbody
-          tr
-            td = f.number_field :calorie, class: "menu_calorie form-control", readonly: true
-            td = f.number_field :protein, class: "menu_protein form-control", readonly: true
-            td = f.number_field :lipid, class: "menu_lipid form-control", readonly: true
-            td = f.number_field :carbohydrate, class: "menu_carbohydrate form-control", readonly: true
-            td = f.number_field :salt, class: "menu_salt form-control", readonly: true
+      / デスクトップ表示
+      .d-none.d-md-block
+        table.table.table-bordered
+          thead.table-light
+            tr
+              th カロリー
+              th たんぱく質
+              th 脂質
+              th 炭水化物
+              th 塩分
+          tbody
+            tr
+              td = f.number_field :calorie, class: "menu_calorie form-control", readonly: true
+              td = f.number_field :protein, class: "menu_protein form-control", readonly: true
+              td = f.number_field :lipid, class: "menu_lipid form-control", readonly: true
+              td = f.number_field :carbohydrate, class: "menu_carbohydrate form-control", readonly: true
+              td = f.number_field :salt, class: "menu_salt form-control", readonly: true
+      / モバイル表示
+      .d-md-none
+        table.table.table-bordered
+          thead.table-light
+            tr
+              th カロリー
+              th たんぱく質
+              th 脂質
+          tbody
+            tr
+              td = f.number_field :calorie, class: "menu_calorie form-control", readonly: true
+              td = f.number_field :protein, class: "menu_protein form-control", readonly: true
+              td = f.number_field :lipid, class: "menu_lipid form-control", readonly: true
+        table.table.table-bordered.mt-2
+          thead.table-light
+            tr
+              th 炭水化物
+              th 塩分
+          tbody
+            tr
+              td = f.number_field :carbohydrate, class: "menu_carbohydrate form-control", readonly: true
+              td = f.number_field :salt, class: "menu_salt form-control", readonly: true
 
   .card.mb-4
     .card-header.bg-light

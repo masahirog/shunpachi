@@ -1,5 +1,4 @@
 .container-fluid.py-4.px-3
-  span 旬八で管理している実際の材料の一覧、レシピに使用する
   .d-flex.justify-content-between.align-items-center.mb-3
     h3.mb-0 材料一覧
     = link_to new_material_path, class: "btn btn-primary" do
@@ -37,7 +36,8 @@
 
 
 
-  .table-responsive
+  / デスクトップ用テーブル表示
+  .d-none.d-md-block.table-responsive
     table.table.table-hover.table-bordered.mb-0
       thead.table-light
         tr
@@ -71,6 +71,42 @@
               - else
                 span.badge.bg-success 使用中
 
-  .d-flex.justify-content-between.align-items-center.mt-2
+  / モバイル用カード表示
+  .d-md-none
+    - @materials.each do |material|
+      .card.mb-3.shadow-sm.js-material-item
+        .card-body.p-3
+          .d-flex.justify-content-between.align-items-start.mb-2
+            div
+              .fw-bold.mb-1
+                = link_to material.name, material_path(material), class: "text-decoration-none"
+              .small.text-muted.mb-1 = material.vendor&.name
+              span.badge.rounded-pill.bg-info.text-dark = material.category_i18n
+            .text-end
+              - if material.unused_flag
+                span.badge.bg-secondary 停止中
+              - else
+                span.badge.bg-success 使用中
+          .row.g-2.mt-2
+            .col-6
+              .small.text-muted レシピ単位
+              div = material.recipe_unit_i18n
+            .col-6
+              .small.text-muted 単価
+              .fw-bold = number_to_currency(material.recipe_unit_price, unit: "円")
+          - if material.food_ingredient.present?
+            .mt-2
+              .small.text-muted 栄養計算
+              div = material.food_ingredient.name
+          .d-flex.gap-2.mt-3
+            = link_to material_path(material), class: "btn btn-sm btn-outline-primary flex-fill" do
+              i.bi.bi-eye.me-1
+              | 詳細
+            = link_to edit_material_path(material), class: "btn btn-sm btn-outline-secondary flex-fill" do
+              i.bi.bi-pencil.me-1
+              | 編集
+
+  .d-flex.flex-column.flex-md-row.justify-content-between.align-items-start.align-items-md-center.gap-2.mt-2
     small.text-muted 全 #{@materials.count} 件
-    = will_paginate @materials, renderer: WillPaginate::ActionView::BootstrapLinkRenderer if @materials.respond_to?(:total_pages)
+    .overflow-auto.w-100.w-md-auto
+      = will_paginate @materials, renderer: WillPaginate::ActionView::BootstrapLinkRenderer if @materials.respond_to?(:total_pages)
