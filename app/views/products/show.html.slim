@@ -1,7 +1,7 @@
 .container-fluid.py-2.px-3
   .mb-4
     h3.mb-3 = @product.name
-    .d-flex.flex-column.flex-md-row.justify-content-between.align-items-start.align-items-md-center.gap-2.gap-md-3
+    .d-flex.flex-column.flex-md-row.justify-content-between.align-items-start.align-items-md-center.gap-2
       .d-flex.flex-wrap.gap-2
         = link_to edit_product_path(@product), class: "btn btn-outline-primary btn-sm" do
           i.bi.bi-pencil.me-1
@@ -17,20 +17,19 @@
           = link_to product_path(@product), data: { turbo_method: :delete, turbo_confirm: "この商品を削除してよろしいですか？" }, class: "btn btn-danger btn-sm" do
             i.bi.bi-trash.me-1
             | 削除
-      .d-flex.flex-column.flex-md-row.gap-2.w-100.w-md-auto
-      = form_with url: product_recipe_pdfs_path(format: :pdf), method: :get, local: true, html: { target: "_blank", class: "d-flex align-items-center" } do |f|
-        = f.hidden_field :product_id, value: @product.id
-        .input-group
-          = f.number_field :serving_size, class: "form-control", value: 1, min: 1, style: "width: 80px"
-          span.input-group-text 人前
-          = f.submit "レシピPDF", class: "btn btn-primary"
-      .d-flex.gap-2
-        = link_to product_path(@product, format: :csv), class: "btn btn-success" do
-          | CSV出力
+      .d-flex.flex-wrap.gap-2
+        = form_with url: product_recipe_pdfs_path(format: :pdf), method: :get, local: true, html: { target: "_blank", class: "d-flex align-items-center" } do |f|
+          = f.hidden_field :product_id, value: @product.id
+          .input-group.input-group-sm
+            = f.number_field :serving_size, class: "form-control form-control-sm", value: 1, min: 1, style: "width: 60px"
+            span.input-group-text 人前
+            = f.submit "PDF", class: "btn btn-primary btn-sm"
+        = link_to product_path(@product, format: :csv), class: "btn btn-success btn-sm" do
+          | CSV
         .dropdown
-          button.btn.btn-info.dropdown-toggle type="button" data-bs-toggle="dropdown"
+          button.btn.btn-info.btn-sm.dropdown-toggle type="button" data-bs-toggle="dropdown"
             i.bi.bi-link-45deg.me-1
-            | 公開URL
+            | URL
           ul.dropdown-menu
             li
               a.dropdown-item href="#" onclick="copyPublicUrl(); return false;"
