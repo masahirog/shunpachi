@@ -7,7 +7,7 @@ tr.nested-fields
     .food_ingredient.mt-1.ps-2
       .food_ingredient_a
         - if f.object.material_id.present? && f.object.material.food_ingredient.present?
-            span.text-muted = f.object.material.food_ingredient.name.truncate(20)
+            = link_to f.object.material.food_ingredient.name.truncate(20),f.object.material.food_ingredient,target:"_blank"
       .food_ingredient_info.d-none
         - if f.object.material_id.present? && f.object.material.food_ingredient.present?
             input.food_ingredient_info_input.unit_calorie value = "#{f.object.material.food_ingredient.calorie}"
