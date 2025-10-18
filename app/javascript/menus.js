@@ -11,6 +11,12 @@ function onLoad() {
 
     // gram_quantity編集トグル機能
     initGramQuantityToggle();
+
+    // ページロード時に原価・栄養計算を実行
+    recalculateMenuValues();
+
+    // 材料選択時の編集リンク更新
+    initMaterialEditLink();
   }
 
   // メニュー選択時のイベント処理
@@ -136,12 +142,14 @@ function onLoad() {
     updateProductAllergens();
   });
   
-  // 既存のメニューを初期化
-  $('.menu-select').each(function() {
-    if ($(this).val()) {
-      $(this).trigger('change');
-    }
-  });
+  // 既存のメニューを初期化（products/editページの場合のみ）
+  if (window.location.pathname.includes('/products/') && window.location.pathname.includes('/edit')) {
+    $('.menu-select').each(function() {
+      if ($(this).val()) {
+        $(this).trigger('change');
+      }
+    });
+  }
 
   // 商品全体のアレルギー情報を更新
   function updateProductAllergens() {
@@ -303,6 +311,65 @@ function updateMenuMaterialPositions() {
   });
 }
 
+// メニュー編集ページで原価・栄養成分を再計算
+function recalculateMenuValues() {
+  // URLからメニューIDを取得
+  const pathParts = window.location.pathname.split('/');
+  const menuIdIndex = pathParts.indexOf('menus') + 1;
+  const menuId = pathParts[menuIdIndex];
+
+  // メニューIDが存在し、editページの場合のみ実行
+  if (!menuId || pathParts[menuIdIndex + 1] !== 'edit') {
+    return;
+  }
+
+  $.ajax({
+    url: `/menus/${menuId}/calculate`,
+    type: 'GET',
+    dataType: 'json',
+    success: function(data) {
+      // メニュー全体の原価・栄養成分の値を更新
+      $('.menu_cost_price').val(data.cost_price || 0);
+      $('.menu_calorie').val(data.calorie || 0);
+      $('.menu_protein').val(data.protein || 0);
+      $('.menu_lipid').val(data.lipid || 0);
+      $('.menu_carbohydrate').val(data.carbohydrate || 0);
+      $('.menu_salt').val(data.salt || 0);
+
+      // 各menu_materialの値を更新（インデックスベースで照合）
+      if (data.menu_materials && data.menu_materials.length > 0) {
+        const $rows = $('#menu_materials-add-point tr.nested-fields');
+
+        data.menu_materials.forEach(function(mm, index) {
+          // インデックスで対応する行を取得
+          const $row = $rows.eq(index);
+
+          if ($row.length > 0) {
+            // cost_price を更新
+            $row.find('.cost_price').val(mm.cost_price || 0);
+
+            // 栄養成分を更新（gram_quantityは手動編集可能なので更新しない）
+            $row.find('.gram_calorie').val(mm.calorie || 0);
+            $row.find('.gram_protein').val(mm.protein || 0);
+            $row.find('.gram_lipid').val(mm.lipid || 0);
+            $row.find('.gram_carbohydrate').val(mm.carbohydrate || 0);
+            $row.find('.gram_salt').val(mm.salt || 0);
+          } else {
+            console.warn(`インデックス${index}に対応する行が見つかりませんでした`);
+          }
+        });
+      }
+    },
+    error: function(xhr, status, error) {
+      console.error('メニュー計算の取得に失敗しました:', {
+        status: status,
+        error: error,
+        response: xhr.responseText
+      });
+    }
+  });
+}
+
 // gram_quantity編集トグル機能
 function initGramQuantityToggle() {
   // 既存の編集ボタンにイベントを設定
@@ -341,6 +408,51 @@ function initGramQuantityToggle() {
     // 新しく追加された行のgram_quantityフィールドもreadonlyに設定
     $(insertedItem).find('.gram_quantity').prop('readonly', true);
   });
+}
+
+// 材料選択時の編集リンク更新機能
+function initMaterialEditLink() {
+  // 材料選択変更時のイベント
+  $(document).on('change', '.material_select2', function() {
+    updateMaterialEditLink($(this));
+  });
+
+  // 新規追加された行にも対応
+  $('#menu_materials-add-point').on('cocoon:after-insert', function(e, insertedItem) {
+    // 新しく追加された行の編集リンクコンテナを初期化
+    const $container = $(insertedItem).find('.d-flex.align-items-center');
+    if ($container.length > 0) {
+      // 既存の編集リンクがあれば削除
+      $container.find('a').remove();
+    }
+  });
+
+  // ページロード時に既存の行にも編集リンクを追加
+  $('.material_select2').each(function() {
+    updateMaterialEditLink($(this));
+  });
+}
+
+// 材料の編集リンクを更新する関数
+function updateMaterialEditLink($select) {
+  const materialId = $select.val();
+  const $container = $select.closest('.d-flex.align-items-center');
+
+  // 既存の全ての編集リンク（<a>タグ）を削除
+  $container.find('a').remove();
+
+  // 材料が選択されている場合、編集リンクを追加
+  if (materialId && materialId !== '') {
+    const editLink = $('<a>', {
+      href: `/materials/${materialId}/edit`,
+      target: '_blank',
+      class: 'btn btn-sm btn-outline-secondary ms-2 material-edit-link',
+      title: '材料を編集',
+      html: '<i class="bi bi-pencil-square"></i>'
+    });
+
+    $container.append(editLink);
+  }
 }
 
 document.addEventListener("DOMContentLoaded", onLoad);

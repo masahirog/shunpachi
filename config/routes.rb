@@ -22,6 +22,7 @@ Rails.application.routes.draw do
     member do
       get :details
       get :copy
+      get :calculate
     end
   end
   resources :products do

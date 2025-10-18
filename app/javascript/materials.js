@@ -240,7 +240,7 @@ function onLoad() {
           $row.find('.unit_cost_price').val(data.recipe_unit_price);
           cal_gram_quantity($row);
           if (data.food_ingredient) {
-            var foodIngredientLink = `<a href="/food_ingredients/${data.food_ingredient.id}" target="_blank" class="food-ingredient-link">${data.food_ingredient.name}</a>`;
+            var foodIngredientLink = `<span>食成：</span><a href="/food_ingredients/${data.food_ingredient.id}" target="_blank" class="food-ingredient-link">${data.food_ingredient.name}</a>`;
             $row.find('.food_ingredient_a').html(foodIngredientLink);
             $row.find('.food_ingredient_info_input.unit_calorie').val(data.food_ingredient.calorie);
             $row.find('.food_ingredient_info_input.unit_protein').val(data.food_ingredient.protein);

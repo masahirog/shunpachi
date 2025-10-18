@@ -1,6 +1,92 @@
 class MenusController < ApplicationController
-  before_action :set_menu, only: %i[edit update destroy]
+  before_action :set_menu, only: %i[edit update destroy calculate]
 
+  def calculate
+    # 現在のメニューの原価と栄養成分を再計算して返す（DBには保存しない）
+    total_cost = 0.0
+    total_calorie = 0.0
+    total_protein = 0.0
+    total_lipid = 0.0
+    total_carbohydrate = 0.0
+    total_salt = 0.0
+
+    # 各menu_materialの原価と栄養成分を計算
+    menu_materials_data = []
+
+    @menu.menu_materials.includes(material: :food_ingredient).each do |mm|
+      next unless mm.material
+
+      mm_cost = 0.0
+      mm_calorie = 0.0
+      mm_protein = 0.0
+      mm_lipid = 0.0
+      mm_carbohydrate = 0.0
+      mm_salt = 0.0
+      mm_gram_quantity = 0.0
+
+      # 原価計算: amount_used × material.recipe_unit_price
+      if mm.material.recipe_unit_price.present? && mm.amount_used.present?
+        mm_cost = (mm.amount_used.to_f * mm.material.recipe_unit_price.to_f).round(2)
+        total_cost += mm_cost
+      end
+
+      # gram_quantity計算
+      if mm.amount_used.present?
+        if mm.material.recipe_unit_gram_quantity.present?
+          # recipe_unit_gram_quantityが存在する場合: amount_used × recipe_unit_gram_quantity
+          mm_gram_quantity = (mm.amount_used.to_f * mm.material.recipe_unit_gram_quantity.to_f).round(2)
+        else
+          # recipe_unit_gram_quantityが存在しない、またはfood_ingredientがない場合: amount_usedをそのまま使用
+          mm_gram_quantity = mm.amount_used.to_f.round(2)
+        end
+      else
+        mm_gram_quantity = 0.0
+      end
+
+      # 栄養成分計算: gram_quantity基準（food_ingredientが存在する場合のみ）
+      if mm.material.food_ingredient.present? && mm_gram_quantity > 0
+        food = mm.material.food_ingredient
+        # 1gあたりの栄養成分をgram_quantityに応じて計算
+        mm_calorie = (food.calorie.to_f * mm_gram_quantity).round(2)
+        mm_protein = (food.protein.to_f * mm_gram_quantity).round(2)
+        mm_lipid = (food.lipid.to_f * mm_gram_quantity).round(2)
+        mm_carbohydrate = (food.carbohydrate.to_f * mm_gram_quantity).round(2)
+        mm_salt = (food.salt.to_f * mm_gram_quantity).round(2)
+
+        total_calorie += mm_calorie
+        total_protein += mm_protein
+        total_lipid += mm_lipid
+        total_carbohydrate += mm_carbohydrate
+        total_salt += mm_salt
+      end
+
+      # 各menu_materialのデータを配列に追加
+      menu_materials_data << {
+        id: mm.id,
+        cost_price: mm_cost,
+        gram_quantity: mm_gram_quantity,
+        calorie: mm_calorie,
+        protein: mm_protein,
+        lipid: mm_lipid,
+        carbohydrate: mm_carbohydrate,
+        salt: mm_salt
+      }
+    end
+
+    respond_to do |format|
+      format.json do
+        render json: {
+          cost_price: total_cost.round(2),
+          calorie: total_calorie.round(2),
+          protein: total_protein.round(2),
+          lipid: total_lipid.round(2),
+          carbohydrate: total_carbohydrate.round(2),
+          salt: total_salt.round(2),
+          menu_materials: menu_materials_data
+        }
+      end
+    end
+  end
 
   def details
     @menu = Menu.includes(menu_materials: { material: :material_allergies }).for_company(current_company).find(params[:id])

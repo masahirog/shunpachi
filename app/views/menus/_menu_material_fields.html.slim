@@ -3,9 +3,11 @@ tr.nested-fields
   td.handle style="cursor: move; width: 30px; text-align: center;" 
     i.bi.bi-grip-vertical
   td
-    = f.collection_select :material_id, @materials, :id, :name, {include_blank: true}, class: "form-select material_select2"
+    .d-flex.align-items-center
+      = f.collection_select :material_id, @materials, :id, :name, {include_blank: true}, class: "form-select material_select2", style: "flex: 1;"
     .food_ingredient.mt-1.ps-2
       .food_ingredient_a
+        span 食成：
         - if f.object.material_id.present? && f.object.material.food_ingredient.present?
             = link_to f.object.material.food_ingredient.name.truncate(20),f.object.material.food_ingredient,target:"_blank"
       .food_ingredient_info.d-none
@@ -24,7 +26,7 @@ tr.nested-fields
 
   td
     .clearfix
-      = f.number_field :amount_used, style:'float:left;width:100px;',class:'form-control amount_used', step: "0.01"
+      = f.number_field :amount_used, style:'float:left;width:100px;',class:'form-control amount_used', step: "any"
       span.float-start.material_unit.ms-2.mt-2 = f.object.material.recipe_unit_i18n if f.object.material_id.present?
 
     .clearfix.mt-1
