@@ -42,7 +42,7 @@
                       span.badge.rounded-pill class=menu_category_badge_class(@menu.category_i18n) = @menu.category_i18n
                   tr
                     th.text-muted 原価
-                    td.fw-bold = number_to_currency(@menu.cost_price, unit: "円")
+                    td.fw-bold = number_to_currency(@menu.cost_price, unit: "円", precision: 1)
             .col-md-6
               table.table.table-borderless.mb-0
                 tbody
@@ -167,7 +167,7 @@
                 th.text-center style="width: 100px;" 分量
                 th.text-center style="width: 80px;" 調味料
                 th style="" 下処理
-                th.text-end style="width:80px;" 原価
+                th.text-end style="width:90px;" 原価
 
                 th style="width:120px;" 仕入先
                 th style="width:150px;" 食材成分

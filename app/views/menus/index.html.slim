@@ -52,7 +52,7 @@
             td.text-center
               span.badge.rounded-pill class=menu_category_badge_class(menu.category_i18n) = menu.category_i18n
             td.text-end
-              = number_to_currency(menu.cost_price, unit: "円")
+              = number_to_currency(menu.cost_price, unit: "円", precision: 1)
             td.text-center
               span.badge.bg-secondary = menu.menu_materials_count
             td.text-center
@@ -88,7 +88,7 @@
               span.badge.rounded-pill class=menu_category_badge_class(menu.category_i18n) = menu.category_i18n
             .col-4
               .small.text-muted 原価
-              .fw-bold = number_to_currency(menu.cost_price, unit: "円")
+              .fw-bold = number_to_currency(menu.cost_price, unit: "円", precision: 1)
             .col-4
               .small.text-muted 材料数
               span.badge.bg-secondary = menu.menu_materials_count

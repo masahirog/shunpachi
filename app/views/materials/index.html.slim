@@ -63,7 +63,7 @@
             td.text-center
               span.badge.rounded-pill.bg-info.text-dark = material.category_i18n
             td.text-center = material.recipe_unit_i18n
-            td.text-end = number_to_currency(material.recipe_unit_price, unit: "円")
+            td.text-end = number_to_currency(material.recipe_unit_price, unit: "円", precision: 1)
             td = material.food_ingredient&.name || '-'
             td.text-center
               - if material.unused_flag
@@ -93,7 +93,7 @@
               div = material.recipe_unit_i18n
             .col-6
               .small.text-muted 単価
-              .fw-bold = number_to_currency(material.recipe_unit_price, unit: "円")
+              .fw-bold = number_to_currency(material.recipe_unit_price, unit: "円", precision: 1)
           - if material.food_ingredient.present?
             .mt-2
               .small.text-muted 栄養計算

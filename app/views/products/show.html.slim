@@ -72,7 +72,7 @@
                     td.fw-bold = number_to_currency(@product.sell_price, unit: "円")
                   tr
                     th.text-muted 原価
-                    td.fw-bold = number_to_currency(@product.cost_price, unit: "円")
+                    td.fw-bold = number_to_currency(@product.cost_price, unit: "円", precision: 1)
                   tr
                     th.text-muted 原価率
                     - cost_ratio = @product.sell_price > 0 ? ((@product.cost_price / @product.sell_price) * 100).round(1) : 0
@@ -216,11 +216,11 @@
                           br
                           span.badge.rounded-pill class=menu_category_badge_class(menu.category_i18n) = menu.category_i18n
                           br
-                          span.text-muted.small 原価: #{number_to_currency(menu.cost_price, unit: "円")}
+                          span.text-muted.small 原価: #{number_to_currency(menu.cost_price, unit: "円", precision: 1)}
                       td = link_to menu_material.material.name, edit_material_path(menu_material.material), class: "small text-truncate d-inline-block", target: "_blank", title: menu_material.material.name
                       td.text-center = "#{format_number(menu_material.amount_used)} #{menu_material.material.recipe_unit_i18n}"
                       td.small style="max-width: 250px; white-space: normal; word-break: break-word;" = menu_material.preparation || "—"
-                      td.text-end = number_to_currency(menu_material.cost_price, unit: "円")
+                      td.text-end = number_to_currency(menu_material.cost_price, unit: "円", precision: 1)
                       td
                         - if menu_material.material.food_ingredient.present?
                           = link_to menu_material.material.food_ingredient.name, food_ingredient_path(menu_material.material.food_ingredient), target: :_blank, class: "small text-truncate d-inline-block", style: "max-width: 120px;", title: menu_material.material.food_ingredient.name
@@ -250,7 +250,7 @@
                     td.fw-bold
                       = link_to menu.name, edit_menu_path(menu), class: "text-decoration-none", target: "_blank"
                       br
-                      span.text-muted.small 原価: #{number_to_currency(menu.cost_price, unit: "円")}
+                      span.text-muted.small 原価: #{number_to_currency(menu.cost_price, unit: "円", precision: 1)}
                     td.text-center
                       span.badge.bg-info.text-dark = menu.category
                     td.text-muted colspan="9" 材料が設定されていません
@@ -270,7 +270,7 @@
                       span.badge.rounded-pill.mt-1 class=menu_category_badge_class(menu.category_i18n) = menu.category_i18n
                   .text-end
                     .small.text-muted 原価
-                    .fw-bold = number_to_currency(menu.cost_price, unit: "円")
+                    .fw-bold = number_to_currency(menu.cost_price, unit: "円", precision: 1)
               .card-body.p-2
                 - if materials.any?
                   - materials.each_with_index do |menu_material, material_index|

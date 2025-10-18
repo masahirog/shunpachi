@@ -41,7 +41,7 @@
                 tbody
                   tr
                     th.text-muted style="width: 40%;" レシピ単位価格
-                    td.fw-bold = number_to_currency(@material.recipe_unit_price, unit: "円")
+                    td.fw-bold = number_to_currency(@material.recipe_unit_price, unit: "円", precision: 1)
                   tr
                     th.text-muted グラム換算
                     td = "#{@material.recipe_unit_gram_quantity}g"

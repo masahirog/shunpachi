@@ -52,7 +52,7 @@
             td.text-center
               span.badge.rounded-pill class=product_category_badge_class(product.category_i18n) = product.category_i18n
             td.text-end = number_to_currency(product.sell_price, unit: "円")
-            td.text-end = number_to_currency(product.cost_price, unit: "円")
+            td.text-end = number_to_currency(product.cost_price, unit: "円", precision: 1)
             td.text-end
               span class="#{cost_ratio <= 30 ? 'text-success' : cost_ratio <= 40 ? 'text-warning' : 'text-danger'}"
                 = "#{cost_ratio}%"
@@ -92,7 +92,7 @@
               .fw-bold = number_to_currency(product.sell_price, unit: "円")
             .col-4
               .small.text-muted 原価
-              .fw-bold = number_to_currency(product.cost_price, unit: "円")
+              .fw-bold = number_to_currency(product.cost_price, unit: "円", precision: 1)
             .col-4
               .small.text-muted 原価率
               .fw-bold class="#{cost_ratio <= 30 ? 'text-success' : cost_ratio <= 40 ? 'text-warning' : 'text-danger'}"
