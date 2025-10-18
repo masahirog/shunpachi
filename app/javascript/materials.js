@@ -103,18 +103,20 @@ function onLoad() {
   // 検索機能
   function performSearch() {
     const query = $('.js-material-search').val();
+    const vendorId = $('.js-vendor-filter').val();
     const category = $('.js-category-filter').val();
-    
+
     let url = window.location.pathname + '?';
-    
+
     if (query) url += `query=${encodeURIComponent(query)}&`;
+    if (vendorId) url += `vendor_id=${encodeURIComponent(vendorId)}&`;
     if (category) url += `category=${encodeURIComponent(category)}&`;
-    
+
     // 末尾の&を削除
     if (url.endsWith('&')) {
       url = url.slice(0, -1);
     }
-    
+
     Turbo.visit(url);
   }
 
@@ -124,6 +126,16 @@ function onLoad() {
       e.preventDefault();
       performSearch();
     }
+  });
+
+  // 検索ボタンクリック
+  $('.js-search-btn').on('click', function() {
+    performSearch();
+  });
+
+  // 仕入先フィルター
+  $('.js-vendor-filter').on('change', function() {
+    performSearch();
   });
 
   // カテゴリフィルター

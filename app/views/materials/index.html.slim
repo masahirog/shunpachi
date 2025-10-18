@@ -21,17 +21,20 @@
 
   .card.shadow-sm.mb-3
     .card-body.py-2.px-3
-      .row.g-2
-        .col-md-8.col-lg-9
-          .input-group
-            span.input-group-text.py-1
-              i.bi.bi-search
-            input.form-control.js-material-search type="text" placeholder="材料名で検索..." value="#{params[:query]}"
-        .col-md-4.col-lg-3
-          select.form-select.js-category-filter
-            option value="" すべてのカテゴリ
-            - Material.categories.keys.each do |category|
-              option value=category selected=("selected" if params[:category] == category) = category
+      = form_with url: materials_path, method: :get, local: true do |f|
+        .row.g-2
+          .col-md-4
+            .input-group
+              span.input-group-text.py-1
+                i.bi.bi-search
+              = f.text_field :query, value: params[:query], class: "form-control", placeholder: "材料名で検索...", autocomplete: "off"
+          .col-md-3
+            = f.select :vendor_id, options_for_select([["すべての仕入先", ""]] + @vendors.map { |v| [v.name, v.id] }, params[:vendor_id]), {}, class: "form-select"
+          .col-md-2
+            = f.select :category, options_for_select([["すべてのカテゴリ", ""]] + Material.categories.keys.map { |c| [c, c] }, params[:category]), {}, class: "form-select"
+          .col-md-3
+            .d-flex.gap-2.justify-content-end
+              = f.submit "検索", class: "btn btn-primary btn-sm"
 
 
 

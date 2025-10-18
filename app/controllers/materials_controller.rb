@@ -35,17 +35,23 @@ class MaterialsController < ApplicationController
 
   def index
     @materials = Material.includes(:food_ingredient, :vendor).joins(:vendor).where(vendors: { company: current_company })
+    @vendors = Vendor.for_company(current_company).order(:name)
 
     # 検索機能
     if params[:query].present?
       @materials = @materials.where("materials.name LIKE ?", "%#{params[:query]}%")
     end
-    
+
+    # 仕入先フィルター
+    if params[:vendor_id].present?
+      @materials = @materials.where(vendor_id: params[:vendor_id])
+    end
+
     # カテゴリフィルター
     if params[:category].present?
       @materials = @materials.where(category: params[:category])
     end
-    
+
     @materials = @materials.order(id: :desc).paginate(page: params[:page], per_page: 30)
   end
 
