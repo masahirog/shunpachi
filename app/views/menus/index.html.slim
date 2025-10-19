@@ -1,9 +1,13 @@
 .container-fluid.py-4.px-3
   .d-flex.justify-content-between.align-items-center.mb-3
     h3.mb-0 メニュー一覧
-    = link_to new_menu_path, class: "btn btn-primary" do
-      i.bi.bi-plus-circle.me-1
-      | 新規登録
+    .d-flex.gap-2
+      = button_to export_to_sheets_menus_path, method: :post, class: "btn btn-success", data: { confirm: 'スプレッドシートにメニュー原価を書き出します。よろしいですか？' } do
+        i.bi.bi-file-earmark-spreadsheet.me-1
+        | スプレッドシート書き出し
+      = link_to new_menu_path, class: "btn btn-primary" do
+        i.bi.bi-plus-circle.me-1
+        | 新規登録
 
   .card.shadow-sm.mb-3
     .card-body.py-2.px-3

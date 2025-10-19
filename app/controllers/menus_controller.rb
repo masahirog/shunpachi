@@ -1,6 +1,17 @@
 class MenusController < ApplicationController
   before_action :set_menu, only: %i[edit update destroy calculate]
 
+  def export_to_sheets
+    service = GoogleSheetsService.new
+    result = service.export_menu_costs
+
+    if result[:success]
+      redirect_to menus_path, notice: result[:message]
+    else
+      redirect_to menus_path, alert: result[:error]
+    end
+  end
+
   def calculate
     # 現在のメニューの原価と栄養成分を再計算して返す（DBには保存しない）
     total_cost = 0.0

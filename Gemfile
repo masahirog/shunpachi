@@ -29,10 +29,12 @@ gem 'enum_help'
 gem 'acts_as_list'
 gem 'aws-sdk-s3', require: false
 gem 'wicked_pdf'
+gem 'google-apis-sheets_v4'
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
   gem 'pry-rails'
+  gem 'dotenv-rails'
 end
 
 group :development do

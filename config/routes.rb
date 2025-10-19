@@ -19,6 +19,9 @@ Rails.application.routes.draw do
     end
   end
   resources :menus do
+    collection do
+      post :export_to_sheets
+    end
     member do
       get :details
       get :copy
