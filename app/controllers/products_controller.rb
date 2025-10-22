@@ -165,10 +165,10 @@ class ProductsController < ApplicationController
 
   def product_to_csv(product)
     require 'csv'
-    
+
     # BOM（Byte Order Mark）を付与
     bom = "\uFEFF"
-    
+
     csv_string = CSV.generate(bom, encoding: 'UTF-8', row_sep: "\r\n", force_quotes: true) do |csv|
       # ヘッダー行
       csv << [
@@ -193,13 +193,17 @@ class ProductsController < ApplicationController
         "炭水化物",
         "食塩相当量"
       ]
-      
+
       # データ行
       raw_materials_parts = []
       raw_materials_parts << product.raw_materials_food_contents if product.raw_materials_food_contents.present?
       raw_materials_parts << product.raw_materials_additive_contents if product.raw_materials_additive_contents.present?
       raw_materials_combined = raw_materials_parts.join("/")
-      
+
+      # アレルギー情報を取得して追加
+      allergen_text = get_allergen_text_for_csv(product)
+      raw_materials_combined += allergen_text if allergen_text.present?
+
       csv << [
         product.label_call_number || "",
         product.name || "",
@@ -223,7 +227,7 @@ class ProductsController < ApplicationController
         "#{product.salt} g"
       ]
     end
-    
+
     csv_string
   end
 
@@ -231,6 +235,32 @@ class ProductsController < ApplicationController
   def format_number(number)
     return "" if number.nil?
     number.to_f == number.to_i ? number.to_i.to_s : number.to_s
+  end
+
+  # CSV用のアレルギー情報テキストを生成
+  def get_allergen_text_for_csv(product)
+    allergens = []
+
+    product.product_menus.includes(menu: { menu_materials: { material: :material_allergies } }).each do |product_menu|
+      next unless product_menu.menu
+
+      product_menu.menu.menu_materials.each do |menu_material|
+        material = menu_material.material
+        next unless material
+
+        material.material_allergies.each do |material_allergy|
+          allergens << material_allergy.allergen
+        end
+      end
+    end
+
+    return "" if allergens.empty?
+
+    # ユニークにして日本語名を取得
+    unique_allergens = allergens.uniq
+    allergen_names = unique_allergens.map { |allergen| MaterialAllergy.allergens_i18n[allergen] }
+
+    "(一部に#{allergen_names.join('・')}を含む)"
   end
 
 
