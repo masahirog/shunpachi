@@ -2,7 +2,7 @@
   .d-flex.justify-content-between.align-items-center.mb-3
     h3.mb-0 メニュー一覧
     .d-flex.gap-2
-      = button_to export_to_sheets_menus_path, method: :post, class: "btn btn-success", data: { confirm: 'スプレッドシートにメニュー原価を書き出します。よろしいですか？' } do
+      button.btn.btn-success type="button" data-bs-toggle="modal" data-bs-target="#exportSheetsModal"
         i.bi.bi-file-earmark-spreadsheet.me-1
         | スプレッドシート書き出し
       = link_to new_menu_path, class: "btn btn-primary" do
@@ -126,6 +126,30 @@
     small.text-muted 全 #{@menus.count} 件
     .overflow-auto.w-100.w-md-auto
       = will_paginate @menus, renderer: WillPaginate::ActionView::BootstrapLinkRenderer if @menus.respond_to?(:total_pages)
+
+/ スプレッドシート書き出し設定モーダル
+#exportSheetsModal.modal.fade tabindex="-1" aria-labelledby="exportSheetsModalLabel" aria-hidden="true"
+  .modal-dialog.modal-dialog-centered
+    .modal-content
+      = form_with url: export_to_sheets_menus_path, method: :post do |f|
+        .modal-header
+          h5#exportSheetsModalLabel.modal-title スプレッドシート書き出し設定
+          button.btn-close type="button" data-bs-dismiss="modal" aria-label="閉じる"
+        .modal-body
+          .mb-3
+            = f.label :spreadsheet_id, "スプレッドシートID", class: "form-label"
+            = f.text_field :spreadsheet_id, class: "form-control", placeholder: "例: 1AbC2DeFgHiJkLmNoPqRsTuVwXyZ", required: true
+            small.form-text.text-muted スプレッドシートのURLから取得できます
+          .mb-3
+            = f.label :sheet_name, "シート名", class: "form-label"
+            = f.text_field :sheet_name, class: "form-control", placeholder: "例: Sheet1", required: true
+          .mb-3
+            = f.label :url_column, "メニューURL列", class: "form-label"
+            = f.text_field :url_column, class: "form-control", placeholder: "例: D", required: true
+            small.form-text.text-muted メニューURLが記載されている列（A, B, C, D...）
+        .modal-footer
+          button.btn.btn-secondary type="button" data-bs-dismiss="modal" キャンセル
+          = f.submit "書き出し実行", class: "btn btn-success"
 
 / 画像拡大表示用モーダル
 #menuImageModal.modal.fade tabindex="-1" aria-labelledby="menuImageModalLabel" aria-hidden="true"

@@ -2,8 +2,22 @@ class MenusController < ApplicationController
   before_action :set_menu, only: %i[edit update destroy calculate]
 
   def export_to_sheets
+    # パラメータのバリデーション
+    spreadsheet_id = params[:spreadsheet_id]&.strip
+    sheet_name = params[:sheet_name]&.strip
+    url_column = params[:url_column]&.strip&.upcase
+
+    if spreadsheet_id.blank? || sheet_name.blank? || url_column.blank?
+      redirect_to menus_path, alert: 'スプレッドシートID、シート名、URL列をすべて入力してください'
+      return
+    end
+
     service = GoogleSheetsService.new
-    result = service.export_menu_costs
+    result = service.export_menu_costs(
+      spreadsheet_id: spreadsheet_id,
+      sheet_name: sheet_name,
+      url_column: url_column
+    )
 
     if result[:success]
       redirect_to menus_path, notice: result[:message]
