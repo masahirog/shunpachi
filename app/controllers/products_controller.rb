@@ -143,7 +143,7 @@ class ProductsController < ApplicationController
 
   def show
     @product = Product.includes(
-      product_menus: { menu: { menu_materials: :material } }
+      product_menus: { menu: { menu_materials: { material: [:food_ingredient, :material_allergies] } } }
     ).for_company(current_company).find(params[:id])
 
     respond_to do |format|
@@ -151,9 +151,9 @@ class ProductsController < ApplicationController
       format.csv do
         # ファイル名に日本語を使わない（文字化け防止）
         filename = "product_#{@product.id}_#{Date.today.strftime('%Y%m%d')}.csv"
-        
+
         # BOM付きUTF-8で送信（最新のExcelは対応）
-        send_data product_to_csv(@product), 
+        send_data product_to_csv(@product),
                   filename: filename,
                   type: 'text/csv; charset=UTF-8'
       end

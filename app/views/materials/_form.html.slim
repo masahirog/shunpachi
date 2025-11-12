@@ -84,8 +84,8 @@
           partial_locals: { raw_materials: @raw_materials }
 
     .card-body
-      / デスクトップ表示
-      .d-none.d-md-block
+      / モバイル対応：横スクロール可能なテーブル
+      .table-responsive
         table.table.table-bordered.mb-0#raw-materials-table
           thead.table-light
             tr
@@ -96,11 +96,6 @@
           tbody#material-raw-materials
             = f.fields_for :material_raw_materials do |mrm|
               = render 'material_raw_material_fields', f: mrm, raw_materials: @raw_materials
-      / モバイル表示
-      .d-md-none#raw-materials-table
-        #material-raw-materials
-          = f.fields_for :material_raw_materials do |mrm|
-            = render 'material_raw_material_fields', f: mrm, raw_materials: @raw_materials
 
   .card.mb-4
     .card-header.bg-light

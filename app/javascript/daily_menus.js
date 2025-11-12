@@ -1,4 +1,9 @@
 function onLoad() {
+  // 編集ページのみで実行（indexページでは不要）
+  if (!document.querySelector('.js-daily-menu-products-container')) {
+    return;
+  }
+
   // 商品追加ボタンのクリックイベント
   $("#addProductModal").on('click', '.js-add-product-btn', function() {
 
@@ -341,9 +346,5 @@ function onLoad() {
   });
 }
 
-$(document).on("turbo:before-cache", function() {
-  $('.material_select2').select2('destroy');
-});
-
-document.addEventListener("DOMContentLoaded", onLoad);
+// ページロード時の初期化（Turboのみ）
 document.addEventListener("turbo:load", onLoad);

@@ -122,7 +122,7 @@ class MaterialsController < ApplicationController
   private
 
   def set_material
-    @material = Material.includes(:material_allergies, :material_raw_materials).joins(:vendor).where(vendors: { company: current_company }).find(params[:id])
+    @material = Material.includes(:material_allergies, :vendor, :food_ingredient, material_raw_materials: :raw_material, menu_materials: :menu).joins(:vendor).where(vendors: { company: current_company }).find(params[:id])
   end
 
   def material_params

@@ -66,7 +66,7 @@ class DailyMenusController < ApplicationController
   
   def set_daily_menu
     @daily_menu = company_scope(DailyMenu).includes(
-      { daily_menu_products: [:product, :store_daily_menu_products] }
+      { daily_menu_products: [:product, store_daily_menu_products: :store] }
     ).find(params[:id])
 
   end

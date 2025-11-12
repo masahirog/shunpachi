@@ -229,7 +229,7 @@ class MenusController < ApplicationController
   end
 
   def show
-    @menu = Menu.includes(menu_materials: { material: :material_allergies }).for_company(current_company).find(params[:id])
+    @menu = Menu.includes(menu_materials: { material: [:material_allergies, :vendor, :food_ingredient] }).for_company(current_company).find(params[:id])
   end
 
   def update
@@ -251,7 +251,7 @@ class MenusController < ApplicationController
   private
 
   def set_menu
-    @menu = Menu.includes(menu_materials: :material).for_company(current_company).find(params[:id])
+    @menu = Menu.includes(menu_materials: { material: :food_ingredient }).for_company(current_company).find(params[:id])
   end
 
   def menu_params

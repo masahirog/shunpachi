@@ -1,5 +1,4 @@
-/ デスクトップ表示
-tr.nested-fields.d-none.d-md-table-row
+tr.nested-fields
   td
     .d-flex.align-items-center
       span.handle.me-2 style="cursor: move; padding: 5px; color: #6c757d; font-size: 1.2em;"
@@ -24,32 +23,3 @@ tr.nested-fields.d-none.d-md-table-row
   td.text-center
     = link_to_remove_association f, class: "btn btn-outline-danger btn-sm", title: "削除" do
       i.bi.bi-trash
-
-/ モバイル表示
-.card.nested-fields.d-md-none.mb-3
-  .card-body.p-3
-    .d-flex.align-items-center.mb-2
-      span.handle.me-2 style="cursor: move; padding: 5px; color: #6c757d; font-size: 1.2em;"
-        i.bi.bi-grip-vertical
-      .small.text-muted 原材料
-    .mb-2
-      - raw_materials = local_assigns[:raw_materials] || @raw_materials || RawMaterial.for_company(@current_company)
-      = f.collection_select :raw_material_id, raw_materials, :id, :display_name,
-        { include_blank: "選択してください" }, { class: "form-select raw-material-select2" }
-      = f.hidden_field :position
-    .d-flex.justify-content-between.align-items-center.mb-2
-      button.btn.btn-outline-success.btn-sm.new-raw-material-btn type="button" data-bs-toggle="modal" data-bs-target="#newRawMaterialModal"
-        i.bi.bi-plus-circle.me-1
-        | 新規原材料
-      - if f.object.raw_material&.category.present?
-        span.badge.rounded-pill.bg-info.text-dark.category-badge data-raw-material-id=f.object.raw_material_id
-          = t("enums.raw_material.category.#{f.object.raw_material.category}")
-      - else
-        span.badge.rounded-pill.bg-info.text-dark.category-badge.d-none data-raw-material-id=""
-    .d-flex.justify-content-between.align-items-center
-      .input-group style="width: 120px;"
-        = f.number_field :percentage, class: "form-control percentage-input", min: "0", max: "100", placeholder: "0"
-        span.input-group-text %
-      = link_to_remove_association f, class: "btn btn-outline-danger btn-sm" do
-        i.bi.bi-trash.me-1
-        | 削除
