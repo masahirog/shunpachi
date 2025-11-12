@@ -5,14 +5,21 @@ function onLoad() {
                      document.querySelector('#menu_materials-add-point');
 
   if (isFormPage) {
+    // 以下、フォームページのみで実行
     initSelect2();
-    material_select2();
-    initRawMaterialSelect2();
 
-    // jQueryUIがロード済みの場合のみsortableを初期化
     if (typeof $.fn.sortable !== 'undefined') {
       initSortable();
+    } else {
+      // jQueryUIが読み込まれたらinitSortableを実行
+      document.addEventListener('jquery-ui-loaded', initSortable);
     }
+
+    // 材料選択用のselect2を初期化
+    material_select2();
+
+    // Raw Material選択用のselect2を初期化
+    initRawMaterialSelect2();
 
     // 材料追加ボタン押下時のイベント
     $('.add_material_fields').on('click', function(){
@@ -544,18 +551,15 @@ function initRawMaterialCreation() {
   });
 }
 
-// Turboの前にselect2破棄（編集ページのみ）
+// Turboの前にselect2破棄
 $(document).on("turbo:before-cache", function() {
-  // 編集ページの場合のみクリーンアップ
-  if ($('.material_select2').length > 0 || $('.raw-material-select2').length > 0) {
-    // Select2が初期化されているものだけdestroyする
-    $('.material_select2.select2-hidden-accessible').select2('destroy');
-    $('.raw-material-select2.select2-hidden-accessible').select2('destroy');
-
-    // Sortableも破棄
-    if ($("#material-raw-materials").data('ui-sortable')) {
-      $("#material-raw-materials").sortable('destroy');
-    }
+  // Select2が初期化されているものだけdestroyする
+  $('.material_select2.select2-hidden-accessible').select2('destroy');
+  $('.raw-material-select2.select2-hidden-accessible').select2('destroy');
+  
+  // Sortableも破棄
+  if ($("#material-raw-materials").data('ui-sortable')) {
+    $("#material-raw-materials").sortable('destroy');
   }
 });
 
@@ -696,7 +700,12 @@ function initFoodIngredientCreation() {
   });
 }
 
-// ページロード時の初期化（Turboのみ）
+// ページロード時の初期化
+document.addEventListener("DOMContentLoaded", function() {
+  onLoad();
+  initRawMaterialCreation();
+  initFoodIngredientCreation();
+});
 document.addEventListener("turbo:load", function() {
   onLoad();
   initRawMaterialCreation();

@@ -66,6 +66,8 @@ class MaterialsController < ApplicationController
   end
 
   def edit
+    # material_raw_materialsをposition順にリロード
+    @material.material_raw_materials.reload
     @vendors = Vendor.for_company(current_company)
     @food_ingredients = FoodIngredient.for_company(current_company)
     @raw_materials = RawMaterial.for_company(current_company)

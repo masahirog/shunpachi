@@ -346,5 +346,12 @@ function onLoad() {
   });
 }
 
-// ページロード時の初期化（Turboのみ）
+$(document).on("turbo:before-cache", function() {
+  // 編集ページの場合のみクリーンアップ
+  if ($('.material_select2').length > 0) {
+    $('.material_select2.select2-hidden-accessible').select2('destroy');
+  }
+});
+
+document.addEventListener("DOMContentLoaded", onLoad);
 document.addEventListener("turbo:load", onLoad);
