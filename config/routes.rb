@@ -41,6 +41,9 @@ Rails.application.routes.draw do
   end
   resources :raw_materials
   resources :daily_menus do
+    collection do
+      get :material_schedule
+    end
     member do
       post :distribute
     end

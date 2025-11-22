@@ -19,6 +19,9 @@
             - date = (i+1).months.from_now
             li
               = link_to date.strftime('%Y年%m月'), daily_menus_path(date: date), class: "dropdown-item"
+      = link_to material_schedule_daily_menus_path, class: "btn btn-success ms-2" do
+        i.bi.bi-box-seam.me-1
+        | 食材使用スケジュール
 
   .card.shadow-sm.mb-4
     .card-body.p-0
@@ -51,16 +54,11 @@
                               span.text-success.fw-bold
                                 = number_to_currency(daily_menu.total_selling_price, unit: "円")
                           
-                          - if product_count <= 3
-                            ul.menu-list.list-unstyled.mt-1.mb-0.ps-0
-                              - daily_menu.daily_menu_products.order(:row_order).limit(3).each do |dmp|
-                                li.text-truncate.small.py-1
-                                  i.bi.bi-dot
-                                  = dmp.product.name
-                          - else
-                            .text-center.mt-1
-                              span.btn.btn-sm.btn-light.w-100
-                                | #{product_count}品目を表示
+                          ul.menu-list.list-unstyled.mt-1.mb-0.ps-0
+                            - daily_menu.daily_menu_products.order(:row_order).each do |dmp|
+                              li.text-truncate.small.py-1
+                                i.bi.bi-dot
+                                = "#{dmp.product.name}：#{dmp.manufacturing_number}食"
                     - else
                       = link_to new_daily_menu_path(date: date), class: "d-block h-100 w-100 text-decoration-none text-dark position-absolute top-0 start-0 p-2 calendar-cell" do
                         span class="#{index == 0 ? 'text-danger' : index == 6 ? 'text-primary' : ''}"

@@ -1,0 +1,92 @@
+.container-fluid.py-4.px-3
+  .d-flex.justify-content-between.align-items-center.mb-3
+    h3.mb-0 食材使用スケジュール
+    = link_to daily_menus_path, class: "btn btn-outline-secondary" do
+      i.bi.bi-arrow-left.me-1
+      | カレンダーに戻る
+
+  .card.shadow-sm.mb-4
+    .card-body
+      = form_with url: material_schedule_daily_menus_path, method: :get, local: true, class: "row g-3 align-items-end" do |f|
+        .col-md-3
+          = f.label :start_date, "開始日", class: "form-label"
+          = f.date_field :start_date, value: @start_date, class: "form-control"
+        .col-md-3
+          = f.label :end_date, "終了日", class: "form-label"
+          = f.date_field :end_date, value: @end_date, class: "form-control"
+        .col-md-auto
+          = f.submit "表示", class: "btn btn-primary"
+        .col-md-auto
+          = link_to "今週", material_schedule_daily_menus_path(start_date: Date.today.beginning_of_week, end_date: Date.today.end_of_week), class: "btn btn-outline-secondary"
+        .col-md-auto
+          = link_to "来週", material_schedule_daily_menus_path(start_date: 1.week.from_now.beginning_of_week, end_date: 1.week.from_now.end_of_week), class: "btn btn-outline-secondary"
+
+  .card.shadow-sm.mb-4
+    .card-header.bg-light
+      h5.mb-0
+        = "集計期間: #{@start_date.strftime('%Y年%m月%d日')} 〜 #{@end_date.strftime('%Y年%m月%d日')}"
+    .card-body
+      - if @material_usage.empty?
+        .alert.alert-info.mb-0
+          i.bi.bi-info-circle.me-2
+          | 指定期間に献立データがありません
+
+      - else
+        .mb-3
+          p.mb-1
+            strong 集計結果:
+            | #{@material_usage.size}種類の食材
+          p.mb-0.text-muted.small
+            | ベンダー: #{@materials_by_vendor.keys.map(&:name).join(', ')}
+
+        - @materials_by_vendor.each do |vendor, materials|
+          .mb-4
+            h5.mb-3
+              i.bi.bi-shop.me-2
+              = vendor.name
+              span.badge.bg-secondary.ms-2
+                = "#{materials.size}種類"
+
+            .table-responsive
+              table.table.table-hover.table-bordered.mb-0
+                thead.table-light
+                  tr
+                    th style="width: 5%" No
+                    th style="width: 25%" 食材名
+                    th.text-end style="width: 15%" 総使用量
+                    th style="width: 55%" 日別使用量
+
+                tbody
+                  - materials.each_with_index do |data, index|
+                    - if data[:unit] == 'g'
+                      - display_total = (data[:total_amount] / 1000.0).round(1)
+                      - display_unit = 'kg'
+                    - else
+                      - display_total = data[:total_amount].round(1)
+                      - display_unit = data[:unit]
+                    tr
+                      td.text-center= index + 1
+                      td
+                        = link_to data[:material].name, material_path(data[:material]), class: "text-decoration-none", target: "_blank"
+                      td.text-end
+                        strong= number_with_delimiter(display_total)
+                        = " #{display_unit}"
+                      td
+                        - data[:daily_amounts].sort_by { |date, _| date }.each do |date, amount|
+                          - if data[:unit] == 'g'
+                            - daily_display = (amount / 1000.0).round(1)
+                            - daily_unit = 'kg'
+                          - else
+                            - daily_display = amount.round(1)
+                            - daily_unit = data[:unit]
+                          span.badge.bg-light.text-dark.border.me-2.mb-1 style="font-size: 0.85rem; padding: 0.4rem 0.6rem;"
+                            div style="font-weight: normal; color: #6c757d;"
+                              = date.strftime('%m/%d')
+                            div style="font-weight: bold; color: #212529;"
+                              = number_with_delimiter(daily_display)
+                              = daily_unit
+
+                tfoot.table-light
+                  tr
+                    td colspan="4"
+                      strong #{materials.size}種類の食材
